@@ -1,4 +1,4 @@
-package com.example.transpose.ui.screen.home.searchresult
+package com.example.transpose.ui.components.items
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,8 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +30,7 @@ import coil.compose.AsyncImage
 import com.example.transpose.data.model.NewPipeContentListData
 
 @Composable
-fun SearchResultItem(
+fun CommonVideoItem(
     item: NewPipeContentListData,
     onClick: (NewPipeContentListData) -> Unit
 ) {
@@ -38,7 +39,7 @@ fun SearchResultItem(
             .fillMaxWidth()
             .height(100.dp)
             .clickable { onClick(item) }
-            .padding(vertical = 10.dp)
+            .padding(vertical = 10.dp, horizontal = 10.dp)
     ) {
         AsyncImage(
             model = item.thumbnailUrl,
@@ -47,7 +48,10 @@ fun SearchResultItem(
                 .width(150.dp)
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            placeholder = ColorPainter(Color.LightGray),
+            error = ColorPainter(Color.LightGray)
+
         )
         Column(
             modifier = Modifier
