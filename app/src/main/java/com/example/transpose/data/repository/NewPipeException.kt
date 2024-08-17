@@ -14,6 +14,8 @@ sealed class NewPipeException(message: String, cause: Throwable? = null) : Excep
         NewPipeException("Method: ${methodName}, Playlist not found", cause)
     class PlaylistItemsFetchFailed(override val methodName: String, cause: Throwable? = null) :
         NewPipeException("Method: ${methodName}, Failed to fetch playlist items", cause)
+    class UnsupportedOperationException(override val methodName: String, cause: Throwable? = null):
+        NewPipeException("Method: ${methodName}, Unsupported Operation", cause)
     class UnknownError(override val methodName: String, cause: Throwable? = null) :
         NewPipeException("Method: ${methodName}, An unknown error occurred", cause)
 }

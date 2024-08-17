@@ -67,7 +67,7 @@ fun HomeSearchResultScreen(
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = { item: NewPipeContentListData ->
-                    CommonVideoItem(item = item, onClick = {})
+                    CommonVideoItem(item = item, onClick = {viewModel.getStreamInfoByVideoId(it.id)})
                 },
 
                 loading = isMoreItemsLoading,

@@ -142,11 +142,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
     data class PlaylistState(
         val items: List<NewPipePlaylistData> = emptyList(),
         val uiState: UiState = UiState.Initial
     )
+
+
 
     // SearchResult Screen
     private val _searchUiState = MutableStateFlow<UiState>(UiState.Initial)
@@ -162,8 +163,6 @@ class HomeViewModel @Inject constructor(
     val isMoreItemsLoading = _isMoreSearchItemsLoading.asStateFlow()
 
     private var searchPager: VideoPager? = null
-
-
 
     fun initializeSearchPager(query: String) = viewModelScope.launch(Dispatchers.IO) {
         _searchUiState.value = UiState.Loading
@@ -217,6 +216,26 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun getStreamInfoByVideoId(videoId: String) = viewModelScope.launch(Dispatchers.IO){
+        try {
+            val result = newPipeRepository.fetchStreamInfoByVideoId(videoId)
+            if (result.isSuccess){
+                val bestQualityStream = result.getOrNull()?.maxByOrNull { it.getResolution() }
+                bestQualityStream?.let {
+                    Logger.d("getStreamInfoByVideoId ${it.content}")
+                }
+            }
+            if (result.isFailure){
+                Logger.d("getStreamInfoByVideoId ${result.exceptionOrNull()}")
+            }
+        }catch (e: Exception){
+            Logger.d("getStreamInfoByVideoId ${e}")
+        }
+    }
+
+
+
+    // PlaylistItemScreen
     private val _playlistItemUiState = MutableStateFlow<UiState>(UiState.Initial)
     val playlistItemUiState = _playlistItemUiState.asStateFlow()
 

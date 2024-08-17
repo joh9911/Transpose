@@ -6,7 +6,6 @@ import com.example.transpose.data.repository.NewPipeDownloader
 import com.example.transpose.data.repository.NewPipeException
 import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.VideoPager
-import com.example.transpose.utils.Logger
 import org.schabi.newpipe.extractor.Extractor
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
@@ -14,14 +13,14 @@ import org.schabi.newpipe.extractor.channel.ChannelExtractor
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 import org.schabi.newpipe.extractor.exceptions.ParsingException
-import org.schabi.newpipe.extractor.linkhandler.LinkHandler
+import org.schabi.newpipe.extractor.exceptions.UnsupportedTabException
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandlerFactory
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor
-import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
 import org.schabi.newpipe.extractor.search.SearchExtractor
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService
-import java.util.LinkedList
+import org.schabi.newpipe.extractor.stream.StreamExtractor
+import org.schabi.newpipe.extractor.stream.VideoStream
 import javax.inject.Inject
 
 class NewPipeRepositoryImpl @Inject constructor(): NewPipeRepository {
@@ -175,6 +174,38 @@ class NewPipeRepositoryImpl @Inject constructor(): NewPipeRepository {
         }
     }
 
+    private fun getStreamExtractor(videoId: String): StreamExtractor {
+        return try {
+            youtubeService.getStreamExtractor(videoId)
+        }catch (e: Exception){
+            throw NewPipeException.ExtractionFailed("getStreamExtractor", e)
+        }
+    }
+
+
+    private fun getVideoUrl(videoId: String): String {
+        return try {
+            youtubeService.streamLHFactory.getUrl(videoId)
+        }
+        catch (e: Exception){
+            when(e){
+                is ParsingException -> throw NewPipeException.ParsingException("getVideoUrl",e)
+                is UnsupportedOperationException -> throw NewPipeException.UnsupportedOperationException("getVideoUrl",e)
+                else -> throw NewPipeException.UnknownError("getVideoUrl",e)
+            }
+        }
+    }
+
+    override suspend fun fetchStreamInfoByVideoId(videoId: String): Result<MutableList<VideoStream>?> {
+        return try {
+            val extractor = getStreamExtractor(getVideoUrl(videoId))
+            extractor.fetchPage()
+            Result.success(extractor.videoStreams)
+        }catch (e: Exception){
+            return Result.failure(e)
+        }
+
+    }
 
 
 
