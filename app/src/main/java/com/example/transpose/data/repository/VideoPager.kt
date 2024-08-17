@@ -19,8 +19,8 @@ import java.net.URL
 
 open class VideoPager(
     streamingService: StreamingService,
-    channelExtractor: ListExtractor<out InfoItem>
-) : Pager<InfoItem, NewPipeContentListData>(streamingService, channelExtractor) {
+    extractor: ListExtractor<out InfoItem>
+) : Pager<InfoItem, NewPipeContentListData>(streamingService, extractor) {
 
     private val seenVideos = HashSet<String>()
 
@@ -71,7 +71,7 @@ open class VideoPager(
             title = item.name,
             description = item.shortDescription ?: "",
             publishTimestamp = item.uploadDate?.date()?.time?.time,
-            thumbnailUrl = getHighestResolutionThumbnail(item.thumbnails.firstOrNull()?.url),
+            thumbnailUrl = item.thumbnails.firstOrNull()?.url,
             uploaderName = item.uploaderName,
             uploaderUrl = item.uploaderUrl,
             uploaderAvatars = item.uploaderAvatars,
@@ -90,7 +90,7 @@ open class VideoPager(
             title = playlistInfoItem.name,
             description = playlistInfoItem.description?.content ?: "",
             publishTimestamp = null,  // PlaylistInfoItem doesn't have this information
-            thumbnailUrl = getHighestResolutionThumbnail(playlistInfoItem.thumbnails.firstOrNull()?.url),
+            thumbnailUrl = playlistInfoItem.thumbnails.firstOrNull()?.url,
             uploaderName = playlistInfoItem.uploaderName ?: "",
             uploaderUrl = playlistInfoItem.uploaderUrl,
             uploaderVerified = playlistInfoItem.isUploaderVerified,
@@ -106,7 +106,7 @@ open class VideoPager(
             title = channelInfoItem.name,
             description = channelInfoItem.description ?: "",
             publishTimestamp = null,  // ChannelInfoItem doesn't have this information
-            thumbnailUrl = getHighestResolutionThumbnail(channelInfoItem.thumbnails.firstOrNull()?.url),
+            thumbnailUrl = channelInfoItem.thumbnails.firstOrNull()?.url,
             subscriberCount = channelInfoItem.subscriberCount,
             streamCount = channelInfoItem.streamCount,
             verified = channelInfoItem.isVerified
