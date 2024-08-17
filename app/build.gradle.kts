@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.media3.session)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,6 +77,8 @@ dependencies {
 
 
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material)
+
 
 
     // ViewModel
@@ -102,6 +105,10 @@ dependencies {
 
     implementation (libs.prettytime)
     implementation(libs.coil.compose)
+
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.ui)
 }
 
 kapt {
