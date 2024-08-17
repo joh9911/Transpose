@@ -12,25 +12,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.transpose.NavigationViewModel
+import com.example.transpose.Route
 import com.example.transpose.data.model.NewPipePlaylistData
 import com.example.transpose.ui.common.UiState
+import com.example.transpose.ui.components.items.NationalPlaylistItem
+import com.example.transpose.ui.components.items.RegularPlaylistItem
 import com.example.transpose.ui.screen.home.HomeViewModel
+import com.example.transpose.utils.LogComposableLifecycle
 import com.example.transpose.utils.Logger
 import kotlinx.coroutines.async
 
 @Composable
 fun HomePlaylistScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    navigationViewModel: NavigationViewModel
 ) {
-    val nationalPlaylistState by viewModel.nationalPlaylistState.collectAsState()
-    val recommendedPlaylistState by viewModel.recommendedPlaylistState.collectAsState()
-    val typedPlaylistState by viewModel.typedPlaylistState.collectAsState()
+    val nationalPlaylistState by homeViewModel.nationalPlaylistState.collectAsState()
+    val recommendedPlaylistState by homeViewModel.recommendedPlaylistState.collectAsState()
+    val typedPlaylistState by homeViewModel.typedPlaylistState.collectAsState()
+
+    LogComposableLifecycle(screenName = "HomePlaylistScreen")
+
 
     LaunchedEffect(key1 = true) {
-        async { viewModel.fetchNationalPlaylists() }
-        async { viewModel.fetchRecommendedPlaylists() }
-        async { viewModel.fetchTypedPlaylists() }
+        navigationViewModel.changeHomeCurrentRoute(Route.Home.Playlist.route)
+        if (nationalPlaylistState.uiState == UiState.Initial)
+            homeViewModel.fetchNationalPlaylists()
+        if (recommendedPlaylistState.uiState == UiState.Initial)
+            homeViewModel.fetchRecommendedPlaylists()
+        if (typedPlaylistState.uiState == UiState.Initial)
+            homeViewModel.fetchTypedPlaylists()
     }
 
     LazyColumn(
@@ -43,7 +56,7 @@ fun HomePlaylistScreen(
             ) { playlist ->
                 NationalPlaylistItem(
                     playlistData = playlist,
-                    onClick = {}
+                    onClick = { navigationViewModel.changeHomeCurrentRoute(Route.Home.PlaylistItem.createRoute(it)) }
                 )
             }
         }
@@ -54,7 +67,7 @@ fun HomePlaylistScreen(
             ) { playlist ->
                 RegularPlaylistItem(
                     playlistData = playlist,
-                    onClick = {}
+                    onClick = { navigationViewModel.changeHomeCurrentRoute(Route.Home.PlaylistItem.createRoute(it)) }
                 )
             }
         }
@@ -65,7 +78,7 @@ fun HomePlaylistScreen(
             ) { playlist ->
                 RegularPlaylistItem(
                     playlistData = playlist,
-                    onClick = {}
+                    onClick = { navigationViewModel.changeHomeCurrentRoute(Route.Home.PlaylistItem.createRoute(it)) }
                 )
             }
         }
@@ -118,7 +131,6 @@ fun PlaylistSection(
                             count = playlistState.items.size,
                             key = { index -> playlistState.items[index].id }
                         ) { index ->
-                            Logger.d("Rendering playlist item at index $index: ${playlistState.items[index].title}")
                             itemContent(playlistState.items[index])
                         }
                     }
