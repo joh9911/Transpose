@@ -54,9 +54,7 @@ fun MainAppBar(
 
     val focusRequester = remember { FocusRequester() }
 
-    BackHandler {
-        Logger.d("MainAppBar")
-    }
+
     when (searchWidgetState) {
         SearchWidgetState.CLOSED -> {
             DefaultAppBar(
@@ -104,11 +102,6 @@ fun CustomSearchAppBar(
     onSearchBarActiveChanged: (Boolean) -> Unit
 ) {
 
-//    BackHandler {
-//        Logger.d("CustomSearchAppBar")
-//    }
-    var expanded by rememberSaveable { mutableStateOf(false) }
-
     SideEffect {
         focusRequester.requestFocus()
     }
@@ -119,7 +112,10 @@ fun CustomSearchAppBar(
             .focusRequester(focusRequester),
         query = searchTextState,
         onQueryChange = onTextChange,
-        onSearch = onSearchClicked,
+        onSearch = {
+            onSearchClicked(it)
+            onCloseClicked()
+        },
         active = isSearchAppBarActive,
         placeholder = { Text("Search YouTube") },
         leadingIcon = {
@@ -157,11 +153,10 @@ fun CustomSearchAppBar(
                         val suggestionKeyword = suggestionKeywords[index]
                         SearchSuggestionItem(
                             suggestionText = suggestionKeyword,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onSearchClicked(suggestionKeyword)
-                                }
+                            onClick = {
+                                onSearchClicked(suggestionKeyword)
+                                onCloseClicked()
+                            },
                         )
                     }
 
@@ -178,9 +173,7 @@ fun CustomSearchAppBar(
 @Composable
 fun DefaultAppBar(onSearchClicked: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
 
-    BackHandler {
-        Logger.d("DefaultAppBar")
-    }
+
     CenterAlignedTopAppBar(
 
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
