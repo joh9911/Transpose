@@ -7,6 +7,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +34,8 @@ fun BottomNavigationBar(
                         id = if (mainNavCurrentRoute == icon.route) icon.filledIcon else icon.outlinedIcon
                     ),
                     contentDescription = icon.label
-                ) }
+                ) },
+                label = {Text(icon.label)}
             )
         }
 
