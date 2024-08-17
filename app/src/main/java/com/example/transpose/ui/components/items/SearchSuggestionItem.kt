@@ -1,5 +1,6 @@
 package com.example.transpose.ui.components.items
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -18,13 +19,14 @@ import com.example.transpose.R
 @Composable
 fun SearchSuggestionItem(
     suggestionText: String,
-    modifier: Modifier = Modifier
+    onClick: (String) -> Unit
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
-            .padding(horizontal = 10.dp),
+            .padding(horizontal = 10.dp)
+            .clickable { onClick(suggestionText) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
