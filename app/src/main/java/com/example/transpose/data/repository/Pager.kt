@@ -13,7 +13,7 @@ import org.schabi.newpipe.extractor.linkhandler.ListLinkHandlerFactory
 
 abstract class Pager<I : InfoItem, O>(
     protected val streamingService: StreamingService,
-    private val channelExtractor: ListExtractor<out InfoItem>
+    private val extractor: ListExtractor<out InfoItem>
 ){
     private var nextPage: Page? = null
     private var hasNextPage = true
@@ -27,15 +27,15 @@ abstract class Pager<I : InfoItem, O>(
 
 
     open fun getNextPage(): List<O> {
-        if (!hasNextPage || channelExtractor == null) {
+        if (!hasNextPage || extractor == null) {
             return emptyList()
         }
         return try {
             if (nextPage == null) {
-                channelExtractor.fetchPage()
-                process(channelExtractor.initialPage)
+                extractor.fetchPage()
+                process(extractor.initialPage)
             } else {
-                process(channelExtractor.getPage(nextPage))
+                process(extractor.getPage(nextPage))
             }
         } catch (e: Exception) {
             when (e) {
@@ -48,7 +48,7 @@ abstract class Pager<I : InfoItem, O>(
 
     fun getPageAndExtract(page: Page): List<O> {
         return try {
-            extract(channelExtractor.getPage(page))
+            extract(extractor.getPage(page))
         } catch (e: Exception) {
             when (e) {
                 is IOException -> throw NewPipeException.PageCannotBeLoaded("getNextPage from Pager",e)

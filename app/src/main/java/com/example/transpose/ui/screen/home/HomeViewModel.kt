@@ -6,6 +6,8 @@ import com.example.transpose.data.model.NewPipeContentListData
 import com.example.transpose.data.model.NewPipePlaylistData
 import com.example.transpose.data.repository.MusicCategoryRepository
 import com.example.transpose.data.repository.NewPipeException
+import com.example.transpose.data.repository.PlaylistPager
+import com.example.transpose.data.repository.VideoPager
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.utils.Logger
@@ -23,8 +25,12 @@ class HomeViewModel @Inject constructor(
     private val newPipeRepository: NewPipeRepository
 ) : ViewModel() {
 
+
+    // Playlist Screen
     private val _nationalPlaylistState = MutableStateFlow(PlaylistState())
     val nationalPlaylistState: StateFlow<PlaylistState> = _nationalPlaylistState.asStateFlow()
+
+    private var nationalPlaylistPager: List<PlaylistPager> = emptyList()
 
     private val _recommendedPlaylistState = MutableStateFlow(PlaylistState())
     val recommendedPlaylistState: StateFlow<PlaylistState> = _recommendedPlaylistState.asStateFlow()
@@ -34,18 +40,23 @@ class HomeViewModel @Inject constructor(
 
 
     fun fetchNationalPlaylists() = viewModelScope.launch(Dispatchers.IO) {
+
         _nationalPlaylistState.value = _nationalPlaylistState.value.copy(uiState = UiState.Loading)
+        val playlistPagerList = mutableListOf<PlaylistPager>()
         val currentList = mutableListOf<NewPipePlaylistData>()
         var hasError = false
 
         val nationPlaylistUrls = MusicCategoryRepository().nationalPlaylistUrls
         nationPlaylistUrls.forEach { playlistId ->
-
-            val result = async { newPipeRepository.fetchPlaylistData(playlistId) }.await()
+            val playlistPager = newPipeRepository.createPlaylistPager(playlistId)
+            playlistPagerList.add(playlistPager)
+            nationalPlaylistPager = playlistPagerList
+            val result = newPipeRepository.fetchPlaylistResult(playlistPager)
 
             when {
                 result.isSuccess -> {
                     val playlistData = result.getOrNull()
+
                     playlistData?.let {
                         currentList.add(playlistData)
                         _nationalPlaylistState.value =
@@ -60,7 +71,6 @@ class HomeViewModel @Inject constructor(
             // firstPageItems를 처리할 수 있습니다 (필요한 경우).
         }
 
-        // 모든 요청이 완료된 후 최종 상태 설정
         if (hasError && currentList.isEmpty()) {
             _nationalPlaylistState.value =
                 PlaylistState(uiState = UiState.Error("Failed to fetch playlists"))
@@ -76,16 +86,16 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchRecommendedPlaylists() = viewModelScope.launch(Dispatchers.IO) {
+
         _recommendedPlaylistState.value = _recommendedPlaylistState.value.copy(uiState = UiState.Loading)
 
         val recommendedId = MusicCategoryRepository().recommendPlaylistChannelId
 
-        val result = async { newPipeRepository.fetchPlaylistWithChannelId(recommendedId) }.await()
+        val result = newPipeRepository.fetchPlaylistWithChannelId(recommendedId)
 
         when {
             result.isSuccess -> {
                 val contents = result.getOrNull()
-                Logger.d("가져온 결과, $contents")
                 contents?.let { contentList ->
                     val playlists = contentList.filterIsInstance<NewPipePlaylistData>()
                     if (playlists.isNotEmpty()) {
@@ -105,16 +115,16 @@ class HomeViewModel @Inject constructor(
 
 
     fun fetchTypedPlaylists() = viewModelScope.launch(Dispatchers.IO) {
+
         _typedPlaylistState.value = _typedPlaylistState.value.copy(uiState = UiState.Loading)
 
         val typedPlaylistId = MusicCategoryRepository().typedPlaylistChannelId
 
-        val result = async { newPipeRepository.fetchPlaylistWithChannelId(typedPlaylistId) }.await()
+        val result = newPipeRepository.fetchPlaylistWithChannelId(typedPlaylistId)
 
         when {
             result.isSuccess -> {
                 val contents = result.getOrNull()
-                Logger.d("가져온 결과, $contents")
                 contents?.let { contentList ->
                     val playlists = contentList.filterIsInstance<NewPipePlaylistData>()
                     if (playlists.isNotEmpty()) {
@@ -138,75 +148,146 @@ class HomeViewModel @Inject constructor(
         val uiState: UiState = UiState.Initial
     )
 
+    // SearchResult Screen
     private val _searchUiState = MutableStateFlow<UiState>(UiState.Initial)
     val searchUiState= _searchUiState.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<NewPipeContentListData>>(emptyList())
     val searchResults= _searchResults.asStateFlow()
 
-    fun fetchSearchResult(query: String) = viewModelScope.launch(Dispatchers.IO) {
-        _searchUiState.value = UiState.Loading
+    private val _hasMoreSearchItems = MutableStateFlow(false)
+    val hasMoreSearchItems = _hasMoreSearchItems.asStateFlow()
 
+    private val _isMoreSearchItemsLoading = MutableStateFlow(false)
+    val isMoreItemsLoading = _isMoreSearchItemsLoading.asStateFlow()
+
+    private var searchPager: VideoPager? = null
+
+
+
+    fun initializeSearchPager(query: String) = viewModelScope.launch(Dispatchers.IO) {
+        _searchUiState.value = UiState.Loading
         try {
-            val searchResults = newPipeRepository.fetchSearchResult(query)
+            searchPager = newPipeRepository.createSearchPager(query)
+            firstFetchSearchResult()
+        }catch (e: Exception){
+            _searchUiState.value = UiState.Error(e.toString())
+        }
+    }
+
+    private fun firstFetchSearchResult() = viewModelScope.launch(Dispatchers.IO) {
+        searchPager ?: return@launch
+        try {
+            val searchResults = newPipeRepository.fetchSearchResult(searchPager!!)
 
             if (searchResults.isSuccess){
                 _searchResults.value = searchResults.getOrElse { emptyList() }
                 _searchUiState.value = UiState.Success
-
-                Logger.d("First page results: ${searchResults.getOrNull()} items")
-
+                _hasMoreSearchItems.value = searchPager!!.isHasNextPage()
             }
             if (searchResults.isFailure){
-
-                Logger.d("failure: ${searchResults.exceptionOrNull()} items")
-
                 _searchResults.value = emptyList()
                 _searchUiState.value = UiState.Error(searchResults.exceptionOrNull().toString())
             }
-
-
-//            firstPageResults.forEachIndexed { index, item ->
-//                when (item) {
-//                    is NewPipeVideoData -> {
-//                        Logger.d(
-//                            "Video Item $index: " +
-//                                    "Title: ${item.title}, " +
-//                                    "Channel: ${item.uploaderName}, " +
-//                                    "Video ID: ${item.id}, " +
-//                                    "Date: ${item.publishTimestamp}, " +
-//                                    "Duration: ${item.duration}, " +
-//                                    "View Count: ${item.viewCount}"
-//                        )
-//                    }
-//                    is NewPipePlaylistData -> {
-//                        Logger.d(
-//                            "Playlist Item $index: " +
-//                                    "Title: ${item.title}, " +
-//                                    "Uploader: ${item.uploaderName}, " +
-//                                    "Playlist ID: ${item.id}, " +
-//                                    "Stream Count: ${item.streamCount}"
-//                        )
-//                    }
-//                    is NewPipeChannelData -> {
-//                        Logger.d(
-//                            "Channel Item $index: " +
-//                                    "Title: ${item.title}, " +
-//                                    "Channel ID: ${item.id}, " +
-//                                    "Subscriber Count: ${item.subscriberCount}, " +
-//                                    "Stream Count: ${item.streamCount}"
-//                        )
-//                    }
-//                    else -> {
-//                        Logger.d("Unknown item type at index $index")
-//                    }
-//                }
-//            }
-
             // 다음 페이지 로직은 주석 처리된 상태로 유지
         } catch (e: Exception) {
             Logger.e("Error fetching search results", e)
             _searchUiState.value = UiState.Error(e.message ?: "Unknown error occurred")
         }
     }
+
+    fun loadMoreSearchResults() = viewModelScope.launch(Dispatchers.IO) {
+        _isMoreSearchItemsLoading.value = false
+        searchPager ?: return@launch
+
+        try {
+            val result = newPipeRepository.fetchSearchResult(searchPager!!)
+            if (result.isSuccess){
+                _searchResults.value += result.getOrDefault(emptyList())
+                _isMoreSearchItemsLoading.value = false
+                _hasMoreSearchItems.value = searchPager!!.isHasNextPage()
+            }
+            if (result.isFailure){
+                Logger.d("loadMoreSearchResults ${result.exceptionOrNull()}")
+                _isMoreSearchItemsLoading.value = false
+            }
+        }catch (e: Exception){
+            _isMoreSearchItemsLoading.value = false
+            Logger.d("loadMoreSearchResults catch ${e}")
+        }
+    }
+
+    private val _playlistItemUiState = MutableStateFlow<UiState>(UiState.Initial)
+    val playlistItemUiState = _playlistItemUiState.asStateFlow()
+
+    private val _playlistItems = MutableStateFlow<List<NewPipeContentListData>>(emptyList())
+    val playlistItems = _playlistItems.asStateFlow()
+
+    private val _playlistInfo = MutableStateFlow<NewPipePlaylistData?>(null)
+    val playlistInfo = _playlistInfo.asStateFlow()
+
+    private val _hasMorePlaylistItems = MutableStateFlow(true)
+    val hasMorePlaylistItems = _hasMorePlaylistItems.asStateFlow()
+
+
+    private val _isMorePlaylistItemsLoading = MutableStateFlow(false)
+    val isMorePlaylistItemsLoading = _isMorePlaylistItemsLoading.asStateFlow()
+
+    private var playlistPager: PlaylistPager? = null
+
+    fun initializePlaylistPager(playlistId: String) = viewModelScope.launch(Dispatchers.IO){
+        _playlistItemUiState.value = UiState.Loading
+        try {
+            playlistPager = newPipeRepository.createPlaylistPager(playlistId)
+            firstFetchPlaylistItems()
+        }catch (e: Exception){
+            _searchUiState.value = UiState.Error(e.toString())
+        }
+    }
+
+    private fun firstFetchPlaylistItems() = viewModelScope.launch(Dispatchers.IO){
+        playlistPager ?: return@launch
+        try {
+            _playlistInfo.value = playlistPager!!.getPlaylist()
+            val playlistItemsResult = newPipeRepository.fetchPlaylistItemsResult(playlistPager!!)
+
+            if (playlistItemsResult.isSuccess){
+                _playlistItems.value = playlistItemsResult.getOrElse { emptyList() }
+                _playlistItemUiState.value = UiState.Success
+                _hasMorePlaylistItems.value = playlistPager!!.isHasNextPage()
+            }
+            if (playlistItemsResult.isFailure){
+                _playlistItems.value = emptyList()
+                _playlistItemUiState.value = UiState.Error(playlistItemsResult.exceptionOrNull().toString())
+            }
+            // 다음 페이지 로직은 주석 처리된 상태로 유지
+        } catch (e: Exception) {
+            Logger.e("Error fetching search results", e)
+            _playlistItemUiState.value = UiState.Error(e.message ?: "Unknown error occurred")
+        }
+    }
+
+    fun loadMorePlaylistItems() = viewModelScope.launch(Dispatchers.IO) {
+        _isMorePlaylistItemsLoading.value = true
+        playlistPager ?: return@launch
+
+        try {
+            val result = newPipeRepository.fetchPlaylistItemsResult(playlistPager!!)
+            if (result.isSuccess){
+                _playlistItems.value += result.getOrDefault(emptyList())
+                _isMorePlaylistItemsLoading.value = false
+                _hasMorePlaylistItems.value = playlistPager!!.isHasNextPage()
+            }
+            if (result.isFailure){
+                Logger.d("loadMoreSearchResults ${result.exceptionOrNull()}")
+                _isMorePlaylistItemsLoading.value = false
+            }
+        }catch (e: Exception){
+            _isMorePlaylistItemsLoading.value = false
+            Logger.d("loadMoreSearchResults catch ${e}")
+        }
+    }
+
+
+
 }

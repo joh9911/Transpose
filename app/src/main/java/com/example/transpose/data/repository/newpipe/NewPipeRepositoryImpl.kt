@@ -69,29 +69,33 @@ class NewPipeRepositoryImpl @Inject constructor(): NewPipeRepository {
         return pager.getPlaylist()
     }
 
-    override suspend fun fetchPlaylistData(playlistId: String): Result<NewPipePlaylistData?> {
-        try {
-            val playlistLinkHandler: ListLinkHandler = getPlaylistHandler(playlistId)
-
-            val playlistExtractor: PlaylistExtractor =
-                getPlaylistExtractor(playlistLinkHandler)
-
-            fetchPageInExtractor(playlistExtractor)
-            val pager = PlaylistPager(youtubeService, playlistExtractor)
-            return Result.success(getPlaylistInPager(pager))
+    override suspend fun createPlaylistPager(playlistId: String): PlaylistPager {
+        return try {
+            val linkHandler = getPlaylistHandler(playlistId)
+            val extractor = getPlaylistExtractor(linkHandler)
+            fetchPageInExtractor(extractor)
+            PlaylistPager(youtubeService, extractor)
         }catch (e: Exception){
-            return Result.failure(e)
+            throw e
         }
-
     }
 
-    override suspend fun fetchPlaylistItemData(playlistPager: PlaylistPager): Result<List<NewPipeContentListData>> {
+    override suspend fun fetchPlaylistResult(pager: PlaylistPager): Result<NewPipePlaylistData?> {
+        return try {
+            Result.success(getPlaylistInPager(pager))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchPlaylistItemsResult(playlistPager: PlaylistPager): Result<List<NewPipeContentListData>> {
         return try {
             Result.success(playlistPager.getNextPage())
         }catch (e: Exception){
             return Result.failure(e)
         }
     }
+
 
     private fun getSearchExtractor(query: String): SearchExtractor{
         return try {
@@ -101,14 +105,20 @@ class NewPipeRepositoryImpl @Inject constructor(): NewPipeRepository {
         }
     }
 
-
-
-    override suspend fun fetchSearchResult(query: String): Result<List<NewPipeContentListData>> {
+    override suspend fun createSearchPager(query: String): VideoPager {
         return try {
             val extractor = getSearchExtractor(query)
             fetchPageInExtractor(extractor)
-            val videoPager = VideoPager(youtubeService, extractor)
-            Result.success(videoPager.getNextPage())
+            VideoPager(youtubeService, extractor)
+        }catch (e: Exception){
+            throw e
+        }
+    }
+
+
+    override suspend fun fetchSearchResult(pager: VideoPager): Result<List<NewPipeContentListData>> {
+        return try {
+            Result.success(pager.getNextPage())
         }catch (e: Exception){
             Result.failure(e)
         }
