@@ -12,26 +12,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.transpose.NavigationViewModel
-import com.example.transpose.Route
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.Route
 import com.example.transpose.data.model.NewPipePlaylistData
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.NationalPlaylistItem
 import com.example.transpose.ui.components.items.RegularPlaylistItem
-import com.example.transpose.ui.screen.home.HomeViewModel
 import com.example.transpose.utils.LogComposableLifecycle
-import com.example.transpose.utils.Logger
-import kotlinx.coroutines.async
 
 @Composable
 fun HomePlaylistScreen(
+    homePlaylistViewModel: HomePlaylistViewModel,
+    navigationViewModel: NavigationViewModel,
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel,
-    navigationViewModel: NavigationViewModel
 ) {
-    val nationalPlaylistState by homeViewModel.nationalPlaylistState.collectAsState()
-    val recommendedPlaylistState by homeViewModel.recommendedPlaylistState.collectAsState()
-    val typedPlaylistState by homeViewModel.typedPlaylistState.collectAsState()
+
+    val nationalPlaylistState by homePlaylistViewModel.nationalPlaylistState.collectAsState()
+    val recommendedPlaylistState by homePlaylistViewModel.recommendedPlaylistState.collectAsState()
+    val typedPlaylistState by homePlaylistViewModel.typedPlaylistState.collectAsState()
 
     LogComposableLifecycle(screenName = "HomePlaylistScreen")
 
@@ -39,11 +39,11 @@ fun HomePlaylistScreen(
     LaunchedEffect(key1 = true) {
         navigationViewModel.changeHomeCurrentRoute(Route.Home.Playlist.route)
         if (nationalPlaylistState.uiState == UiState.Initial)
-            homeViewModel.fetchNationalPlaylists()
+            homePlaylistViewModel.fetchNationalPlaylists()
         if (recommendedPlaylistState.uiState == UiState.Initial)
-            homeViewModel.fetchRecommendedPlaylists()
+            homePlaylistViewModel.fetchRecommendedPlaylists()
         if (typedPlaylistState.uiState == UiState.Initial)
-            homeViewModel.fetchTypedPlaylists()
+            homePlaylistViewModel.fetchTypedPlaylists()
     }
 
     LazyColumn(
@@ -88,7 +88,7 @@ fun HomePlaylistScreen(
 @Composable
 fun PlaylistSection(
     title: String,
-    playlistState: HomeViewModel.PlaylistState,
+    playlistState: HomePlaylistViewModel.PlaylistState,
     itemContent: @Composable (NewPipePlaylistData) -> Unit
 ) {
     Column{

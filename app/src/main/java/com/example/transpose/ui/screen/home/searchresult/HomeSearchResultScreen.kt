@@ -1,56 +1,53 @@
 package com.example.transpose.ui.screen.home.searchresult
 
-import androidx.compose.foundation.layout.Box
+import android.provider.MediaStore.Audio.Media
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.transpose.NavigationViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.transpose.MediaViewModel
+import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.data.model.NewPipeContentListData
 import com.example.transpose.ui.common.UiState
-import com.example.transpose.ui.components.LoadingIndicator
+import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
-import com.example.transpose.ui.screen.home.HomeViewModel
 import com.example.transpose.utils.Logger
 
 @Composable
 fun HomeSearchResultScreen(
-    viewModel: HomeViewModel,
+    homeSearchResultViewModel: HomeSearchResultViewModel,
+    navigationViewModel: NavigationViewModel,
+    mediaViewModel: MediaViewModel,
     query: String?,
-    navigationViewModel: NavigationViewModel
 ) {
-    val searchResults by viewModel.searchResults.collectAsState()
-    val uiState by viewModel.searchUiState.collectAsState()
-    val isMoreItemsLoading by viewModel.isMoreItemsLoading.collectAsState()
-    val hasMoreItems by viewModel.hasMoreSearchItems.collectAsState()
+
+    val searchResults by homeSearchResultViewModel.searchResults.collectAsState()
+    val uiState by homeSearchResultViewModel.searchUiState.collectAsState()
+    val isMoreItemsLoading by homeSearchResultViewModel.isMoreItemsLoading.collectAsState()
+    val hasMoreItems by homeSearchResultViewModel.hasMoreSearchItems.collectAsState()
+    val url by homeSearchResultViewModel.videoUri.collectAsState()
 
     val listState = rememberLazyListState()
 
-    val isAtBottom by remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-            lastVisibleItem?.index == listState.layoutInfo.totalItemsCount - 1
-        }
-    }
 
     LaunchedEffect(key1 = true) {
         query?.let {
-            viewModel.initializeSearchPager(it)
+            homeSearchResultViewModel.initializeSearchPager(it)
         }
 
     }
+    LaunchedEffect(url) {
+        Logger.d("LaunchedEffect $url")
+        mediaViewModel.setMediaItem(url)
+
+    }
+
     when (uiState) {
         is UiState.Initial -> {
             // 초기 상태 UI (예: 검색 안내 메시지)
@@ -67,11 +64,14 @@ fun HomeSearchResultScreen(
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = { item: NewPipeContentListData ->
-                    CommonVideoItem(item = item, onClick = {viewModel.getStreamInfoByVideoId(it.id)})
+                    CommonVideoItem(
+                        item = item,
+                        onClick = { homeSearchResultViewModel.getStreamInfoByVideoId(it.id)
+                        })
                 },
 
                 loading = isMoreItemsLoading,
-                loadMore = {viewModel.loadMoreSearchResults()},
+                loadMore = { homeSearchResultViewModel.loadMoreSearchResults() },
                 hasMoreItems = hasMoreItems
             )
         }
@@ -82,8 +82,6 @@ fun HomeSearchResultScreen(
     }
 
 }
-
-
 
 
 @Composable
