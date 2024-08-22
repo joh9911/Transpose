@@ -1,5 +1,9 @@
 package com.example.transpose
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.transpose.data.model.NewPipeChannelData
@@ -84,6 +88,31 @@ class MainViewModel @Inject constructor(
             }
 
     }
+
+
+    private val _requiredOffset = MutableStateFlow(0f)
+    val requiredOffset = _requiredOffset.asStateFlow()
+
+    fun updateRequiredOffset(requiredOffset: Float){
+        _requiredOffset.value = requiredOffset
+    }
+
+    private val _bottomSheetDraggableArea = MutableStateFlow<Rect?>(null)
+    val bottomSheetDraggableArea = _bottomSheetDraggableArea.asStateFlow()
+
+    fun updateBottomSheetDraggableArea(rect: Rect){
+        _bottomSheetDraggableArea.value = rect
+    }
+
+    private val _isBottomSheetDraggable = MutableStateFlow(true)
+    val isBottomSheetDraggable = _isBottomSheetDraggable.asStateFlow()
+
+    fun updateIsBottomSheetDraggable(boolean: Boolean){
+        _isBottomSheetDraggable.value = boolean
+        Logger.d("isBottomSheetDraggable ${isBottomSheetDraggable.value}")
+    }
+
+
 
 
 }
