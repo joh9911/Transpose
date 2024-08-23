@@ -1,3 +1,4 @@
 /build
 **/build/generated/hilt/
 ./gradle
+.gradle/
