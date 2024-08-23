@@ -1,8 +1,7 @@
-package com.example.transpose.ui.components.bottomnavigation
+package com.example.transpose.ui.components.bottom_navigation
 
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
@@ -10,18 +9,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.transpose.MainViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
-import com.example.transpose.utils.Logger
 
 @Composable
 fun BottomNavigationBar(

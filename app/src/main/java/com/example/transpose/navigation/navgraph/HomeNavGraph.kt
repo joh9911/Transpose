@@ -9,9 +9,9 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.Route
-import com.example.transpose.ui.screen.home.homeplaylist.HomePlaylistScreen
-import com.example.transpose.ui.screen.home.playlistitem.HomePlaylistItemScreen
-import com.example.transpose.ui.screen.home.searchresult.HomeSearchResultScreen
+import com.example.transpose.ui.screen.home.home_playlist.HomePlaylistScreen
+import com.example.transpose.ui.screen.home.playlist_item.HomePlaylistItemScreen
+import com.example.transpose.ui.screen.home.search_result.HomeSearchResultScreen
 
 fun NavGraphBuilder.homeNavGraph(
      navigationViewModel: NavigationViewModel,

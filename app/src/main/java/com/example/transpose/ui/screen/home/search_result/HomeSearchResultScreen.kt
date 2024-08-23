@@ -1,6 +1,5 @@
-package com.example.transpose.ui.screen.home.searchresult
+package com.example.transpose.ui.screen.home.search_result
 
-import android.provider.MediaStore.Audio.Media
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -8,8 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
@@ -19,7 +16,6 @@ import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
-import com.example.transpose.utils.Logger
 
 @Composable
 fun HomeSearchResultScreen(

@@ -1,4 +1,4 @@
-package com.example.transpose.ui.screen.home.homeplaylist
+package com.example.transpose.ui.screen.home.home_playlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

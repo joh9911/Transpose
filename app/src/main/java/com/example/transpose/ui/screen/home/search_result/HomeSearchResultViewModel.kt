@@ -1,4 +1,4 @@
-package com.example.transpose.ui.screen.home.searchresult
+package com.example.transpose.ui.screen.home.search_result
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.example.transpose.ui.screen.home.homeplaylist
+package com.example.transpose.ui.screen.home.home_playlist
 
 import androidx.compose.runtime.Composable
 
@@ -12,8 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.data.model.NewPipePlaylistData

@@ -11,24 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.HomeNavHost
-import com.example.transpose.ui.screen.home.homeplaylist.HomePlaylistScreen
-import com.example.transpose.ui.screen.home.homeplaylist.HomePlaylistViewModel
-import com.example.transpose.ui.screen.home.playlistitem.HomePlaylistItemScreen
-import com.example.transpose.ui.screen.home.playlistitem.HomePlaylistItemViewModel
-import com.example.transpose.ui.screen.home.searchresult.HomeSearchResultScreen
-import com.example.transpose.ui.screen.home.searchresult.HomeSearchResultViewModel
 import com.example.transpose.utils.LogComposableLifecycle
 import com.example.transpose.utils.Logger
 

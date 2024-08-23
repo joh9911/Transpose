@@ -1,4 +1,4 @@
-package com.example.transpose.ui.components.bottomnavigation
+package com.example.transpose.ui.components.bottom_navigation
 
 import com.example.transpose.R
 import com.example.transpose.navigation.Route

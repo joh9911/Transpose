@@ -1,11 +1,9 @@
-package com.example.transpose.ui.screen.home.playlistitem
+package com.example.transpose.ui.screen.home.playlist_item
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.data.model.NewPipeContentListData
 import com.example.transpose.ui.common.UiState

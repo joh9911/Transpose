@@ -7,47 +7,30 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.MainNavHost
 import com.example.transpose.ui.components.appbar.MainAppBar
-import com.example.transpose.ui.components.bottomnavigation.BottomNavigationBar
+import com.example.transpose.ui.components.bottom_navigation.BottomNavigationBar
 import com.example.transpose.ui.components.bottomsheet.PlayerBottomSheetScaffold
-import com.example.transpose.ui.screen.convert.ConvertMainScreen
-import com.example.transpose.ui.screen.convert.ConvertViewModel
-import com.example.transpose.ui.screen.home.HomeMainScreen
-import com.example.transpose.ui.screen.library.LibraryMainScreen
-import com.example.transpose.ui.screen.library.LibraryViewModel
 import com.example.transpose.ui.theme.TransposeTheme
 import com.example.transpose.utils.LogComposableLifecycle
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,11 +71,6 @@ class MainActivity : ComponentActivity() {
 
         val navController = rememberNavController()
         val mainCurrentRoute by navigationViewModel.mainNavCurrentRoute.collectAsState()
-
-
-        val mediaController by mediaViewModel.mediaController.collectAsState()
-
-        val requiredOffset by mainViewModel.normalizedOffset.collectAsState()
 
 
         val nestedScrollConnection = remember {
