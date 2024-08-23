@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.Route
@@ -35,6 +36,7 @@ import com.example.transpose.utils.Logger
 fun HomeMainScreen(
     navigationViewModel: NavigationViewModel,
     mediaViewModel: MediaViewModel,
+    mainViewModel: MainViewModel,
     onBackButtonClick: () -> Unit
 ) {
 
@@ -77,6 +79,7 @@ fun HomeMainScreen(
             startDestination = Route.Home.Playlist.route,
             navigationViewModel = navigationViewModel,
             mediaViewModel = mediaViewModel,
+            mainViewModel = mainViewModel,
             modifier = Modifier.fillMaxSize()
         )
 

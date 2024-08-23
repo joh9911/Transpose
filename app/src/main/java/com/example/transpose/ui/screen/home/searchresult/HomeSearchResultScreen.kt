@@ -10,9 +10,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.data.model.NewPipeContentListData
+import com.example.transpose.data.model.NewPipeVideoData
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.items.CommonVideoItem
@@ -23,6 +25,7 @@ import com.example.transpose.utils.Logger
 fun HomeSearchResultScreen(
     homeSearchResultViewModel: HomeSearchResultViewModel,
     navigationViewModel: NavigationViewModel,
+    mainViewModel: MainViewModel,
     mediaViewModel: MediaViewModel,
     query: String?,
 ) {
@@ -31,7 +34,6 @@ fun HomeSearchResultScreen(
     val uiState by homeSearchResultViewModel.searchUiState.collectAsState()
     val isMoreItemsLoading by homeSearchResultViewModel.isMoreItemsLoading.collectAsState()
     val hasMoreItems by homeSearchResultViewModel.hasMoreSearchItems.collectAsState()
-    val url by homeSearchResultViewModel.videoUri.collectAsState()
 
     val listState = rememberLazyListState()
 
@@ -42,11 +44,7 @@ fun HomeSearchResultScreen(
         }
 
     }
-    LaunchedEffect(url) {
-        Logger.d("LaunchedEffect $url")
-        mediaViewModel.setMediaItem(url)
 
-    }
 
     when (uiState) {
         is UiState.Initial -> {
@@ -66,7 +64,9 @@ fun HomeSearchResultScreen(
                 itemContent = { item: NewPipeContentListData ->
                     CommonVideoItem(
                         item = item,
-                        onClick = { homeSearchResultViewModel.getStreamInfoByVideoId(it.id)
+                        onClick = { mediaViewModel.setMediaItem(item as NewPipeVideoData)
+                            mainViewModel.showBottomSheet()
+
                         })
                 },
 
