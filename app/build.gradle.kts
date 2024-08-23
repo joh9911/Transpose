@@ -111,6 +111,9 @@ dependencies {
     implementation(libs.androidx.media3.ui)
 
     implementation (libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+
 }
 
 kapt {
