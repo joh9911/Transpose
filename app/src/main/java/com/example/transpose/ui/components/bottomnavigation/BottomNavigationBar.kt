@@ -2,6 +2,7 @@ package com.example.transpose.ui.components.bottomnavigation
 
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
@@ -28,9 +29,7 @@ fun BottomNavigationBar(
     searchWidgetState: SearchWidgetState,
     mainViewModel: MainViewModel
 ) {
-    val requiredOffset by mainViewModel.requiredOffset.collectAsState()
-
-    val normalizedOffset = 1 - (requiredOffset / 1949f)
+    val normalizedOffset by mainViewModel.normalizedOffset.collectAsState()
 
     val icons = listOf(BottomNavItem.Home, BottomNavItem.Convert, BottomNavItem.Library)
     val mainNavCurrentRoute by navigationViewModel.mainNavCurrentRoute.collectAsState()

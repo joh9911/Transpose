@@ -2,6 +2,7 @@ package com.example.transpose.ui.components.appbar
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -33,6 +34,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.zIndex
 import com.example.transpose.ui.components.items.SearchSuggestionItem
 import com.example.transpose.utils.Logger
 
@@ -54,35 +56,37 @@ fun MainAppBar(
 
     val focusRequester = remember { FocusRequester() }
 
+    Box(modifier = Modifier.zIndex(0f)
 
-    when (searchWidgetState) {
-        SearchWidgetState.CLOSED -> {
-            DefaultAppBar(
-                onSearchClicked = onSearchTriggered,
-                scrollBehavior = scrollBehavior
-            )
-        }
-
-        SearchWidgetState.OPENED -> {
-            BackHandler {
-                Logger.d("OPENED")
+    ){
+        when (searchWidgetState) {
+            SearchWidgetState.CLOSED -> {
+                DefaultAppBar(
+                    onSearchClicked = onSearchTriggered,
+                    scrollBehavior = scrollBehavior
+                )
             }
-            CustomSearchAppBar(
-                searchWidgetState = searchWidgetState,
-                searchTextState = searchTextState,
-                onTextChange = { onTextChange(it) },
-                onTextClearClicked = { onTextClearClicked() },
-                onCloseClicked = { onCloseClicked() },
-                onSearchClicked = { onSearchClicked(it) },
-                onSearchTriggered = { onSearchTriggered() },
-                suggestionKeywords = suggestionKeywords,
-                isSearchAppBarActive = isSearchBarExpanded,
-                focusRequester = focusRequester,
-                onSearchBarActiveChanged = onSearchBarActiveChanged
-            )
 
+            SearchWidgetState.OPENED -> {
+                CustomSearchAppBar(
+                    searchWidgetState = searchWidgetState,
+                    searchTextState = searchTextState,
+                    onTextChange = { onTextChange(it) },
+                    onTextClearClicked = { onTextClearClicked() },
+                    onCloseClicked = { onCloseClicked() },
+                    onSearchClicked = { onSearchClicked(it) },
+                    onSearchTriggered = { onSearchTriggered() },
+                    suggestionKeywords = suggestionKeywords,
+                    isSearchAppBarActive = isSearchBarExpanded,
+                    focusRequester = focusRequester,
+                    onSearchBarActiveChanged = onSearchBarActiveChanged
+                )
+
+
+            }
         }
     }
+
 
 }
 
@@ -109,7 +113,8 @@ fun CustomSearchAppBar(
     SearchBar(
         modifier = Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            .zIndex(0f),
         query = searchTextState,
         onQueryChange = onTextChange,
         onSearch = {
@@ -146,9 +151,8 @@ fun CustomSearchAppBar(
                 onCloseClicked()
         },
         content = {
-
             if (searchTextState.isNotEmpty()) {
-                LazyColumn {
+                LazyColumn(modifier = Modifier.zIndex(0f)) {
                     items(suggestionKeywords.size) { index ->
                         val suggestionKeyword = suggestionKeywords[index]
                         SearchSuggestionItem(

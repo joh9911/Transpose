@@ -1,5 +1,7 @@
 package com.example.transpose
 
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.Dp
@@ -25,7 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import javax.inject.Inject
-
+@OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val suggestionKeywordRepository: SuggestionKeywordRepository,
@@ -90,11 +92,11 @@ class MainViewModel @Inject constructor(
     }
 
 
-    private val _requiredOffset = MutableStateFlow(0f)
-    val requiredOffset = _requiredOffset.asStateFlow()
+    private val _normalizedOffset = MutableStateFlow(0f)
+    val normalizedOffset = _normalizedOffset.asStateFlow()
 
-    fun updateRequiredOffset(requiredOffset: Float){
-        _requiredOffset.value = requiredOffset
+    fun updateNormalizedOffset(requiredOffset: Float){
+        _normalizedOffset.value = requiredOffset
     }
 
     private val _bottomSheetDraggableArea = MutableStateFlow<Rect?>(null)
@@ -109,10 +111,18 @@ class MainViewModel @Inject constructor(
 
     fun updateIsBottomSheetDraggable(boolean: Boolean){
         _isBottomSheetDraggable.value = boolean
-        Logger.d("isBottomSheetDraggable ${isBottomSheetDraggable.value}")
     }
 
+    private val _bottomSheetState = MutableStateFlow(SheetValue.Expanded)
+    val bottomSheetState = _bottomSheetState.asStateFlow()
 
+    fun showBottomSheet() {
+        _bottomSheetState.value = SheetValue.Expanded
+    }
+
+    fun hideBottomSheet() {
+        _bottomSheetState.value = SheetValue.Hidden
+    }
 
 
 }

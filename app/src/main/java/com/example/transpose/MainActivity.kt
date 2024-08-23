@@ -6,15 +6,11 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
@@ -24,7 +20,6 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,27 +29,27 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.Route
+import com.example.transpose.navigation.navhost.MainNavHost
 import com.example.transpose.ui.components.appbar.MainAppBar
 import com.example.transpose.ui.components.bottomnavigation.BottomNavigationBar
-import com.example.transpose.ui.components.bottomsheet.PlayerBottomSheet
 import com.example.transpose.ui.components.bottomsheet.PlayerBottomSheetScaffold
 import com.example.transpose.ui.screen.convert.ConvertMainScreen
 import com.example.transpose.ui.screen.convert.ConvertViewModel
 import com.example.transpose.ui.screen.home.HomeMainScreen
-import com.example.transpose.ui.screen.home.HomeViewModel
 import com.example.transpose.ui.screen.library.LibraryMainScreen
 import com.example.transpose.ui.screen.library.LibraryViewModel
 import com.example.transpose.ui.theme.TransposeTheme
 import com.example.transpose.utils.LogComposableLifecycle
-import com.example.transpose.utils.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -82,9 +77,6 @@ class MainActivity : ComponentActivity() {
         mainViewModel: MainViewModel, mediaViewModel: MediaViewModel
     ) {
 
-        val homeViewModel: HomeViewModel by viewModels()
-        val convertViewModel: ConvertViewModel by viewModels()
-        val libraryViewModel: LibraryViewModel by viewModels()
         val navigationViewModel: NavigationViewModel by viewModels()
 
         val searchWidgetState by mainViewModel.searchWidgetState.collectAsState()
@@ -99,6 +91,8 @@ class MainActivity : ComponentActivity() {
 
 
         val mediaController by mediaViewModel.mediaController.collectAsState()
+
+        val requiredOffset by mainViewModel.normalizedOffset.collectAsState()
 
 
         val nestedScrollConnection = remember {
@@ -143,12 +137,12 @@ class MainActivity : ComponentActivity() {
 
         Scaffold(containerColor = Color.White, bottomBar = {
             BottomNavigationBar(
-                navigationViewModel = navigationViewModel, searchWidgetState = searchWidgetState
+                navigationViewModel = navigationViewModel,
+                searchWidgetState = searchWidgetState,
+                mainViewModel = mainViewModel
             )
         })
         { innerPadding ->
-            val bottomPadding = innerPadding.calculateBottomPadding() + 56.dp
-
             PlayerBottomSheetScaffold(
                 topAppBar = {
                     MainAppBar(
@@ -181,46 +175,27 @@ class MainActivity : ComponentActivity() {
                         suggestionKeywords = suggestionKeywords,
                         isSearchBarExpanded = isSearchBarActive,
                         onSearchBarActiveChanged = { mainViewModel.updateIsSearchBarExpanded(it) },
-                        scrollBehavior = scrollBehavior
-                    )
+                        scrollBehavior = scrollBehavior,
+
+                        )
                 },
-                playerBottomSheet = {
-                    PlayerBottomSheet(
-                        mediaController = mediaController,
-                    )
-                },
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                mediaViewModel = mediaViewModel,
+                mainViewModel = mainViewModel
             ) {
-                NavHost(
+                playerBottomSheetScaffoldPadding ->
+                MainNavHost(
                     navController = navController,
                     startDestination = Route.Home.route,
+                    navigationViewModel = navigationViewModel,
+                    mediaViewModel = mediaViewModel,
+                    mainViewModel = mainViewModel,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
+                        .background(Color.White)
                         .nestedScroll(nestedScrollConnection)
-                ) {
+                )
 
-                    composable(route = Route.Home.route) {
-                        HomeMainScreen(navigationViewModel = navigationViewModel,
-                            homeViewModel = homeViewModel,
-                            mediaViewModel = mediaViewModel,
-                            onBackButtonClick = { navController.popBackStack() }
-
-                        )
-                    }
-                    composable(route = Route.Convert.route) {
-                        ConvertMainScreen(
-                            navigationViewModel = navigationViewModel,
-                            convertViewModel = convertViewModel
-                        )
-                    }
-                    composable(route = Route.Library.route) {
-                        LibraryMainScreen(
-                            navigationViewModel = navigationViewModel,
-                            libraryViewModel = libraryViewModel
-                        )
-                    }
-                }
             }
 
 

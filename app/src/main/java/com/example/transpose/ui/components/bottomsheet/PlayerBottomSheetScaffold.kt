@@ -2,36 +2,28 @@ package com.example.transpose.ui.components.bottomsheet
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
@@ -47,45 +39,68 @@ fun PlayerBottomSheetScaffold(
     content: @Composable (PaddingValues) -> Unit,
 
     ) {
-
-    val requiredOffset by mainViewModel.requiredOffset.collectAsState()
+    val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
+    val normalizedOffset by mainViewModel.normalizedOffset.collectAsState()
     val searchWidgetState by mainViewModel.searchWidgetState.collectAsState()
     val isBottomSheetDraggable by mainViewModel.isBottomSheetDraggable.collectAsState()
+
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp.dp
+    val density = LocalDensity.current
+
+    val screenHeightPx = with(density) { screenHeightDp.toPx() }
 
     val searchBarClosedSheetPeekHeight = innerPadding.calculateBottomPadding() + 56.dp
     val searchBarOpenedSheetPeekHeight = getNavigationBarHeightDp() + 56.dp
 
-    val scaffoldBottomPadding = innerPadding.calculateBottomPadding() + when {
-        requiredOffset <= 0f -> 56.dp // 완전히 펼쳐진 상태
-        requiredOffset in 0f..1950f -> 56.dp // PartiallyExpanded 상태 유지
-        requiredOffset in 1950f..2400f -> {
-            // PartiallyExpanded에서 Hidden으로 가는 중
-            val progress = (requiredOffset - 1950f) / 450f
-            (56 * (1 - progress * 3)).coerceIn(0f, 56f).dp
+    val sheetPeekHeight = when (bottomSheetState) {
+        SheetValue.Hidden -> 0.dp
+        else -> if (searchWidgetState == SearchWidgetState.CLOSED) {
+            searchBarClosedSheetPeekHeight
+        } else {
+            searchBarOpenedSheetPeekHeight
         }
+    }
 
-        else -> 0.dp // Hidden 상태
+    val scaffoldBottomPadding = innerPadding.calculateBottomPadding() + when {
+        // 완전히 펼쳐진 상태 (Expanded)
+        normalizedOffset >= 1.0f -> 56.dp
+        // PartiallyExpanded 상태
+        normalizedOffset in 0.0f..1.0f -> 56.dp
+        // Hidden으로 가는 중
+        normalizedOffset in -1.0f..0.0f -> {
+            val progress = -normalizedOffset // 0에서 1 사이의 값으로 변환
+            (56 * (1 - progress)).coerceIn(0f, 56f).dp
+        }
+        // Hidden 상태
+        else -> 0.dp
     }
 
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.Expanded,
+            initialValue = bottomSheetState,
             skipHiddenState = false
 
         )
     )
-
-
+    LaunchedEffect(bottomSheetState) {
+        when (bottomSheetState) {
+            SheetValue.Hidden -> scaffoldState.bottomSheetState.hide()
+            SheetValue.Expanded -> scaffoldState.bottomSheetState.expand()
+            SheetValue.PartiallyExpanded -> scaffoldState.bottomSheetState.partialExpand()
+        }
+    }
 
     LaunchedEffect(scaffoldState.bottomSheetState) {
         snapshotFlow {
-            scaffoldState.bottomSheetState.requireOffset()
+            transformOffset(scaffoldState.bottomSheetState.requireOffset() / screenHeightPx)
         }
-            .collect { offset ->
-                Logger.d("프로그래스 $offset")
-                mainViewModel.updateRequiredOffset(offset)
+            .collect { normalizedOffset ->
+                if (normalizedOffset <= -1f){
+                    mainViewModel.hideBottomSheet()
+                }
+                Logger.d("normalizedOffset $normalizedOffset")
+                mainViewModel.updateNormalizedOffset(normalizedOffset)
             }
-
     }
     BottomSheetScaffold(
         sheetContainerColor = Color.White,
@@ -99,12 +114,29 @@ fun PlayerBottomSheetScaffold(
             )
         },
         sheetShape = RectangleShape,
-        sheetPeekHeight = if (searchWidgetState == SearchWidgetState.CLOSED) searchBarClosedSheetPeekHeight else searchBarOpenedSheetPeekHeight,
+        sheetPeekHeight = sheetPeekHeight,
         topBar = topAppBar,
         sheetSwipeEnabled = true,
         sheetDragHandle = null
     ) { playerBottomSheetInnerPadding ->
         content(playerBottomSheetInnerPadding)
+    }
+}
+
+private fun transformOffset(rawOffset: Float): Float {
+    return when {
+        rawOffset <= 0f -> 1f // Fully expanded
+        rawOffset < 0.89763963f -> {
+            // Map 0..0.887245 to 1..0
+            1f - (rawOffset / 0.89763963f)
+        }
+
+        rawOffset <= 1.1053541f -> {
+            // Map 0.887245..1.0990753 to 0..-1
+            -(rawOffset - 0.89763963f) / (1.1053541f - 0.89763963f)
+        }
+
+        else -> -1f // Fully hidden
     }
 }
 
