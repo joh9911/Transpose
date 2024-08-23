@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.Route
@@ -14,7 +15,8 @@ import com.example.transpose.ui.screen.home.searchresult.HomeSearchResultScreen
 
 fun NavGraphBuilder.homeNavGraph(
      navigationViewModel: NavigationViewModel,
-     mediaViewModel: MediaViewModel
+     mediaViewModel: MediaViewModel,
+     mainViewModel: MainViewModel
 ) {
 
     composable(Route.Home.Playlist.route) {
@@ -40,6 +42,7 @@ fun NavGraphBuilder.homeNavGraph(
             homeSearchResultViewModel = hiltViewModel(),
             navigationViewModel = hiltViewModel(),
             mediaViewModel = mediaViewModel,
+            mainViewModel = mainViewModel,
             query = query
         )
     }

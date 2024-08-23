@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.NavigationViewModel
 import com.example.transpose.navigation.navgraph.mainNavGraph
@@ -19,6 +20,7 @@ fun MainNavHost(
     startDestination: String,
     navigationViewModel: NavigationViewModel,
     mediaViewModel: MediaViewModel,
+    mainViewModel: MainViewModel,
     modifier: Modifier
 ) {
     NavHost(
@@ -27,6 +29,7 @@ fun MainNavHost(
         modifier = modifier
     ) {
         mainNavGraph(
+            mainViewModel = mainViewModel,
             navigationViewModel = navigationViewModel,
             mediaViewModel = mediaViewModel,
             onBackButtonClick =
