@@ -1,4 +1,4 @@
-package com.example.transpose.data.repository
+package com.example.transpose.data.repository.newpipe
 
 import okhttp3.OkHttpClient
 import okhttp3.Request

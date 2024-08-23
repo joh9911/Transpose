@@ -2,7 +2,6 @@ package com.example.transpose.data.repository.newpipe
 
 import com.example.transpose.data.model.NewPipeContentListData
 import com.example.transpose.data.model.NewPipePlaylistData
-import com.example.transpose.data.repository.NewPipeDownloader
 import com.example.transpose.data.repository.NewPipeException
 import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.VideoPager
@@ -13,7 +12,6 @@ import org.schabi.newpipe.extractor.channel.ChannelExtractor
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 import org.schabi.newpipe.extractor.exceptions.ParsingException
-import org.schabi.newpipe.extractor.exceptions.UnsupportedTabException
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandlerFactory
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor

@@ -1,4 +1,4 @@
-package com.example.transpose.ui.components
+package com.example.transpose.ui.components.items
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
