@@ -15,7 +15,6 @@ class NavigationViewModel @Inject constructor(): ViewModel() {
     var mainNavPreviousRoute = Route.Home.route
 
     fun changeMainCurrentRoute(route: String){
-        Logger.d("changeRoute: $route")
         _mainNavCurrentRoute.value = route
     }
 
@@ -27,5 +26,15 @@ class NavigationViewModel @Inject constructor(): ViewModel() {
     fun changeHomeCurrentRoute(route: String){
         _homeNavCurrentRoute.value = route
     }
+
+    private val _convertNavCurrentRoute = MutableStateFlow(Route.Convert.AudioEdit.route)
+    val convertNavCurrentRoute = _convertNavCurrentRoute.asStateFlow()
+
+    var convertPreviousRoute = Route.Convert.AudioEdit.route
+
+    fun changeConvertCurrentRoute(route: String){
+        _convertNavCurrentRoute.value = route
+    }
+
 }
 

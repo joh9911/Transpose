@@ -28,7 +28,12 @@ fun NavGraphBuilder.mainNavGraph(
         )
     }
     composable(Route.Convert.route){
-        ConvertMainScreen()
+        ConvertMainScreen(
+            mediaViewModel = mediaViewModel,
+            navigationViewModel = navigationViewModel,
+            mainViewModel = mainViewModel,
+            onBackButtonClick = onBackButtonClick
+        )
     }
     composable(Route.Library.route){
         LibraryMainScreen()

@@ -33,6 +33,7 @@ import com.example.transpose.ui.components.bottom_navigation.BottomNavigationBar
 import com.example.transpose.ui.components.bottomsheet.PlayerBottomSheetScaffold
 import com.example.transpose.ui.theme.TransposeTheme
 import com.example.transpose.utils.LogComposableLifecycle
+import com.example.transpose.utils.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -138,6 +139,7 @@ class MainActivity : ComponentActivity() {
                         onSearchClicked = {
                             when (mainCurrentRoute) {
                                 Route.Home.route -> {
+                                    Logger.d("Route.Home.route")
                                     navigationViewModel.changeHomeCurrentRoute(
                                         Route.Home.SearchResult.createRoute(
                                             it
@@ -145,7 +147,15 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                Route.Convert.route -> {}
+                                Route.Convert.route -> {
+                                    Logger.d("Route.Convert.route")
+                                    navigationViewModel.changeConvertCurrentRoute(
+                                        Route.Convert.SearchResult.createRoute(
+                                            it
+                                        )
+                                    )
+                                }
+
                                 Route.Library.route -> {}
                             }
                         },
@@ -160,8 +170,7 @@ class MainActivity : ComponentActivity() {
                 innerPadding = innerPadding,
                 mediaViewModel = mediaViewModel,
                 mainViewModel = mainViewModel
-            ) {
-                playerBottomSheetScaffoldPadding ->
+            ) { playerBottomSheetScaffoldPadding ->
                 MainNavHost(
                     navController = navController,
                     startDestination = Route.Home.route,
