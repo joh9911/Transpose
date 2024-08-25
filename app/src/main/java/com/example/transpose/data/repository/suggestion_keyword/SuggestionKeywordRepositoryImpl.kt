@@ -1,4 +1,4 @@
-package com.example.transpose.data.repository.suggestionkeyword
+package com.example.transpose.data.repository.suggestion_keyword
 
 import com.example.transpose.data.api.SuggestionKeywordApiService
 import okhttp3.ResponseBody
