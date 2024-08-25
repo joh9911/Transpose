@@ -1,44 +1,48 @@
 package com.example.transpose
 
 import android.content.ComponentName
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore.Audio.Media
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Metadata
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionToken
-import com.example.transpose.data.model.NewPipeContentListData
 import com.example.transpose.data.model.NewPipeVideoData
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
-import com.example.transpose.service.MediaService
-import com.example.transpose.service.MusicServiceHandler
-import com.example.transpose.service.audio_effect.AudioEffectHandler
+import com.example.transpose.media.MediaService
+import com.example.transpose.media.audio_effect.AudioEffectHandler
+import com.example.transpose.media.audio_effect.data.equalizer.EqualizerPresets
+import com.example.transpose.media.audio_effect.data.equalizer.EqualizerSettings
+import com.example.transpose.media.audio_effect.data.reverb.ReverbPresets
 import com.example.transpose.utils.Logger
-import com.example.transpose.utils.MediaStateEvents
-import com.example.transpose.utils.MusicStates
-import com.example.transpose.utils.PlayerUiEvent
+import com.example.transpose.utils.constants.MediaSessionCallback
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.math.log2
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class MediaViewModel @Inject constructor(
     private val application: Application,
     private val newPipeRepository: NewPipeRepository,
-): AndroidViewModel(application), AudioEffectHandler {
+): AndroidViewModel(application) {
     private val _mediaController = MutableStateFlow<MediaController?>(null)
     val mediaController = _mediaController.asStateFlow()
 
@@ -75,6 +79,26 @@ class MediaViewModel @Inject constructor(
     val mediaMetadata = _mediaMetaData.asStateFlow()
 
     private val playerListener = object : Player.Listener {
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+            super.onPlaybackParametersChanged(playbackParameters)
+
+            val currentPitch = playbackParameters.pitch
+
+            val semitonesPitch = 12 * log2(currentPitch.toDouble())
+
+            val pitchValue = ((semitonesPitch * 10) + 100).roundToInt().coerceIn(0, 200)
+            _pitchValue.value = pitchValue
+
+            val currentTempo = playbackParameters.speed
+
+            val semitonesTempo = 12 * log2(currentTempo.toDouble())
+
+            val tempoValue = ((semitonesTempo * 10) + 100).roundToInt().coerceIn(0, 200)
+            _tempoValue.value = tempoValue
+
+        }
+
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             _mediaMetaData.value = mediaMetadata
             super.onMediaMetadataChanged(mediaMetadata)
@@ -107,9 +131,7 @@ class MediaViewModel @Inject constructor(
     fun setMediaItem(item: NewPipeVideoData) {
         viewModelScope.launch {
             try {
-                // 비동기로 URL 가져오기
                 val videoUri = getStreamInfoByVideoId(item.id)
-                // URL을 성공적으로 가져왔다면 MediaItem 설정
                 videoUri?.let { uri ->
                     val mediaItem = MediaItem.Builder()
                         .setUri(uri)
@@ -144,7 +166,6 @@ class MediaViewModel @Inject constructor(
         }
     }
 
-    // URL을 가져오는 함수를 suspend 함수로 변경
     private suspend fun getStreamInfoByVideoId(videoId: String): String? {
         return withContext(Dispatchers.IO) {
             try {
@@ -163,36 +184,229 @@ class MediaViewModel @Inject constructor(
         }
     }
 
-    override fun setPitch(value: Int) {
+    private val _pitchValue = MutableStateFlow(100)
+    val pitchValue = _pitchValue.asStateFlow()
+
+    private val _tempoValue = MutableStateFlow(100)
+    val tempoValue = _tempoValue.asStateFlow()
+
+    fun updatePitchValue(value: Int){
+        _pitchValue.value = value
+    }
+
+    fun initPitchValue(){
+        _pitchValue.value = 100
+        setPitch()
+    }
+
+    fun setPitch() {
+        val action = MediaSessionCallback.SET_PITCH
+        val bundle = Bundle().apply {
+            putInt("value", pitchValue.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    fun updateTempoValue(value: Int){
+        _tempoValue.value = value
+    }
+
+    fun initTempoValue(){
+        _tempoValue.value = 100
+        setTempo()
+    }
+
+    fun setTempo() {
+        val action = MediaSessionCallback.SET_TEMPO
+        val bundle = Bundle().apply {
+            putInt("value", tempoValue.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    private val _isEqualizerEnabled = MutableStateFlow(false)
+    val isEqualizerEnabled = _isEqualizerEnabled.asStateFlow()
+
+    private val _equalizerCurrentPreset = MutableStateFlow(EqualizerPresets.PRESET_DEFAULT)
+    val equalizerCurrentPreset = _equalizerCurrentPreset.asStateFlow()
+
+    private val _equalizerSettings = MutableStateFlow(EqualizerSettings())
+    val equalizerSettings: StateFlow<EqualizerSettings> = _equalizerSettings
+
+    fun updateIsEqualizerEnabled(){
+        if (isEqualizerEnabled.value)
+            initEqualizerValue()
+        _isEqualizerEnabled.value = !isEqualizerEnabled.value
+
+    }
+
+    fun initEqualizerValue(){
+        updateEqualizerWithPreset(EqualizerPresets.PRESET_DEFAULT)
+    }
+
+    fun updateEqualizerWithPreset(presetIndex: Int) {
+        _equalizerCurrentPreset.value = presetIndex
+        val presetValues = EqualizerPresets.getPresetGainValues(presetIndex)
+        _equalizerSettings.value = EqualizerSettings(
+            bandLevels = presetValues.map{it.toFloat()},
+            presetName = EqualizerPresets.effectTypes[presetIndex]
+        )
+        setEqualizerWithPreset()
+    }
+
+    fun setEqualizerWithPreset() {
+        if (!isEqualizerEnabled.value) return
+
+        val action = MediaSessionCallback.SET_EQUALIZER_PRESET
+        val bundle = Bundle().apply {
+            putInt("value", equalizerCurrentPreset.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    fun setEqualizerWithCustomValue(changedBand: Int) {
+        if (!isEqualizerEnabled.value) return
+
+        val action = MediaSessionCallback.SET_EQUALIZER_CUSTOM
+        val bundle = Bundle().apply {
+            putInt("band", changedBand)
+            putInt("level", equalizerSettings.value.bandLevels[changedBand].toInt())
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    fun updateEqualizerBandLevel(index: Int, newValue: Float) {
+        _equalizerSettings.update { currentSettings ->
+            currentSettings.withUpdatedBandLevel(index, newValue)
+        }
+        _equalizerCurrentPreset.value = EqualizerPresets.PRESET_DEFAULT
+    }
+
+    private val _isReverbEnabled = MutableStateFlow(false)
+    val isReverbEnabled = _isReverbEnabled.asStateFlow()
+
+    private val _reverbCurrentPreset = MutableStateFlow(ReverbPresets.PRESET_NONE)
+    val reverbCurrentPreset = _reverbCurrentPreset.asStateFlow()
+
+    private val _reverbValue = MutableStateFlow(0)
+    val reverbValue = _reverbValue.asStateFlow()
+
+    fun updateIsReverbEnabled(){
+        if (isReverbEnabled.value){
+            _reverbCurrentPreset.value = ReverbPresets.PRESET_NONE
+            initReverbValue()
+        }
+        _isReverbEnabled.value = !isReverbEnabled.value
+    }
+
+    fun updateReverbCurrentPreset(presetIndex: Int){
+        _reverbCurrentPreset.value = presetIndex
+        setPresetReverb()
+    }
+
+    fun updateReverbValue(value: Int){
+        _reverbValue.value = value
+    }
+
+    fun initReverbValue(){
+        _reverbValue.value = 0
+        setPresetReverb()
+    }
+
+    fun setPresetReverb() {
+        if (!isReverbEnabled.value) return
+
+        val action = MediaSessionCallback.SET_REVERB
+        val bundle = Bundle().apply {
+            putInt("presetIndex", reverbCurrentPreset.value)
+            putInt("sendLevel",reverbValue.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    private val _bassBoostValue = MutableStateFlow(0)
+    val bassBoostValue = _bassBoostValue.asStateFlow()
+
+    fun updateBassBoostValue(value: Int){
+        _bassBoostValue.value = value
+        setBassBoost()
+    }
+
+    fun initBassBoostValue(){
+        _bassBoostValue.value = 0
+        setBassBoost()
+    }
+
+    fun setBassBoost() {
+        val action = MediaSessionCallback.SET_BASS_BOOST
+        val bundle = Bundle().apply {
+            putInt("value", bassBoostValue.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    private val _loudnessEnhancerValue = MutableStateFlow(0)
+    val loudnessEnhancerValue = _loudnessEnhancerValue.asStateFlow()
+
+    fun updateLoudnessEnhancerValue(value: Int){
+        _loudnessEnhancerValue.value = value
+    }
+    fun initLoudnessEnhancerValue(){
+        _loudnessEnhancerValue.value = 0
+        setLoudnessEnhancer()
+    }
+
+    fun setLoudnessEnhancer() {
+        val action = MediaSessionCallback.SET_LOUDNESS_ENHANCER
+        val bundle = Bundle().apply {
+            putInt("value", loudnessEnhancerValue.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+
+    private val _virtualizerValue = MutableStateFlow(0)
+    val virtualizerValue = _virtualizerValue.asStateFlow()
+
+    fun updateVirtualizerValue(value: Int){
+        _virtualizerValue.value = value
+        setVirtualizer()
+    }
+
+    fun initVirtualizerValue(){
+        _virtualizerValue.value = 0
+        setVirtualizer()
+    }
+
+    fun setVirtualizer() {
+        val action = MediaSessionCallback.SET_VIRTUALIZER
+        val bundle = Bundle().apply {
+            putInt("value", virtualizerValue.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)    }
+
+
+    fun setEnvironmentalReverb() {
         TODO("Not yet implemented")
     }
 
-    override fun setTempo(value: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setBassBoost(value: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setLoudnessEnhancer(value: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setEqualizer(value: Int?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setVirtualizer(value: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setPresetReverb(value: Int, sendLevel: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setEnvironmentalReverb() {
-        TODO("Not yet implemented")
+    fun releaseMediaController() {
+        viewModelScope.launch {
+            mediaController.value?.let { controller ->
+                controller.release()
+                _mediaController.value = null
+            }
+            // MediaService 종료
+            application.stopService(Intent(application, MediaService::class.java))
+        }
     }
 
 

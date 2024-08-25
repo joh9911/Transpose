@@ -1,7 +1,5 @@
-package com.example.transpose.service.audio_effect
+package com.example.transpose.media.audio_effect
 
-import android.content.Context
-import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.DynamicsProcessing
@@ -10,19 +8,16 @@ import android.media.audiofx.Equalizer
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
 import android.media.audiofx.Virtualizer
-import android.os.Bundle
 import android.util.Log
 import androidx.annotation.OptIn
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.session.SessionCommand
-import com.example.transpose.utils.constants.MediaSessionCallback
+import com.example.transpose.utils.Logger
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.log2
 import kotlin.math.pow
 
 @OptIn(UnstableApi::class)
@@ -47,6 +42,7 @@ class AudioEffectHandlerImpl @Inject constructor(
         val adjustedPitch = 2.0.pow(semitonesFromCenter / 12.0).toFloat()
         val currentTempoValue = exoPlayer.playbackParameters.speed
         exoPlayer.playbackParameters = PlaybackParameters(currentTempoValue, adjustedPitch)
+        Logger.d("setPitch $value")
     }
 
     override fun setTempo(value: Int) {
@@ -112,12 +108,24 @@ class AudioEffectHandlerImpl @Inject constructor(
         }
     }
 
-    override fun setEqualizer(value: Int?) {
-        value ?: return
-        if (value == -1){
-            disableEqualizer()
-            return
+    override fun setEqualizerWithPreset(value: Int) {
+        if (equalizer == null){
+            try{
+                equalizer = Equalizer(0, exoPlayer.audioSessionId)
+                equalizer?.enabled = true
+            }
+            catch (e: Exception){
+            }
         }
+        for (i in 0 until equalizer!!.numberOfPresets) {
+            Logger.d("이퀼라이저 ${equalizer!!.getPresetName(i.toShort())}")
+        }
+
+        equalizer?.usePreset(value.toShort())
+    }
+
+
+    override fun setEqualizerWithCustomValue(changedBand: Int, newGainLevel: Int) {
         if (equalizer == null){
             try{
                 equalizer = Equalizer(0, exoPlayer.audioSessionId)
@@ -127,21 +135,11 @@ class AudioEffectHandlerImpl @Inject constructor(
             }
         }
 
-        equalizer?.usePreset(value.toShort())
-
-        val i = equalizer?.numberOfBands!!
-//        val intent = Intent(Actions.GET_EQUALIZER_INFO)
-//        for (index in 0 until i){
-//            Log.d("이퀼라이저","${equalizer?.getBandLevel(index.toShort())}")
-//
-//            intent.putExtra("$index","${equalizer?.getBandLevel(index.toShort())}")
-//
-//        }
-//        sendBroadcast(intent)
+        equalizer?.setBandLevel(changedBand.toShort(), newGainLevel.toShort())
     }
 
     private fun disableEqualizer(){
-        setEqualizer(3)
+        setEqualizerWithPreset(3)
         equalizer?.release()
         equalizer = null
     }
@@ -152,14 +150,14 @@ class AudioEffectHandlerImpl @Inject constructor(
             virtualizer?.enabled = true
             virtualizer?.forceVirtualizationMode(Virtualizer.VIRTUALIZATION_MODE_BINAURAL)
         }
+
+        virtualizer?.setStrength(value.toShort())
+        virtualizer?.enabled = true
+
+        exoPlayer.setAuxEffectInfo(AuxEffectInfo(virtualizer!!.id, 0.5f))
     }
 
-    override fun setPresetReverb(value: Int, sendLevel: Int) {
-        if (value == -1 && sendLevel == -1) {
-            disablePresetReverb()
-            return
-        }
-
+    override fun setPresetReverb(presetIndex: Int, sendLevel: Int) {
         if (presetReverb == null) {
             try {
                 presetReverb = PresetReverb(1, audioSessionId)
@@ -170,13 +168,9 @@ class AudioEffectHandlerImpl @Inject constructor(
         }
 
         try {
-            presetReverb?.preset = value.toShort()
+            presetReverb?.preset = presetIndex.toShort()
 
-            val auxEffectSendLevel = if (sendLevel == -1) {
-                1f
-            } else {
-                sendLevel.toFloat() / 100f
-            }
+            val auxEffectSendLevel = sendLevel.toFloat()
 
             exoPlayer.setAuxEffectInfo(AuxEffectInfo(presetReverb!!.id, auxEffectSendLevel))
         } catch (e: Exception) {
@@ -194,4 +188,53 @@ class AudioEffectHandlerImpl @Inject constructor(
     override fun setEnvironmentalReverb() {
 
     }
+
+    override fun pitchPlusOne() {
+        val currentPitch = exoPlayer.playbackParameters.pitch
+        val currentTempoValue = exoPlayer.playbackParameters.speed
+
+        val currentSemitones = 12 * log2(currentPitch.toDouble())
+
+        val newSemitones = currentSemitones + 1
+
+        val newPitch = 2.0.pow(newSemitones / 12.0).toFloat()
+
+        exoPlayer.playbackParameters = PlaybackParameters(currentTempoValue, newPitch)
+    }
+
+    override fun pitchMinusOne() {
+        val currentPitch = exoPlayer.playbackParameters.pitch
+        val currentTempoValue = exoPlayer.playbackParameters.speed
+
+        val currentSemitones = 12 * log2(currentPitch.toDouble())
+
+        val newSemitones = currentSemitones - 1
+
+        val newPitch = 2.0.pow(newSemitones / 12.0).toFloat()
+
+        exoPlayer.playbackParameters = PlaybackParameters(currentTempoValue, newPitch)    }
+
+    override fun tempoPlusOne() {
+        val currentPitch = exoPlayer.playbackParameters.pitch
+        val currentTempoValue = exoPlayer.playbackParameters.speed
+
+        val currentSemitones = 12 * log2(currentTempoValue.toDouble())
+
+        val newSemitones = currentSemitones + 1
+
+        val newTempo = 2.0.pow(newSemitones / 12.0).toFloat()
+
+        exoPlayer.playbackParameters = PlaybackParameters(newTempo, currentPitch)    }
+
+    override fun tempoMinusOne() {
+        val currentPitch = exoPlayer.playbackParameters.pitch
+        val currentTempoValue = exoPlayer.playbackParameters.speed
+
+        val currentSemitones = 12 * log2(currentTempoValue.toDouble())
+
+        val newSemitones = currentSemitones - 1
+
+        val newTempo = 2.0.pow(newSemitones / 12.0).toFloat()
+
+        exoPlayer.playbackParameters = PlaybackParameters(newTempo, currentPitch)    }
 }

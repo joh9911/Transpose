@@ -1,18 +1,15 @@
-package com.example.transpose.service
+package com.example.transpose.media
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
+import android.se.omapi.Session
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import com.example.transpose.R
-import com.example.transpose.service.audio_effect.AudioEffectHandlerImpl
+import com.example.transpose.media.audio_effect.AudioEffectHandlerImpl
 import com.example.transpose.utils.constants.MediaSessionCallback
 import com.google.common.util.concurrent.ListenableFuture
 import javax.inject.Inject
@@ -26,12 +23,20 @@ class CustomMediaSessionCallback @Inject constructor(
 
         val myCommands = arrayListOf<SessionCommand>()
 
+        val pitchCommand = SessionCommand(MediaSessionCallback.SET_PITCH, Bundle())
+
+        val tempoCommand = SessionCommand(MediaSessionCallback.SET_TEMPO, Bundle())
+
         val bassBoostCommand = SessionCommand(MediaSessionCallback.SET_BASS_BOOST, Bundle())
 
         val loudnessEnhancementCommand =
             SessionCommand(MediaSessionCallback.SET_LOUDNESS_ENHANCER, Bundle())
 
-        val equalizerCommand = SessionCommand(MediaSessionCallback.SET_EQUALIZER, Bundle())
+        val equalizerPresetCommand =
+            SessionCommand(MediaSessionCallback.SET_EQUALIZER_PRESET, Bundle())
+
+        val equalizerCustomCommand =
+            SessionCommand(MediaSessionCallback.SET_EQUALIZER_CUSTOM, Bundle())
 
         val reverbCommand = SessionCommand(MediaSessionCallback.SET_REVERB, Bundle())
 
@@ -40,12 +45,21 @@ class CustomMediaSessionCallback @Inject constructor(
         val environmentalReverbCommand =
             SessionCommand(MediaSessionCallback.SET_ENVIRONMENT_REVERB, Bundle())
 
+        val pitchPlusCommand = SessionCommand(MediaSessionCallback.PLUS, Bundle())
+
+        val pitchMinusCommand = SessionCommand(MediaSessionCallback.MINUS, Bundle())
+
+        myCommands.add(pitchCommand)
+        myCommands.add(tempoCommand)
         myCommands.add(bassBoostCommand)
         myCommands.add(loudnessEnhancementCommand)
-        myCommands.add(equalizerCommand)
+        myCommands.add(equalizerPresetCommand)
+        myCommands.add(equalizerCustomCommand)
         myCommands.add(reverbCommand)
         myCommands.add(virtualizerCommand)
         myCommands.add(environmentalReverbCommand)
+        myCommands.add(pitchPlusCommand)
+        myCommands.add(pitchMinusCommand)
         return myCommands
     }
 
@@ -113,6 +127,18 @@ class CustomMediaSessionCallback @Inject constructor(
     ): ListenableFuture<SessionResult> {
         when (customCommand.customAction) {
 
+            MediaSessionCallback.SET_PITCH -> {
+                val value =
+                    customCommand.customExtras.getInt("value")
+                audioEffectHandlerImpl.setPitch(value)
+            }
+
+            MediaSessionCallback.SET_TEMPO -> {
+                val value =
+                    customCommand.customExtras.getInt("value")
+                audioEffectHandlerImpl.setTempo(value)
+            }
+
             MediaSessionCallback.SET_BASS_BOOST -> {
 
                 val value =
@@ -126,9 +152,16 @@ class CustomMediaSessionCallback @Inject constructor(
                 audioEffectHandlerImpl.setLoudnessEnhancer(value)
             }
 
-            MediaSessionCallback.SET_EQUALIZER -> {
+            MediaSessionCallback.SET_EQUALIZER_PRESET -> {
                 val value = customCommand.customExtras.getInt("value")
-                audioEffectHandlerImpl.setEqualizer(value)
+                audioEffectHandlerImpl.setEqualizerWithPreset(value)
+
+            }
+
+            MediaSessionCallback.SET_EQUALIZER_CUSTOM -> {
+                val band = customCommand.customExtras.getInt("band")
+                val level = customCommand.customExtras.getInt("level")
+                audioEffectHandlerImpl.setEqualizerWithCustomValue(band, level)
 
             }
 
@@ -139,11 +172,11 @@ class CustomMediaSessionCallback @Inject constructor(
             }
 
             MediaSessionCallback.SET_REVERB -> {
-                val value =
-                    customCommand.customExtras.getInt("value")
+                val presetIndex =
+                    customCommand.customExtras.getInt("presetIndex")
                 val sendLevel =
                     customCommand.customExtras.getInt("sendLevel")
-                audioEffectHandlerImpl.setPresetReverb(value, sendLevel)
+                audioEffectHandlerImpl.setPresetReverb(presetIndex, sendLevel)
 
             }
 
@@ -152,13 +185,11 @@ class CustomMediaSessionCallback @Inject constructor(
             }
 
             MediaSessionCallback.MINUS -> {
-                val value = customCommand.customExtras.getInt("value")
-                audioEffectHandlerImpl.setPitch(value)
+                audioEffectHandlerImpl.pitchMinusOne()
             }
 
             MediaSessionCallback.PLUS -> {
-                val value = customCommand.customExtras.getInt("value")
-                audioEffectHandlerImpl.setPitch(value)
+                audioEffectHandlerImpl.pitchPlusOne()
             }
 
         }
