@@ -14,5 +14,6 @@ fun LibraryMyPlaylistItemScreen(
     libraryMyPlaylistItemViewModel: LibraryMyPlaylistItemViewModel,
     itemId: String?
 ){
+    libraryMyPlaylistItemViewModel.getVideosForPlaylist(0)
     Text(text = "LibraryMyPlaylistItemScreen")
 }
