@@ -25,7 +25,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.compose.rememberNavController
-import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.MainNavHost
 import com.example.transpose.ui.components.appbar.MainAppBar
@@ -39,23 +39,27 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val mainViewModel: MainViewModel by viewModels()
+    private val mediaViewModel: MediaViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val mainViewModel: MainViewModel by viewModels()
-        val mediaControlViewModel: MediaViewModel by viewModels()
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
             TransposeTheme {
-                MainScreen(mainViewModel = mainViewModel, mediaViewModel = mediaControlViewModel)
+                MainScreen(mainViewModel = mainViewModel, mediaViewModel = mediaViewModel)
             }
         }
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        Logger.d("onDestroy")
+        mediaViewModel.releaseMediaController()
+    }
 
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(
         mainViewModel: MainViewModel, mediaViewModel: MediaViewModel
@@ -156,7 +160,13 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                Route.Library.route -> {}
+                                Route.Library.route -> {
+                                    navigationViewModel.changeLibraryCurrentRoute(
+                                        Route.Library.SearchResult.createRoute(
+                                            it
+                                        )
+                                    )
+                                }
                             }
                         },
                         onSearchTriggered = { mainViewModel.openSearchBar() },
