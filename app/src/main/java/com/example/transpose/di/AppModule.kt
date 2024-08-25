@@ -18,5 +18,4 @@ object AppModule {
         return context.applicationContext as Application
     }
 
-    // 기타 제공 메서드...
 }
