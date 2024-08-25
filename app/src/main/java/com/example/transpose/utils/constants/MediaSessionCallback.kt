@@ -3,9 +3,11 @@ package com.example.transpose.utils.constants
 object MediaSessionCallback{
 
     private const val prefix = "transpose_"
-    const val SET_PITCH = "setPitch"
+    const val SET_PITCH = prefix +"setPitch"
+    const val SET_TEMPO = prefix +"setTempo"
     const val GET_EQUALIZER_INFO = prefix + "setEqualizerInfo"
-    const val SET_EQUALIZER = prefix + "setEqualizer"
+    const val SET_EQUALIZER_PRESET = prefix + "setEqualizerPreset"
+    const val SET_EQUALIZER_CUSTOM = prefix + "setEqualizerCustom"
     const val SET_BASS_BOOST = prefix + "setBassBoost"
     const val SET_LOUDNESS_ENHANCER= prefix + "setLoudnessEnhancer"
     const val SET_VIRTUALIZER = prefix + "setVirtualizer"
