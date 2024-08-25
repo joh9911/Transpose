@@ -3,13 +3,17 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-
+    id("androidx.room")
 
 }
 
 android {
     namespace = "com.example.transpose"
     compileSdk = 34
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 
     defaultConfig {
         applicationId = "com.example.transpose"
@@ -112,6 +116,17 @@ dependencies {
 
     implementation (libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt(libs.androidx.room.compiler)
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
+
 
 
 }
