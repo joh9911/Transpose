@@ -8,20 +8,11 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.session.MediaSession
-import com.example.transpose.Application
-import com.example.transpose.data.repository.suggestionkeyword.SuggestionKeywordRepository
-import com.example.transpose.data.repository.suggestionkeyword.SuggestionKeywordRepositoryImpl
-import com.example.transpose.service.MusicNotificationManager
-import com.example.transpose.service.MusicServiceHandler
-import com.example.transpose.service.audio_effect.AudioEffectHandlerImpl
-import dagger.Binds
+import com.example.transpose.media.audio_effect.AudioEffectHandlerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 

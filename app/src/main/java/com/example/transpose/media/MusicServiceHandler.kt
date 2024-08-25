@@ -1,4 +1,4 @@
-package com.example.transpose.service
+package com.example.transpose.media
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player

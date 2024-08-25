@@ -1,4 +1,4 @@
-package com.example.transpose.service.mediacontroller
+package com.example.transpose.media.mediacontroller
 
 import android.content.ComponentName
 import android.content.Context
@@ -6,7 +6,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.transpose.service.MediaService
+import com.example.transpose.media.MediaService
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.qualifiers.ApplicationContext

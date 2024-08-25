@@ -1,7 +1,6 @@
-package com.example.transpose.service.mediacontroller
+package com.example.transpose.media.mediacontroller
 
 import androidx.media3.common.MediaItem
-import androidx.media3.session.MediaController
 import kotlinx.coroutines.flow.StateFlow
 
 interface MediaControllerManager {

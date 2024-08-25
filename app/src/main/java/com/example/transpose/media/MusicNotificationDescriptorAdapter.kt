@@ -1,9 +1,8 @@
-package com.example.transpose.service
+package com.example.transpose.media
 
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import androidx.core.graphics.drawable.toBitmap
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
