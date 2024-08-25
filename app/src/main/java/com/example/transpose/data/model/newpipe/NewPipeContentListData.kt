@@ -1,4 +1,4 @@
-package com.example.transpose.data.model
+package com.example.transpose.data.model.newpipe
 
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*

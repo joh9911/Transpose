@@ -1,6 +1,5 @@
 package com.example.transpose.data.repository
 
-import android.util.Log
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.ListExtractor.InfoItemsPage
 import org.schabi.newpipe.extractor.StreamingService
@@ -8,14 +7,11 @@ import org.schabi.newpipe.extractor.playlist.PlaylistExtractor
 
 
 
-import com.example.transpose.data.model.NewPipeContentListData
-import com.example.transpose.data.model.NewPipePlaylistData
-import com.example.transpose.utils.Logger
+import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 
 import org.schabi.newpipe.extractor.exceptions.ParsingException
-import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
-import org.schabi.newpipe.extractor.linkhandler.ListLinkHandlerFactory
 
 class PlaylistPager(
     streamingService: StreamingService,

@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.example.transpose.MainViewModel
-import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 
 @Composable

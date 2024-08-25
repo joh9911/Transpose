@@ -6,8 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
-import com.example.transpose.navigation.NavigationViewModel
-import com.example.transpose.navigation.Route
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.navgraph.convertNavGraph
 
 @Composable

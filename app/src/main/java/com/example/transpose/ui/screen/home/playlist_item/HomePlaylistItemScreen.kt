@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.example.transpose.navigation.NavigationViewModel
-import com.example.transpose.data.model.NewPipeContentListData
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
+import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.items.CommonVideoItem

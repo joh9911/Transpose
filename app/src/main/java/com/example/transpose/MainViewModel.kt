@@ -2,27 +2,16 @@ package com.example.transpose
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.transpose.data.model.NewPipeChannelData
-import com.example.transpose.data.model.NewPipeContentListData
-import com.example.transpose.data.model.NewPipePlaylistData
-import com.example.transpose.data.model.NewPipeVideoData
-import com.example.transpose.data.repository.NewPipeException
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
-import com.example.transpose.data.repository.suggestionkeyword.SuggestionKeywordRepository
-import com.example.transpose.ui.common.UiState
+import com.example.transpose.data.repository.suggestion_keyword.SuggestionKeywordRepository
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 import com.example.transpose.utils.Logger
 import com.example.transpose.utils.SuggestionKeywordStringExtractor
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -113,7 +102,7 @@ class MainViewModel @Inject constructor(
         _isBottomSheetDraggable.value = boolean
     }
 
-    private val _bottomSheetState = MutableStateFlow(SheetValue.Expanded)
+    private val _bottomSheetState = MutableStateFlow(SheetValue.Hidden)
     val bottomSheetState = _bottomSheetState.asStateFlow()
 
     fun showBottomSheet() {

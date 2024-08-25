@@ -1,4 +1,4 @@
-package com.example.transpose.data.model
+package com.example.transpose.data.model.newpipe
 
 import org.schabi.newpipe.extractor.Image
 import org.schabi.newpipe.extractor.stream.StreamType

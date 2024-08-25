@@ -7,16 +7,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
-import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.ui.screen.home.home_playlist.HomePlaylistScreen
 import com.example.transpose.ui.screen.home.playlist_item.HomePlaylistItemScreen
 import com.example.transpose.ui.screen.home.search_result.HomeSearchResultScreen
 
 fun NavGraphBuilder.homeNavGraph(
-     navigationViewModel: NavigationViewModel,
-     mediaViewModel: MediaViewModel,
-     mainViewModel: MainViewModel
+    navigationViewModel: NavigationViewModel,
+    mediaViewModel: MediaViewModel,
+    mainViewModel: MainViewModel
 ) {
 
     composable(Route.Home.Playlist.route) {

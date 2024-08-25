@@ -9,9 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
-import com.example.transpose.navigation.NavigationViewModel
-import com.example.transpose.data.model.NewPipeContentListData
-import com.example.transpose.data.model.NewPipeVideoData
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
+import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.items.CommonVideoItem

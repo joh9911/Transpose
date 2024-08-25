@@ -1,4 +1,4 @@
-package com.example.transpose.data.model
+package com.example.transpose.data.model.newpipe
 
 data class NewPipeChannelData(
     override val id: String,

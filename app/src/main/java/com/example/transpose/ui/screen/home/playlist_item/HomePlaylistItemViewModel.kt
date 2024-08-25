@@ -2,8 +2,8 @@ package com.example.transpose.ui.screen.home.playlist_item
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.transpose.data.model.NewPipeContentListData
-import com.example.transpose.data.model.NewPipePlaylistData
+import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.ui.common.UiState

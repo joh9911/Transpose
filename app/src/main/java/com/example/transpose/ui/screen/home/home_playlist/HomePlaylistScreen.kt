@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
-import com.example.transpose.data.model.NewPipePlaylistData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.NationalPlaylistItem
 import com.example.transpose.ui.components.items.RegularPlaylistItem

@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore.Audio.Media
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -16,10 +15,9 @@ import androidx.media3.common.Tracks
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionToken
-import com.example.transpose.data.model.NewPipeVideoData
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.media.MediaService
-import com.example.transpose.media.audio_effect.AudioEffectHandler
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerPresets
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerSettings
 import com.example.transpose.media.audio_effect.data.reverb.ReverbPresets

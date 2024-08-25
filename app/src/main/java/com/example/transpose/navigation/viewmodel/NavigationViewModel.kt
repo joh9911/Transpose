@@ -1,7 +1,7 @@
-package com.example.transpose.navigation
+package com.example.transpose.navigation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.transpose.utils.Logger
+import com.example.transpose.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,6 +34,15 @@ class NavigationViewModel @Inject constructor(): ViewModel() {
 
     fun changeConvertCurrentRoute(route: String){
         _convertNavCurrentRoute.value = route
+    }
+
+    private val _libraryNavCurrentRoute = MutableStateFlow(Route.Library.MyPlaylist.route)
+    val libraryNavCurrentRoute = _libraryNavCurrentRoute.asStateFlow()
+
+    var libraryPreviousRoute = Route.Library.MyPlaylist.route
+
+    fun changeLibraryCurrentRoute(route: String){
+        _libraryNavCurrentRoute.value = route
     }
 
 }

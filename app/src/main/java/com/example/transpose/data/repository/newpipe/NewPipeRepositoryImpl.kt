@@ -1,7 +1,7 @@
 package com.example.transpose.data.repository.newpipe
 
-import com.example.transpose.data.model.NewPipeContentListData
-import com.example.transpose.data.model.NewPipePlaylistData
+import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.repository.NewPipeException
 import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.VideoPager
@@ -21,7 +21,9 @@ import org.schabi.newpipe.extractor.stream.StreamExtractor
 import org.schabi.newpipe.extractor.stream.VideoStream
 import javax.inject.Inject
 
-class NewPipeRepositoryImpl @Inject constructor(): NewPipeRepository {
+class NewPipeRepositoryImpl @Inject constructor(
+
+): NewPipeRepository {
     private val youtubeService: YoutubeService
 
     init {

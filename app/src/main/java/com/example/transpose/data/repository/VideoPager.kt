@@ -1,9 +1,9 @@
 package com.example.transpose.data.repository
 
-import com.example.transpose.data.model.NewPipeChannelData
-import com.example.transpose.data.model.NewPipeContentListData
-import com.example.transpose.data.model.NewPipePlaylistData
-import com.example.transpose.data.model.NewPipeVideoData
+import com.example.transpose.data.model.newpipe.NewPipeChannelData
+import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.utils.Logger
 import com.myFile.transpose.network.newpipe.Pager
 import org.schabi.newpipe.extractor.InfoItem

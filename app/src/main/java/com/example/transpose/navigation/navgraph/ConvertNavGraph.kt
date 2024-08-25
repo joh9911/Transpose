@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
-import com.example.transpose.navigation.NavigationViewModel
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.ui.screen.convert.audio_edit.ConvertAudioEditScreen
 import com.example.transpose.ui.screen.convert.search_result.ConvertSearchResultScreen
@@ -23,7 +23,8 @@ fun NavGraphBuilder.convertNavGraph(
         ConvertAudioEditScreen(
             mainViewModel = mainViewModel,
             mediaViewModel = mediaViewModel,
-            navigationViewModel = navigationViewModel
+            navigationViewModel = navigationViewModel,
+            convertAudioEditViewModel = hiltViewModel()
         )
     }
     composable(
