@@ -1,7 +1,10 @@
 package com.example.transpose.ui.screen.convert.search_result
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,6 +19,7 @@ import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConvertSearchResultScreen(
     convertSearchResultViewModel: ConvertSearchResultViewModel,
@@ -24,13 +28,18 @@ fun ConvertSearchResultScreen(
     query: String?
 
 ){
+    val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val searchResults by convertSearchResultViewModel.searchResults.collectAsState()
     val uiState by convertSearchResultViewModel.searchUiState.collectAsState()
     val isMoreItemsLoading by convertSearchResultViewModel.isMoreItemsLoading.collectAsState()
     val hasMoreItems by convertSearchResultViewModel.hasMoreSearchItems.collectAsState()
 
-    val listState = rememberLazyListState()
 
+    BackHandler(
+        enabled = bottomSheetState == SheetValue.Expanded
+    ) {
+        mainViewModel.partialExpandBottomSheet()
+    }
 
     LaunchedEffect(key1 = true) {
         query?.let {
@@ -59,7 +68,7 @@ fun ConvertSearchResultScreen(
                     CommonVideoItem(
                         item = item,
                         onClick = { mediaViewModel.setMediaItem(item as NewPipeVideoData)
-                            mainViewModel.showBottomSheet()
+                            mainViewModel.expandBottomSheet()
                         })
                 },
 

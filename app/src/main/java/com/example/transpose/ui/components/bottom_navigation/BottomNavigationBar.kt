@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.lerp
 import com.example.transpose.MainViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
+import com.example.transpose.utils.Logger
 
 @Composable
 fun BottomNavigationBar(
@@ -57,6 +58,7 @@ fun BottomNavigationBar(
                     if (mainNavCurrentRoute == icon.route) {
                         navigationViewModel.resetNavigationFor(icon.route)
                     } else {
+                        Logger.d("bottom ${icon.route}")
                         navigationViewModel.changeMainCurrentRoute(icon.route)
                     } },
                 icon = {

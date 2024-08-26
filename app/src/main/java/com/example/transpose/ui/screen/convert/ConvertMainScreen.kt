@@ -46,14 +46,14 @@ fun ConvertMainScreen(
     LaunchedEffect(resetConvertNavigation) {
         if (resetConvertNavigation) {
             navController.popBackStack(Route.Convert.AudioEdit.route, inclusive = false)
-            navigationViewModel.changeLibraryCurrentRoute(Route.Convert.AudioEdit.route)
-            navigationViewModel.onResetLibraryNavigationHandled()
+            navigationViewModel.changeConvertCurrentRoute(Route.Convert.AudioEdit.route)
+            navigationViewModel.onResetConvertNavigationHandled()
         }
     }
 
     LaunchedEffect(key1 = currentBackStackEntryAsState) {
         currentBackStackEntryAsState?.destination?.route?.let {
-            navigationViewModel.changeHomeCurrentRoute(it)
+            navigationViewModel.changeConvertCurrentRoute(it)
         }
     }
 
