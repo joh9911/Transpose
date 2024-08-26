@@ -53,7 +53,12 @@ fun BottomNavigationBar(
         icons.forEach { icon ->
             BottomNavigationItem(
                 selected = mainNavCurrentRoute == icon.route,
-                onClick = { navigationViewModel.changeMainCurrentRoute(icon.route) },
+                onClick = {
+                    if (mainNavCurrentRoute == icon.route) {
+                        navigationViewModel.resetNavigationFor(icon.route)
+                    } else {
+                        navigationViewModel.changeMainCurrentRoute(icon.route)
+                    } },
                 icon = {
                     Icon(
                         painter = painterResource(

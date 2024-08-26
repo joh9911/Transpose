@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
@@ -29,36 +30,45 @@ fun HomeMainScreen(
 ) {
 
     val homeNavCurrentRoute by navigationViewModel.homeNavCurrentRoute.collectAsState()
+    val resetLibraryNavigation by navigationViewModel.resetHomeNavigation.collectAsState()
     val navController = rememberNavController()
-    var canPopNested by remember { mutableStateOf(true) }
+    val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
 
 
-    LogComposableLifecycle(screenName = "HomeMainScreen")
+
 
     BackHandler {
-        if (canPopNested) {
+        Logger.d("HomeMainScreen BackHandler")
+
+        if (navController.previousBackStackEntry != null) {
             navController.popBackStack()
         } else {
             onBackButtonClick()
         }
     }
 
-    LaunchedEffect(homeNavCurrentRoute) {
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            canPopNested = navController.previousBackStackEntry != null
-        }
-        if (homeNavCurrentRoute != navigationViewModel.homeNavPreviousRoute) {
-            Logger.d("되어야 하는데? $homeNavCurrentRoute")
-            navController.navigate(homeNavCurrentRoute) {
-                popUpTo(navController.graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-            navigationViewModel.homeNavPreviousRoute = homeNavCurrentRoute
+    LaunchedEffect(resetLibraryNavigation) {
+        if (resetLibraryNavigation) {
+            navController.popBackStack(Route.Home.Playlist.route, inclusive = false)
+            navigationViewModel.changeLibraryCurrentRoute(Route.Home.Playlist.route)
+            navigationViewModel.onResetLibraryNavigationHandled()
         }
     }
+
+    LaunchedEffect(key1 = currentBackStackEntryAsState) {
+        currentBackStackEntryAsState?.destination?.route?.let {
+            navigationViewModel.changeHomeCurrentRoute(it)
+        }
+    }
+
+    LaunchedEffect(homeNavCurrentRoute) {
+        if (navController.currentDestination?.route != homeNavCurrentRoute){
+            navController.navigate(homeNavCurrentRoute) {
+                restoreState = true
+            }
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {

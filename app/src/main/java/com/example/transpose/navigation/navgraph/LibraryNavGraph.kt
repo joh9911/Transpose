@@ -9,6 +9,7 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
+import com.example.transpose.ui.screen.library.my_local_item.LibraryMyLocalItemScreen
 import com.example.transpose.ui.screen.library.my_playlist.LibraryMyPlaylistScreen
 import com.example.transpose.ui.screen.library.my_playlist_item.LibraryMyPlaylistItemScreen
 import com.example.transpose.ui.screen.library.search_result.LibrarySearchResultScreen
@@ -49,7 +50,21 @@ fun NavGraphBuilder.libraryNavGraph(
             librarySearchResultViewModel = hiltViewModel(),
             mainViewModel = mainViewModel,
             mediaViewModel = mediaViewModel,
+            navigationViewModel = navigationViewModel,
             query = query
+        )
+    }
+    composable(
+        route = Route.Library.MyLocalFileItem.route,
+        arguments = listOf(navArgument("type") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val type = backStackEntry.arguments?.getString("type")
+        LibraryMyLocalItemScreen(
+            libraryMyLocalItemViewModel = hiltViewModel(),
+            mainViewModel = mainViewModel,
+            mediaViewModel = mediaViewModel,
+            navigationViewModel = navigationViewModel,
+            type = type
         )
     }
 

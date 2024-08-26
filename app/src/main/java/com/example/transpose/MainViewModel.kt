@@ -1,17 +1,25 @@
 package com.example.transpose
 
+import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
+import com.example.transpose.data.repository.database.MyPlaylistDBRepository
+import com.example.transpose.data.repository.database.MyPlaylistDBRepositoryImpl
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.data.repository.suggestion_keyword.SuggestionKeywordRepository
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 import com.example.transpose.utils.Logger
+import com.example.transpose.utils.PermissionUtils
 import com.example.transpose.utils.SuggestionKeywordStringExtractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -20,8 +28,30 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val suggestionKeywordRepository: SuggestionKeywordRepository,
-    private val newPipeRepository: NewPipeRepository
+    private val newPipeRepository: NewPipeRepository,
+    private val playlistDBRepository: MyPlaylistDBRepository,
+    @ApplicationContext private val context: Context  // Application Context 주입
 ): ViewModel() {
+
+    private val _permissionGranted = MutableStateFlow(false)
+    val permissionGranted: StateFlow<Boolean> = _permissionGranted.asStateFlow()
+
+    init {
+        checkPermissions()
+    }
+
+    fun checkPermissions() {
+        _permissionGranted.value = PermissionUtils.checkPermissions(context)
+    }
+
+    fun setPermissionGranted(granted: Boolean) {
+        _permissionGranted.value = granted
+    }
+
+    fun requestPermissions(launcher: (Array<String>) -> Unit) {
+        PermissionUtils.requestPermissions(launcher)
+    }
+
 
     private val _searchWidgetState = MutableStateFlow(SearchWidgetState.CLOSED)
     val searchWidgetState = _searchWidgetState.asStateFlow()
@@ -111,6 +141,11 @@ class MainViewModel @Inject constructor(
 
     fun hideBottomSheet() {
         _bottomSheetState.value = SheetValue.Hidden
+    }
+
+
+    fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) = viewModelScope.launch(Dispatchers.IO){
+        playlistDBRepository.addVideoToPlaylist(video, playlistId)
     }
 
 

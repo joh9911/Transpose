@@ -17,13 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
@@ -54,7 +58,6 @@ class MainActivity : ComponentActivity() {
     }
     override fun onDestroy() {
         super.onDestroy()
-        Logger.d("onDestroy")
         mediaViewModel.releaseMediaController()
     }
 
@@ -75,6 +78,7 @@ class MainActivity : ComponentActivity() {
 
 
         val navController = rememberNavController()
+        val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
         val mainCurrentRoute by navigationViewModel.mainNavCurrentRoute.collectAsState()
 
 
@@ -87,9 +91,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        LogComposableLifecycle(screenName = "MainScreen")
 
         BackHandler {
+            Logger.d("MainBackHandler")
             when (mainCurrentRoute) {
                 Route.Home.route -> {}
                 Route.Convert.route -> {
@@ -102,18 +106,23 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        LaunchedEffect(key1 = currentBackStackEntryAsState) {
+            currentBackStackEntryAsState?.destination?.route?.let {
+                navigationViewModel.changeMainCurrentRoute(it)
+            }
+
+        }
+
 
         LaunchedEffect(mainCurrentRoute) {
-            if (mainCurrentRoute != navigationViewModel.mainNavPreviousRoute) {
+            if (navController.currentDestination?.route != mainCurrentRoute){
                 navController.navigate(mainCurrentRoute) {
-                    // 백 스택 관리
                     popUpTo(navController.graph.startDestinationId) {
                         saveState = true
                     }
                     launchSingleTop = true
                     restoreState = true
                 }
-                navigationViewModel.mainNavPreviousRoute = mainCurrentRoute
             }
         }
 
@@ -143,7 +152,6 @@ class MainActivity : ComponentActivity() {
                         onSearchClicked = {
                             when (mainCurrentRoute) {
                                 Route.Home.route -> {
-                                    Logger.d("Route.Home.route")
                                     navigationViewModel.changeHomeCurrentRoute(
                                         Route.Home.SearchResult.createRoute(
                                             it
@@ -152,7 +160,6 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 Route.Convert.route -> {
-                                    Logger.d("Route.Convert.route")
                                     navigationViewModel.changeConvertCurrentRoute(
                                         Route.Convert.SearchResult.createRoute(
                                             it

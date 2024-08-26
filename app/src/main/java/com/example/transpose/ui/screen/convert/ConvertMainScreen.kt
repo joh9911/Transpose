@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
@@ -18,6 +19,7 @@ import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.ConvertNavHost
 import com.example.transpose.utils.LogComposableLifecycle
+import com.example.transpose.utils.Logger
 
 @Composable
 fun ConvertMainScreen(
@@ -26,34 +28,40 @@ fun ConvertMainScreen(
     navigationViewModel: NavigationViewModel,
     onBackButtonClick: () -> Unit
 ){
-    LogComposableLifecycle(screenName = "ConvertMainScreen")
 
-
+    val resetConvertNavigation by navigationViewModel.resetConvertNavigation.collectAsState()
     val convertNavCurrentRoute by navigationViewModel.convertNavCurrentRoute.collectAsState()
     val navController = rememberNavController()
-    var canPopNested by remember { mutableStateOf(true) }
+    val currentBackStackEntryAsState by navController.currentBackStackEntryAsState()
 
     BackHandler {
-        if (canPopNested) {
+        Logger.d("HomeMainScreen BackHandler")
+        if (navController.previousBackStackEntry != null) {
             navController.popBackStack()
         } else {
             onBackButtonClick()
         }
     }
 
-    LaunchedEffect(convertNavCurrentRoute) {
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            canPopNested = navController.previousBackStackEntry != null
+    LaunchedEffect(resetConvertNavigation) {
+        if (resetConvertNavigation) {
+            navController.popBackStack(Route.Convert.AudioEdit.route, inclusive = false)
+            navigationViewModel.changeLibraryCurrentRoute(Route.Convert.AudioEdit.route)
+            navigationViewModel.onResetLibraryNavigationHandled()
         }
-        if (convertNavCurrentRoute != navigationViewModel.convertPreviousRoute) {
+    }
+
+    LaunchedEffect(key1 = currentBackStackEntryAsState) {
+        currentBackStackEntryAsState?.destination?.route?.let {
+            navigationViewModel.changeHomeCurrentRoute(it)
+        }
+    }
+
+    LaunchedEffect(convertNavCurrentRoute) {
+        if (navController.currentDestination?.route != convertNavCurrentRoute){
             navController.navigate(convertNavCurrentRoute) {
-                popUpTo(navController.graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
                 restoreState = true
             }
-            navigationViewModel.convertPreviousRoute = convertNavCurrentRoute
         }
     }
 
