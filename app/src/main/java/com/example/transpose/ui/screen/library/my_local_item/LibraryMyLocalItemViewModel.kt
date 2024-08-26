@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.transpose.data.model.local_file.LocalFileData
 import com.example.transpose.data.repository.local_file.LocalFileRepositoryImpl
+import com.example.transpose.utils.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,9 +40,11 @@ class LibraryMyLocalItemViewModel @Inject constructor(
     fun loadVideoFiles() = viewModelScope.launch(Dispatchers.IO) {
         localFileRepositoryImpl.getVideoFiles()
             .onSuccess { files ->
+                Logger.d("${files}")
                 _videoFiles.value = files
             }
             .onFailure { error ->
+                Logger.d("${error}")
                 _errorMessage.value = "비디오 파일 로딩 실패: ${error.message}"
             }
 

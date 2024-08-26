@@ -1,6 +1,8 @@
 package com.example.transpose.di
 
 
+import com.example.transpose.data.repository.database.MyPlaylistDBRepository
+import com.example.transpose.data.repository.database.MyPlaylistDBRepositoryImpl
 import com.example.transpose.data.repository.local_file.LocalFileRepository
 import com.example.transpose.data.repository.local_file.LocalFileRepositoryImpl
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
@@ -33,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindLocalFileRepository(
         localFileRepositoryImpl: LocalFileRepositoryImpl
     ): LocalFileRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlaylistDBRepository(
+        myPlaylistDBRepositoryImpl: MyPlaylistDBRepositoryImpl
+    ): MyPlaylistDBRepository
 }

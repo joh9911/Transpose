@@ -8,5 +8,17 @@ data class LocalFileData(
     val uri: Uri,
     val mimeType: String,
     val size: Long,
-    val duration: Long
+    val duration: Long,
+    val artist: String?,
+    val album: String?,
+    val year: Int?,
+    val genre: String?,
+    val composer: String?,
+    val albumArtist: String?,
+    val width: Int?,  // 비디오용
+    val height: Int?, // 비디오용
+    val resolution: String?, // 비디오용
+    val dateTaken: Long?,
+    val dateAdded: Long,
+    val dateModified: Long
 )
