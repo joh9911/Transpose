@@ -82,7 +82,6 @@ fun PlayerBottomSheet(
     val bottomSheetDraggableArea by mainViewModel.bottomSheetDraggableArea.collectAsState()
     val isBottomSheetDraggable by mainViewModel.isBottomSheetDraggable.collectAsState()
 
-
     val mediaMetaData by mediaViewModel.mediaMetadata.collectAsState()
 
 

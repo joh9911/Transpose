@@ -166,6 +166,7 @@ fun CustomSearchAppBar(
 
                 }
                 BackHandler {
+                    Logger.d("CustomSearchAppBar BackHandler")
                     onCloseClicked()
                 }
             }

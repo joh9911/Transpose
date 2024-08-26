@@ -1,5 +1,6 @@
 package com.example.transpose.ui.components.bottomsheet
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +30,7 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 import com.example.transpose.utils.Logger
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +45,7 @@ fun PlayerBottomSheetScaffold(
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val normalizedOffset by mainViewModel.normalizedOffset.collectAsState()
     val searchWidgetState by mainViewModel.searchWidgetState.collectAsState()
-    val isBottomSheetDraggable by mainViewModel.isBottomSheetDraggable.collectAsState()
+
 
     val screenHeightDp = LocalConfiguration.current.screenHeightDp.dp
     val density = LocalDensity.current
@@ -82,6 +85,8 @@ fun PlayerBottomSheetScaffold(
 
         )
     )
+
+
     LaunchedEffect(bottomSheetState) {
         when (bottomSheetState) {
             SheetValue.Hidden -> scaffoldState.bottomSheetState.hide()

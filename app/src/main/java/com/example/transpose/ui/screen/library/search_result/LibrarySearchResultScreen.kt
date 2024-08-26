@@ -1,7 +1,10 @@
 package com.example.transpose.ui.screen.library.search_result
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +24,7 @@ import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
 import com.example.transpose.ui.screen.convert.search_result.ConvertSearchResultViewModel
 import com.example.transpose.ui.screen.home.search_result.HomeSearchResultViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibrarySearchResultScreen(
     librarySearchResultViewModel: LibrarySearchResultViewModel,
@@ -30,13 +34,17 @@ fun LibrarySearchResultScreen(
     query: String?
 ){
 
+    val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val searchResults by librarySearchResultViewModel.searchResults.collectAsState()
     val uiState by librarySearchResultViewModel.searchUiState.collectAsState()
     val isMoreItemsLoading by librarySearchResultViewModel.isMoreItemsLoading.collectAsState()
     val hasMoreItems by librarySearchResultViewModel.hasMoreSearchItems.collectAsState()
 
-    val listState = rememberLazyListState()
-
+    BackHandler(
+        enabled = bottomSheetState == SheetValue.Expanded
+    ) {
+        mainViewModel.partialExpandBottomSheet()
+    }
 
     LaunchedEffect(key1 = true) {
         query?.let {
@@ -65,7 +73,7 @@ fun LibrarySearchResultScreen(
                     CommonVideoItem(
                         item = item,
                         onClick = { mediaViewModel.setMediaItem(item as NewPipeVideoData)
-                            mainViewModel.showBottomSheet()
+                            mainViewModel.expandBottomSheet()
 
                         })
                 },

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -58,7 +59,6 @@ class MainActivity : ComponentActivity() {
     }
     override fun onDestroy() {
         super.onDestroy()
-        mediaViewModel.releaseMediaController()
     }
 
 
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
     ) {
 
         val navigationViewModel: NavigationViewModel by viewModels()
-
+        val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
         val searchWidgetState by mainViewModel.searchWidgetState.collectAsState()
         val searchTextState by mainViewModel.searchTextState.collectAsState()
         val suggestionKeywords by mainViewModel.suggestionKeywords.collectAsState()
@@ -94,28 +94,35 @@ class MainActivity : ComponentActivity() {
 
         BackHandler {
             Logger.d("MainBackHandler")
-            when (mainCurrentRoute) {
-                Route.Home.route -> {}
-                Route.Convert.route -> {
-                    navigationViewModel.changeMainCurrentRoute(Route.Home.route)
-                }
 
-                Route.Library.route -> {
-                    navigationViewModel.changeMainCurrentRoute(Route.Home.route)
+            if (bottomSheetState == SheetValue.Expanded){
+                mainViewModel.partialExpandBottomSheet()
+            }
+            else{
+                when (mainCurrentRoute) {
+                    Route.Home.route -> { this.finish()}
+                    Route.Convert.route -> {
+                        navigationViewModel.changeMainCurrentRoute(Route.Home.route)
+                    }
+
+                    Route.Library.route -> {
+                        navigationViewModel.changeMainCurrentRoute(Route.Home.route)
+                    }
                 }
             }
         }
 
         LaunchedEffect(key1 = currentBackStackEntryAsState) {
             currentBackStackEntryAsState?.destination?.route?.let {
+                Logger.d("main currentBackStackEntryAsState $it")
                 navigationViewModel.changeMainCurrentRoute(it)
             }
-
         }
 
 
         LaunchedEffect(mainCurrentRoute) {
             if (navController.currentDestination?.route != mainCurrentRoute){
+                Logger.d("main mainCurrentRoute ${navController.currentDestination?.route} $mainCurrentRoute")
                 navController.navigate(mainCurrentRoute) {
                     popUpTo(navController.graph.startDestinationId) {
                         saveState = true

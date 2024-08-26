@@ -3,6 +3,7 @@ package com.example.transpose
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -135,8 +136,12 @@ class MainViewModel @Inject constructor(
     private val _bottomSheetState = MutableStateFlow(SheetValue.Hidden)
     val bottomSheetState = _bottomSheetState.asStateFlow()
 
-    fun showBottomSheet() {
+    fun expandBottomSheet() {
         _bottomSheetState.value = SheetValue.Expanded
+    }
+
+    fun partialExpandBottomSheet(){
+        _bottomSheetState.value = SheetValue.PartiallyExpanded
     }
 
     fun hideBottomSheet() {

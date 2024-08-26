@@ -20,7 +20,7 @@ fun NavGraphBuilder.homeNavGraph(
 ) {
 
     composable(Route.Home.Playlist.route) {
-        HomePlaylistScreen(homePlaylistViewModel = hiltViewModel(), navigationViewModel = navigationViewModel)
+        HomePlaylistScreen(mainViewModel = mainViewModel, homePlaylistViewModel = hiltViewModel(), navigationViewModel = navigationViewModel)
     }
     composable(
         route = Route.Home.PlaylistItem.route,
@@ -28,6 +28,7 @@ fun NavGraphBuilder.homeNavGraph(
     ) { backStackEntry ->
         val itemId = backStackEntry.arguments?.getString("itemId")
         HomePlaylistItemScreen(
+            mainViewModel = mainViewModel,
             homePlaylistItemViewModel = hiltViewModel(),
             navigationViewModel = hiltViewModel(),
             itemId = itemId

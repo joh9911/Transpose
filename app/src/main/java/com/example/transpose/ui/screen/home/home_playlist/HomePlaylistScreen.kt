@@ -1,5 +1,6 @@
 package com.example.transpose.ui.screen.home.home_playlist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.transpose.MainViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
@@ -19,20 +21,27 @@ import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.NationalPlaylistItem
 import com.example.transpose.ui.components.items.RegularPlaylistItem
 import com.example.transpose.utils.LogComposableLifecycle
+import com.example.transpose.utils.Logger
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePlaylistScreen(
+    mainViewModel: MainViewModel,
     homePlaylistViewModel: HomePlaylistViewModel,
     navigationViewModel: NavigationViewModel,
     modifier: Modifier = Modifier,
 ) {
-
+    val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val nationalPlaylistState by homePlaylistViewModel.nationalPlaylistState.collectAsState()
     val recommendedPlaylistState by homePlaylistViewModel.recommendedPlaylistState.collectAsState()
     val typedPlaylistState by homePlaylistViewModel.typedPlaylistState.collectAsState()
 
-    LogComposableLifecycle(screenName = "HomePlaylistScreen")
-
+    BackHandler(
+        enabled = bottomSheetState == SheetValue.Expanded
+    ) {
+        Logger.d("HomePlaylistScreen")
+        mainViewModel.partialExpandBottomSheet()
+    }
 
     LaunchedEffect(key1 = true) {
         navigationViewModel.changeHomeCurrentRoute(Route.Home.Playlist.route)

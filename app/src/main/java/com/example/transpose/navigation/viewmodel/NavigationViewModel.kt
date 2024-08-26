@@ -13,10 +13,9 @@ class NavigationViewModel @Inject constructor() : ViewModel() {
     private val _mainNavCurrentRoute = MutableStateFlow(Route.Home.route)
     val mainNavCurrentRoute = _mainNavCurrentRoute.asStateFlow()
 
-    var mainNavPreviousRoute = Route.Home.route
-
     fun changeMainCurrentRoute(route: String) {
         _mainNavCurrentRoute.value = route
+        Logger.d("changeMainCurrentRoute $route")
     }
 
 
