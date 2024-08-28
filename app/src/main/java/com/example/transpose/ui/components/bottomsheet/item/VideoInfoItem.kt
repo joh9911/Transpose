@@ -6,12 +6,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
 
 @Composable
-fun VideoInfoItem(videoTitle: String) {
+fun VideoInfoItem(currentVideoItem: NewPipeVideoData?) {
     Column(modifier = Modifier.padding(10.dp)) {
-        Text(text = videoTitle)
-        Text(text = "1,000,000 views • 2 days ago")
+        Text(text = currentVideoItem?.title ?: "")
+        Text(text = "${currentVideoItem?.viewCount} views • ${currentVideoItem?.textualUploadDate}")
         // 채널 정보 등 추가
     }
 }
