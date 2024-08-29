@@ -86,25 +86,5 @@ class ConvertSearchResultViewModel @Inject constructor(
         }
     }
 
-    private val _videoUri = MutableStateFlow<String>("")
-    val videoUri = _videoUri.asStateFlow()
-
-    fun getStreamInfoByVideoId(videoId: String) = viewModelScope.launch(Dispatchers.IO){
-        try {
-            val result = newPipeRepository.fetchStreamInfoByVideoId(videoId)
-            if (result.isSuccess){
-                val bestQualityStream = result.getOrNull()?.maxByOrNull { it.getResolution() }
-                bestQualityStream?.let {
-                    Logger.d("getStreamInfoByVideoId ${it.content}")
-                    _videoUri.value = it.content
-                }
-            }
-            if (result.isFailure){
-                Logger.d("getStreamInfoByVideoId ${result.exceptionOrNull()}")
-            }
-        }catch (e: Exception){
-            Logger.d("getStreamInfoByVideoId ${e}")
-        }
-    }
 
 }

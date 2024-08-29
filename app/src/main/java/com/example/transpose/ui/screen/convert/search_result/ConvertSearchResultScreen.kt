@@ -67,7 +67,7 @@ fun ConvertSearchResultScreen(
                 itemContent = { item: NewPipeContentListData ->
                     CommonVideoItem(
                         item = item,
-                        onClick = { mediaViewModel.setMediaItem(item as NewPipeVideoData)
+                        onClick = { mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
                             mainViewModel.expandBottomSheet()
                         })
                 },
