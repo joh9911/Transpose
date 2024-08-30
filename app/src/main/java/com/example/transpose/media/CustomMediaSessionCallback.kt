@@ -1,8 +1,21 @@
 package com.example.transpose.media
 
+import android.content.Context
 import android.os.Bundle
 import android.se.omapi.Session
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS
+import androidx.media3.datasource.DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.dash.DashMediaSource
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.MergingMediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
@@ -10,12 +23,15 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import com.example.transpose.R
 import com.example.transpose.media.audio_effect.AudioEffectHandlerImpl
+import com.example.transpose.utils.Logger
 import com.example.transpose.utils.constants.MediaSessionCallback
 import com.google.common.util.concurrent.ListenableFuture
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @UnstableApi
 class CustomMediaSessionCallback @Inject constructor(
+    private val context: Context,
     private val audioEffectHandlerImpl: AudioEffectHandlerImpl
 ) : MediaSession.Callback {
 
@@ -89,6 +105,47 @@ class CustomMediaSessionCallback @Inject constructor(
         session.setCustomLayout(controller, createCommandButton())
     }
 
+    override fun onAddMediaItems(
+        mediaSession: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        mediaItems: MutableList<MediaItem>
+    ): ListenableFuture<MutableList<MediaItem>> {
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setConnectTimeoutMs(DEFAULT_CONNECT_TIMEOUT_MILLIS)
+            .setReadTimeoutMs(DEFAULT_READ_TIMEOUT_MILLIS)
+            .setAllowCrossProtocolRedirects(true)
+
+//        val mediaSources = mediaItems.map {
+//            val videoUri = it.mediaMetadata.extras?.getString("videoUrl")
+//            val audioUri = it.mediaMetadata.extras?.getString("audioUrl")
+//            if (videoUri != null && audioUri != null) {
+//                Logger.d("$videoUri $audioUri")
+//                val videoSource = createOptimizedSource(videoUri, dataSourceFactory)
+//                val audioSource = createOptimizedSource(audioUri, dataSourceFactory)
+//                MergingMediaSource(true, videoSource, audioSource)
+//            } else {
+//                ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(it)
+//            }
+//        }
+
+//        (mediaSession.player as? ExoPlayer)?.setMediaSources(mediaSources)
+
+        return super.onAddMediaItems(mediaSession, controller, mediaItems)
+    }
+
+    private fun createOptimizedSource(uri: String, dataSourceFactory: DataSource.Factory): MediaSource {
+        return when {
+            uri.contains(".mpd") -> DashMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(MediaItem.fromUri(uri))
+            uri.contains(".m3u8") -> HlsMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(MediaItem.fromUri(uri))
+            else -> ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(MediaItem.fromUri(uri))
+        }
+    }
+
+
+
 
     override fun onConnect(
         session: MediaSession,
@@ -126,6 +183,10 @@ class CustomMediaSessionCallback @Inject constructor(
         args: Bundle
     ): ListenableFuture<SessionResult> {
         when (customCommand.customAction) {
+
+            MediaSessionCallback.UPDATE_METADATA -> {
+
+            }
 
             MediaSessionCallback.SET_PITCH -> {
                 val value =

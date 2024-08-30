@@ -17,7 +17,9 @@ import org.schabi.newpipe.extractor.linkhandler.ListLinkHandlerFactory
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor
 import org.schabi.newpipe.extractor.search.SearchExtractor
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService
+import org.schabi.newpipe.extractor.stream.AudioStream
 import org.schabi.newpipe.extractor.stream.StreamExtractor
+import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.extractor.stream.VideoStream
 import javax.inject.Inject
 
@@ -125,6 +127,7 @@ class NewPipeRepositoryImpl @Inject constructor(
 
 
 
+
     private fun getChannelLinkHandler(channelId: String): ListLinkHandler{
         val factory: ListLinkHandlerFactory = youtubeService.channelLHFactory
 
@@ -196,7 +199,17 @@ class NewPipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchStreamInfoByVideoId(videoId: String): Result<MutableList<VideoStream>?> {
+    override suspend fun fetchSeparatedStreamByVideoId(videoId: String): Result<Pair<MutableList<VideoStream>?, MutableList<AudioStream>>> {
+        return try {
+            val extractor = getStreamExtractor(getVideoUrl(videoId))
+            extractor.fetchPage()
+            Result.success(Pair(extractor.videoOnlyStreams, extractor.audioStreams))
+        }catch (e: Exception){
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchVideoStreamByVideoId(videoId: String): Result<MutableList<VideoStream>>{
         return try {
             val extractor = getStreamExtractor(getVideoUrl(videoId))
             extractor.fetchPage()
@@ -204,11 +217,7 @@ class NewPipeRepositoryImpl @Inject constructor(
         }catch (e: Exception){
             return Result.failure(e)
         }
-
     }
-
-
-
 
 
 }

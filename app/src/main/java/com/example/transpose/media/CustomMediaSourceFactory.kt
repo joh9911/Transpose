@@ -13,6 +13,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
+import com.example.transpose.utils.Logger
 
 @UnstableApi
 class CustomMediaSourceFactory(
@@ -40,16 +41,16 @@ class CustomMediaSourceFactory(
 
     @OptIn(UnstableApi::class)
     override fun createMediaSource(mediaItem: MediaItem): MediaSource {
-        val extras = mediaItem.playbackProperties?.tag as? Bundle
-        val videoUri = extras?.getString("videoUrl")?.let { Uri.parse(it) }
-        val audioUri = extras?.getString("audioUrl")?.let { Uri.parse(it) }
-
+        val videoUri = mediaItem.mediaMetadata.extras?.getString("videoUrl")
+        val audioUri = mediaItem.mediaMetadata.extras?.getString("audioUrl")
+        Logger.d("createMediaSource $videoUri $audioUri ${mediaItem.mediaMetadata.title}")
         return if (videoUri != null && audioUri != null) {
             val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(MediaItem.fromUri(videoUri))
             val audioSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(MediaItem.fromUri(audioUri))
-            MergingMediaSource(videoSource, audioSource)
+            Logger.d("createMediaSource return")
+            MergingMediaSource(true, videoSource, audioSource)
         } else {
             ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
