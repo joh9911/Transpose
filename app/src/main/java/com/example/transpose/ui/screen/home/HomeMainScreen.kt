@@ -46,14 +46,12 @@ fun HomeMainScreen(
 
     LaunchedEffect(key1 = currentBackStackEntryAsState) {
         currentBackStackEntryAsState?.destination?.route?.let {
-            Logger.d("HomeMainScreen currentBackStackEntryAsState $it")
             navigationViewModel.changeHomeCurrentRoute(it)
         }
     }
 
     LaunchedEffect(homeNavCurrentRoute) {
         if (navController.currentDestination?.route != homeNavCurrentRoute){
-            Logger.d("HomeMainScreen homeNavCurrentRoute $homeNavCurrentRoute ${navController.currentDestination?.route}")
             navController.navigate(homeNavCurrentRoute) {
                 restoreState = true
             }
