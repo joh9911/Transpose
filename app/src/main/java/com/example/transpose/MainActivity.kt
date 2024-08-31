@@ -28,6 +28,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
@@ -49,7 +50,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         setContent {
             TransposeTheme {
@@ -93,14 +93,12 @@ class MainActivity : ComponentActivity() {
         }
 
         BackHandler {
-            Logger.d("MainBackHandler")
-
             if (bottomSheetState == SheetValue.Expanded){
                 mainViewModel.partialExpandBottomSheet()
             }
             else{
                 when (mainCurrentRoute) {
-                    Route.Home.route -> { this.finish()}
+                    Route.Home.route -> { this.moveTaskToBack(true)}
                     Route.Convert.route -> {
                         navigationViewModel.changeMainCurrentRoute(Route.Home.route)
                     }
@@ -114,7 +112,6 @@ class MainActivity : ComponentActivity() {
 
         LaunchedEffect(key1 = currentBackStackEntryAsState) {
             currentBackStackEntryAsState?.destination?.route?.let {
-                Logger.d("main currentBackStackEntryAsState $it")
                 navigationViewModel.changeMainCurrentRoute(it)
             }
         }
@@ -122,7 +119,6 @@ class MainActivity : ComponentActivity() {
 
         LaunchedEffect(mainCurrentRoute) {
             if (navController.currentDestination?.route != mainCurrentRoute){
-                Logger.d("main mainCurrentRoute ${navController.currentDestination?.route} $mainCurrentRoute")
                 navController.navigate(mainCurrentRoute) {
                     popUpTo(navController.graph.startDestinationId) {
                         saveState = true
