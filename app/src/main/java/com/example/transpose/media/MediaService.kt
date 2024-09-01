@@ -11,6 +11,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.util.EventLogger
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.example.transpose.MainActivity
@@ -29,7 +30,7 @@ class MediaService : MediaSessionService() {
     @OptIn(UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
-        val customCallback = CustomMediaSessionCallback(audioEffectHandlerImpl)
+        val customCallback = CustomMediaSessionCallback(this, audioEffectHandlerImpl)
         mediaSession = MediaSession.Builder(this, exoPlayer)
             .setCallback(customCallback)
             .build()
@@ -73,6 +74,7 @@ class MediaService : MediaSessionService() {
             stopSelf()
         }
     }
+
 
     override fun onDestroy() {
         mediaSession?.run {

@@ -3,6 +3,7 @@ package com.example.transpose.utils.constants
 object MediaSessionCallback{
 
     private const val prefix = "transpose_"
+    const val UPDATE_METADATA = prefix + "updateMetaData"
     const val SET_PITCH = prefix +"setPitch"
     const val SET_TEMPO = prefix +"setTempo"
     const val GET_EQUALIZER_INFO = prefix + "setEqualizerInfo"
@@ -18,8 +19,10 @@ object MediaSessionCallback{
     const val NEXT = prefix + "next"
     const val PLAY = prefix + "play"
     const val INIT = prefix + "init"
-    const val MINUS = prefix + "minus"
-    const val PLUS = prefix + "plus"
+    const val PITCH_MINUS = prefix + "pitchMinus"
+    const val PITCH_PLUS = prefix + "pitchPlus"
+    const val TEMPO_MINUS = prefix + "tempoMinus"
+    const val TEMPO_PLUS = prefix + "tempoPlus"
     const val REPLAY = prefix + "replay"
     const val PAUSE = prefix + "pause"
     const val START_FOREGROUND = prefix + "startforeground"

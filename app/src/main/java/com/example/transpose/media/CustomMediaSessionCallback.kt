@@ -2,31 +2,24 @@ package com.example.transpose.media
 
 import android.content.Context
 import android.os.Bundle
-import android.se.omapi.Session
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS
 import androidx.media3.datasource.DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
-import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import com.example.transpose.R
 import com.example.transpose.media.audio_effect.AudioEffectHandlerImpl
-import com.example.transpose.utils.Logger
 import com.example.transpose.utils.constants.MediaSessionCallback
 import com.google.common.util.concurrent.ListenableFuture
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @UnstableApi
@@ -61,9 +54,13 @@ class CustomMediaSessionCallback @Inject constructor(
         val environmentalReverbCommand =
             SessionCommand(MediaSessionCallback.SET_ENVIRONMENT_REVERB, Bundle())
 
-        val pitchPlusCommand = SessionCommand(MediaSessionCallback.PLUS, Bundle())
+        val pitchPlusCommand = SessionCommand(MediaSessionCallback.PITCH_PLUS, Bundle())
 
-        val pitchMinusCommand = SessionCommand(MediaSessionCallback.MINUS, Bundle())
+        val pitchMinusCommand = SessionCommand(MediaSessionCallback.PITCH_MINUS, Bundle())
+
+        val tempoPlusCommand = SessionCommand(MediaSessionCallback.TEMPO_PLUS, Bundle())
+
+        val tempMinusCommand = SessionCommand(MediaSessionCallback.TEMPO_MINUS, Bundle())
 
         myCommands.add(pitchCommand)
         myCommands.add(tempoCommand)
@@ -76,12 +73,14 @@ class CustomMediaSessionCallback @Inject constructor(
         myCommands.add(environmentalReverbCommand)
         myCommands.add(pitchPlusCommand)
         myCommands.add(pitchMinusCommand)
+        myCommands.add(tempoPlusCommand)
+        myCommands.add(tempMinusCommand)
         return myCommands
     }
 
     private fun createCommandButton(): List<CommandButton> {
-        val pitchMinusCommand = SessionCommand(MediaSessionCallback.MINUS, Bundle())
-        val pitchPlusCommand = SessionCommand(MediaSessionCallback.PLUS, Bundle())
+        val pitchMinusCommand = SessionCommand(MediaSessionCallback.PITCH_MINUS, Bundle())
+        val pitchPlusCommand = SessionCommand(MediaSessionCallback.PITCH_PLUS, Bundle())
 
         val minusButton = CommandButton.Builder()
             .setSessionCommand(pitchMinusCommand)
@@ -245,12 +244,19 @@ class CustomMediaSessionCallback @Inject constructor(
 
             }
 
-            MediaSessionCallback.MINUS -> {
+            MediaSessionCallback.PITCH_MINUS -> {
                 audioEffectHandlerImpl.pitchMinusOne()
             }
 
-            MediaSessionCallback.PLUS -> {
+            MediaSessionCallback.PITCH_PLUS -> {
                 audioEffectHandlerImpl.pitchPlusOne()
+            }
+
+            MediaSessionCallback.TEMPO_MINUS -> {
+                audioEffectHandlerImpl.tempoMinusOne()
+            }
+            MediaSessionCallback.TEMPO_PLUS -> {
+                audioEffectHandlerImpl.tempoPlusOne()
             }
 
         }
