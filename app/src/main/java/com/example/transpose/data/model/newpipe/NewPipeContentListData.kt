@@ -1,5 +1,6 @@
 package com.example.transpose.data.model.newpipe
 
+import com.example.transpose.utils.CountFormatter
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
@@ -15,6 +16,14 @@ interface NewPipeContentListData {
         return publishTimestamp?.let { timestamp ->
             prettyTime.format(Date(timestamp))
         } ?: "Unknown"
+    }
+
+    fun viewCountCalculator(viewCountStringArray: Array<String>, viewCountString: String): String {
+        return CountFormatter.format(viewCountString.toLong(), viewCountStringArray)
+    }
+
+    fun subscriberCountConverter(subscriberCountString: String, subscriberArray: Array<String>): String {
+        return CountFormatter.format(subscriberCountString.toLong(), subscriberArray, isSubscriber = true)
     }
 
     fun getPublishDatePrettyKorean(): String = getPublishDatePretty(Locale.KOREAN)
