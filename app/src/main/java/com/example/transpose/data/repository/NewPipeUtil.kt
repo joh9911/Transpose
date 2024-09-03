@@ -37,4 +37,12 @@ object NewPipeUtils {
     fun getThumbnailUrl(comment: InfoItem): String? {
         return getThumbnailUrl(comment.thumbnails)
     }
+
+    fun removeChannelIdPrefix(channelId: String): String {
+        return if (channelId.contains("channel/")) {
+            channelId.split("channel/")[1]
+        } else {
+            channelId
+        }
+    }
 }
