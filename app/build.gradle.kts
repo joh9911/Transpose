@@ -70,7 +70,10 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.material3.v121)
+
     implementation(libs.androidx.media3.session)
+    implementation(libs.androidx.media3.exoplayer.hls)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,7 +85,6 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material)
-
 
 
     // ViewModel
