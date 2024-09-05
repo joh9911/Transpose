@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
+import org.schabi.newpipe.extractor.InfoItem
 import javax.inject.Inject
 @OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
@@ -171,6 +172,24 @@ class MainViewModel @Inject constructor(
     fun fetchChannelData(item: NewPipeVideoData) = viewModelScope.launch(Dispatchers.IO){
         try {
             newPipeRepository.fetchChannelDataByChannelUrl(item.uploaderUrl ?: "")
+        }catch (e: Exception){
+
+        }
+    }
+
+    private val _relatedVideos = MutableStateFlow<MutableList<out InfoItem>?>(null)
+    val relatedVideos = _relatedVideos.asStateFlow()
+
+
+    fun fetchRelatedVideos(videoId: String) = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            val result = newPipeRepository.fetchRelatedVideoStreamByVideoId(videoId)
+            if (result.isSuccess){
+                _relatedVideos.value = result.getOrNull()
+            }
+            if (result.isFailure){
+
+            }
         }catch (e: Exception){
 
         }

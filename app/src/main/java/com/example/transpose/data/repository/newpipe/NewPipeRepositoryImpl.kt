@@ -8,9 +8,11 @@ import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.VideoPager
 import com.example.transpose.utils.Logger
 import org.schabi.newpipe.extractor.Extractor
+import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.channel.ChannelExtractor
+import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
 import org.schabi.newpipe.extractor.exceptions.ParsingException
@@ -83,8 +85,9 @@ class NewPipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchPlaylistResult(pager: PlaylistPager): Result<NewPipePlaylistData?> {
+    override suspend fun fetchPlaylistResult(playlistId: String): Result<NewPipePlaylistData?> {
         return try {
+            val pager = createPlaylistPager(playlistId)
             Result.success(getPlaylistInPager(pager))
         }catch (e: Exception){
             Result.failure(e)
@@ -208,6 +211,16 @@ class NewPipeRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun fetchRelatedVideoStreamByVideoId(videoId: String): Result<MutableList<out InfoItem>?> {
+        return try {
+            val extractor = getStreamExtractor(getVideoUrl(videoId))
+            extractor.fetchPage()
+            Result.success(extractor.relatedItems?.items)
+        }catch (e: Exception){
+            return Result.failure(e)
+        }
+    }
+
     override suspend fun fetchVideoStreamByVideoId(videoId: String): Result<MutableList<VideoStream>>{
         return try {
             val extractor = getStreamExtractor(getVideoUrl(videoId))
@@ -227,6 +240,7 @@ class NewPipeRepositoryImpl @Inject constructor(
             val channelId = getChannelId(channelUrl)
             val linkHandler = getChannelLinkHandler(channelId)
             val channelExtractor = getChannelExtractor(linkHandler)
+            val channelInfo = ChannelInfo.getInfo(channelUrl)
             channelExtractor.fetchPage()
 
         }catch (e: Exception){
