@@ -1,17 +1,27 @@
 package com.example.transpose.ui.components.bottomsheet
 
+import android.text.Layout
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
@@ -19,6 +29,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,9 +44,17 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -47,11 +66,16 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
+import com.example.transpose.R
 import com.example.transpose.ui.components.bottomsheet.GraphicsLayerConstants.PEEK_HEIGHT
+import com.example.transpose.ui.components.bottomsheet.item.ChannelLayout
 import com.example.transpose.ui.components.bottomsheet.item.PitchControlItem
+import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicator
+import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
 import com.example.transpose.ui.components.bottomsheet.item.RelatedVideoItem
 import com.example.transpose.ui.components.bottomsheet.item.TempoControlItem
 import com.example.transpose.ui.components.bottomsheet.item.VideoInfoItem
+import com.example.transpose.utils.Logger
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 
@@ -73,19 +97,20 @@ fun PlayerBottomSheet(
     mainViewModel: MainViewModel,
 ) {
 
+    val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val mediaController by mediaViewModel.mediaController.collectAsState()
-
 
     val normalizedOffset by mainViewModel.normalizedOffset.collectAsState()
 
-    val searchWidgetState by mainViewModel.searchWidgetState.collectAsState()
-    val bottomSheetDraggableArea by mainViewModel.bottomSheetDraggableArea.collectAsState()
-    val isBottomSheetDraggable by mainViewModel.isBottomSheetDraggable.collectAsState()
+    val isPlaying by mediaViewModel.isPlaying.collectAsState()
 
-    val mediaMetaData by mediaViewModel.mediaMetadata.collectAsState()
+    val currentVideoItem by mediaViewModel.currentVideoItem.collectAsState()
+
+    val draggableAreaBounds by mainViewModel.bottomSheetDraggableArea.collectAsState()
 
 
     val listState = rememberLazyListState()
+
     val isFocused by listState.interactionSource.interactions
         .filterIsInstance<DragInteraction>()
         .map { dragInteraction ->
@@ -95,9 +120,18 @@ fun PlayerBottomSheet(
 
     var playerViewHeight by remember { mutableStateOf(0) }
 
+    val playerViewKey = remember { mutableStateOf(0) }
+
+    LaunchedEffect(bottomSheetState) {
+        playerViewKey.value += 1
+    }
+
+
     LaunchedEffect(isFocused) {
+        Logger.d("LaunchedEffect(isFocused) ")
         mainViewModel.updateIsBottomSheetDraggable(false)
     }
+
 
     ConstraintLayout(
         modifier = Modifier
@@ -105,11 +139,7 @@ fun PlayerBottomSheet(
             .zIndex(2f)
     ) {
 
-        val alphaValue = (0.2 - normalizedOffset) / 0.2
-
-
-
-        val (playerContainer, mainContainerLayout, playerView, playerThumbnailView, tempPlayerView, bottomPlayerCloseButton, bottomPlayerPauseButton, bottomTitleTextView, contentLazyColumn) = createRefs()
+        val (playerContainer, mainContainerLayout, playerView, playerThumbnailView, tempPlayerView, bottomPlayerCloseButton, bottomPlayerPauseButton, bottomTitleTextView, contentLazyColumn, playlistShowButton, playlistBottomSheet) = createRefs()
 
         Box(
             modifier = Modifier
@@ -126,30 +156,7 @@ fun PlayerBottomSheet(
                 .onGloballyPositioned { coordinates ->
                     mainViewModel.updateBottomSheetDraggableArea(coordinates.boundsInWindow())
                 }
-
-
         )
-
-        // playerThumbnailView
-        Box(
-            modifier = Modifier
-                .constrainAs(playerThumbnailView) {
-                    top.linkTo(playerContainer.top)
-                    start.linkTo(playerContainer.start)
-                    end.linkTo(playerContainer.end)
-                    bottom.linkTo(playerContainer.bottom)
-                }
-                .graphicsLayer(
-                    scaleX = when {
-                        normalizedOffset < 0f -> GraphicsLayerConstants.MIN_SCALE
-                        normalizedOffset < 0.2f -> calculateDefaultScaleX(normalizedOffset)
-                        else -> 1f
-                    },
-                    scaleY = calculateScaleFactorY(normalizedOffset),
-                    transformOrigin = TransformOrigin(0f, 0f)
-                )
-        )
-
 
         val centerGuideline = createGuidelineFromTop(PEEK_HEIGHT / 2)
 
@@ -167,7 +174,7 @@ fun PlayerBottomSheet(
 
         // bottomTitleTextView
         Text(
-            text = mediaMetaData?.title.toString(),
+            text = currentVideoItem?.title ?: "",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = Color.White,
@@ -202,7 +209,7 @@ fun PlayerBottomSheet(
 
         // bottomPlayerPauseButton
         IconButton(
-            onClick = { /* Play/Pause logic */ },
+            onClick = { mediaViewModel.playPause() },
             modifier = Modifier
                 .constrainAs(bottomPlayerPauseButton) {
                     end.linkTo(bottomPlayerCloseButton.start, margin = 5.dp)
@@ -213,7 +220,7 @@ fun PlayerBottomSheet(
                 .bottomSheetAlpha(normalizedOffset)
         ) {
             Icon(
-                imageVector = Icons.Default.PlayArrow,
+                painterResource(id = if (isPlaying) R.drawable.baseline_pause_24 else R.drawable.baseline_play_arrow_24),
                 contentDescription = "Play/Pause",
                 tint = Color.White
             )
@@ -244,60 +251,101 @@ fun PlayerBottomSheet(
                 )
         ) {
             AndroidView(
-                factory = { ctx -> PlayerView(ctx).apply {
+                factory = { ctx ->
+                    PlayerView(ctx).apply {
+                        resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL  // 또는 RESIZE_MODE_FIT
 
-                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL  // 또는 RESIZE_MODE_FIT
-
-                } },
+                    }
+                },
                 update = { view ->
                     mediaController?.let { controller ->
                         view.player = controller
                     } ?: run {
                         view.player = null
-
                     }
+                    Logger.d("AndroidView $bottomSheetState")
+
+                    view.useController = when (bottomSheetState) {
+                        SheetValue.Expanded -> true
+                        else -> false
+                    }
+
                 },
                 modifier = Modifier.fillMaxSize()
             )
-
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.Center)
-
+            PlayerLoadingIndicator(
+                mediaViewModel = mediaViewModel,
+                modifier = Modifier.align(Alignment.Center)
             )
         }
 
-
-        LazyColumn(
+        // playerThumbnailView
+        PlayerThumbnailView(
+            mediaViewModel = mediaViewModel,
             modifier = Modifier
-                .constrainAs(contentLazyColumn) {
+                .constrainAs(playerThumbnailView) {
+                    top.linkTo(playerContainer.top)
+                    start.linkTo(playerContainer.start)
+                    end.linkTo(playerContainer.end)
+                    bottom.linkTo(playerContainer.bottom)
+                }
+                .graphicsLayer(
+                    scaleX = when {
+                        normalizedOffset < 0f -> GraphicsLayerConstants.MIN_SCALE
+                        normalizedOffset < 0.2f -> calculateDefaultScaleX(normalizedOffset)
+                        else -> 1f
+                    },
+                    scaleY = calculateScaleFactorY(normalizedOffset),
+                    transformOrigin = TransformOrigin(0f, 0f)
+                )
+        )
+
+        PlaylistBottomSheet(
+            mainViewModel = mainViewModel,
+            mediaViewModel = mediaViewModel,
+            modifier = Modifier
+                .constrainAs(playlistBottomSheet) {
                     top.linkTo(playerContainer.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
-                }
-                .graphicsLayer(
+                }.graphicsLayer(
                     translationY = -playerViewHeight * (1 - calculateScaleFactorY(normalizedOffset))
                 )
                 .changeMainBackgroundAlpha(normalizedOffset)
-        ) {
-            item {
-                VideoInfoItem(mediaMetaData?.title.toString())
-            }
-            item {
-                PitchControlItem()
-            }
-            item {
-                TempoControlItem()
-            }
-            items(20) { index ->
-                RelatedVideoItem(index)
+        ){ paddingValues ->
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+
+            ) {
+                item {
+                    VideoInfoItem(currentVideoItem)
+                }
+                item {
+                    ChannelLayout(
+                        currentVideoItem = currentVideoItem,
+                        mediaViewModel = mediaViewModel,
+                        mainViewModel = mainViewModel
+                    )
+                }
+                item {
+                    PitchControlItem(mediaViewModel)
+                }
+                item {
+                    TempoControlItem(mediaViewModel)
+                }
+
+                items(20) { index ->
+                    RelatedVideoItem(index)
+                }
             }
         }
-
-
     }
+
 
 }
 
@@ -310,24 +358,26 @@ private fun Modifier.bottomSheetAlpha(normalizedOffset: Float): Modifier {
                 val alphaValue = (0.2 - normalizedOffset) / 0.2
                 alphaValue.toFloat()
             }
+
             else -> 0f
         }
     )
 }
 
-private fun Modifier.changeMainBackgroundAlpha(normalizedOffset: Float): Modifier{
+private fun Modifier.changeMainBackgroundAlpha(normalizedOffset: Float): Modifier {
     if (normalizedOffset < 0) return alpha(1f)
     return this.alpha((normalizedOffset * normalizedOffset * normalizedOffset).coerceAtLeast(0f))
 
 
 }
 
-private fun calculateDefaultScaleX(normalizedOffset: Float): Float{
+private fun calculateDefaultScaleX(normalizedOffset: Float): Float {
     return lerp(start = 0.3f, stop = 1f, fraction = normalizedOffset / 0.2f)
 }
 
 private fun calculateScaleFactorY(normalizedOffset: Float): Float {
-    val minScale = GraphicsLayerConstants.PEEK_HEIGHT.value / GraphicsLayerConstants.DEFAULT_HEIGHT.value
+    val minScale =
+        GraphicsLayerConstants.PEEK_HEIGHT.value / GraphicsLayerConstants.DEFAULT_HEIGHT.value
     return when {
         normalizedOffset <= GraphicsLayerConstants.FULLY_EXPANDED -> minScale
         else -> lerp(start = minScale, stop = 1f, fraction = normalizedOffset)

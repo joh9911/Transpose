@@ -126,19 +126,15 @@ fun PlayerBottomSheetScaffold(
 
 
     LaunchedEffect(bottomSheetState) {
-        Logger.d("LaunchedEffect(bottomSheetState) $bottomSheetState")
             when (bottomSheetState) {
                 SheetValue.Expanded -> {
-                    Logger.d("LaunchedEffect(bottomSheetState) SheetValue.Expanded  $bottomSheetState")
                     sheetState.expand()
                 }
                 SheetValue.PartiallyExpanded -> {
-                    Logger.d("LaunchedEffect(bottomSheetState) SheetValue.PartiallyExpanded  $bottomSheetState")
 
                     sheetState.partialExpand()
                 }
                 SheetValue.Hidden -> {
-                    Logger.d("LaunchedEffect(bottomSheetState) SheetValue.Hidden  $bottomSheetState")
 
                 }
             }
@@ -148,7 +144,6 @@ fun PlayerBottomSheetScaffold(
     // BottomSheetState의 변경을 ViewModel에 반영
     LaunchedEffect(sheetState) {
         snapshotFlow { sheetState.currentValue }.collect {
-            Logger.d("snapshotFlow { sheetState.currentValue } ${it} ${sheetState.hasPartiallyExpandedState}")
             when(it){
                 SheetValue.Hidden -> {
                     mainViewModel.hideBottomSheet()
