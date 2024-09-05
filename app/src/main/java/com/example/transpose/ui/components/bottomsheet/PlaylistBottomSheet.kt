@@ -66,6 +66,7 @@ fun PlaylistBottomSheet(
         )
 
         BottomSheetScaffold(
+            sheetContainerColor = Color.White,
             sheetPeekHeight = 0.dp,
             sheetContent = {
                 if (mediaItemCount == null) return@BottomSheetScaffold

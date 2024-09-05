@@ -45,11 +45,11 @@ fun HomePlaylistScreen(
 
     LaunchedEffect(key1 = true) {
         navigationViewModel.changeHomeCurrentRoute(Route.Home.Playlist.route)
-        if (nationalPlaylistState.uiState == UiState.Initial)
+        if (nationalPlaylistState == UiState.Initial)
             homePlaylistViewModel.fetchNationalPlaylists()
-        if (recommendedPlaylistState.uiState == UiState.Initial)
+        if (recommendedPlaylistState == UiState.Initial)
             homePlaylistViewModel.fetchRecommendedPlaylists()
-        if (typedPlaylistState.uiState == UiState.Initial)
+        if (typedPlaylistState == UiState.Initial)
             homePlaylistViewModel.fetchTypedPlaylists()
     }
 
@@ -95,7 +95,7 @@ fun HomePlaylistScreen(
 @Composable
 fun PlaylistSection(
     title: String,
-    playlistState: HomePlaylistViewModel.PlaylistState,
+    playlistState: UiState<List<NewPipePlaylistData>>,
     itemContent: @Composable (NewPipePlaylistData) -> Unit
 ) {
     Column{
@@ -105,7 +105,7 @@ fun PlaylistSection(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
         )
-        when (playlistState.uiState) {
+        when (playlistState) {
             is UiState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -119,12 +119,12 @@ fun PlaylistSection(
             is UiState.Error -> {
                 ErrorMessage(
                     isVisible = true,
-                    message = (playlistState.uiState).message,
+                    message = (playlistState).message,
                     onRefresh = {} // 여기에 적절한 리프레시 함수를 넣어주세요
                 )
             }
             is UiState.Success -> {
-                if (playlistState.items.isEmpty()) {
+                if (playlistState.data.isEmpty()) {
                     Text(
                         text = "No playlists available",
                         modifier = Modifier.padding(16.dp)
@@ -135,10 +135,10 @@ fun PlaylistSection(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(
-                            count = playlistState.items.size,
-                            key = { index -> playlistState.items[index].id }
+                            count = playlistState.data.size,
+                            key = { index -> playlistState.data[index].id }
                         ) { index ->
-                            itemContent(playlistState.items[index])
+                            itemContent(playlistState.data[index])
                         }
                     }
                 }

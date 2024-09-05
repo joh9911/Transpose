@@ -2,7 +2,6 @@ package com.example.transpose.ui.screen.home.search_result
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
@@ -15,7 +14,7 @@ import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
-import com.example.transpose.ui.common.UiState
+import com.example.transpose.ui.common.PaginatedState
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
@@ -29,13 +28,8 @@ fun HomeSearchResultScreen(
     mediaViewModel: MediaViewModel,
     query: String?,
 ) {
-
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
-
-    val searchResults by homeSearchResultViewModel.searchResults.collectAsState()
-    val uiState by homeSearchResultViewModel.searchUiState.collectAsState()
-    val isMoreItemsLoading by homeSearchResultViewModel.isMoreItemsLoading.collectAsState()
-    val hasMoreItems by homeSearchResultViewModel.hasMoreSearchItems.collectAsState()
+    val searchResultsState by homeSearchResultViewModel.searchResultsState.collectAsState()
 
     BackHandler(
         enabled = bottomSheetState == SheetValue.Expanded
@@ -43,51 +37,43 @@ fun HomeSearchResultScreen(
         mainViewModel.partialExpandBottomSheet()
     }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = query) {
         query?.let {
             homeSearchResultViewModel.initializeSearchPager(it)
         }
-
     }
 
-
-    when (uiState) {
-        is UiState.Initial -> {
-            // 초기 상태 UI (예: 검색 안내 메시지)
+    when (val state = searchResultsState) {
+        is PaginatedState.Initial -> {
         }
-
-        is UiState.Loading -> {
+        is PaginatedState.Loading -> {
             LoadingIndicator()
         }
-
-        is UiState.Success -> {
+        is PaginatedState.Success -> {
             EndlessLazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                items = searchResults,
+                items = state.items,
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = { item: NewPipeContentListData ->
                     CommonVideoItem(
                         item = item,
-                        onClick = { mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
+                        onClick = {
+                            mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
                             mainViewModel.expandBottomSheet()
-
-                        })
+                        }
+                    )
                 },
-
-                loading = isMoreItemsLoading,
+                loading = state.isLoadingMore,
                 loadMore = { homeSearchResultViewModel.loadMoreSearchResults() },
-                hasMoreItems = hasMoreItems
+                hasMoreItems = state.hasMore
             )
         }
-
-        is UiState.Error -> {
-            ErrorMessage(message = (uiState as UiState.Error).message)
+        is PaginatedState.Error -> {
+            ErrorMessage(message = state.message)
         }
     }
-
 }
-
 
 @Composable
 fun ErrorMessage(message: String) {

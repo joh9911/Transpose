@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import com.example.transpose.MainViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
-import com.example.transpose.ui.common.UiState
+import com.example.transpose.ui.common.PaginatedState
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
 import com.example.transpose.ui.components.items.PlaylistHeaderItem
@@ -26,11 +26,7 @@ fun HomePlaylistItemScreen(
 ) {
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val playlistInfo by homePlaylistItemViewModel.playlistInfo.collectAsState()
-    val playlistItems by homePlaylistItemViewModel.playlistItems.collectAsState()
-    val playlistItemUiState by homePlaylistItemViewModel.playlistItemUiState.collectAsState()
-    val hasMoreItems by homePlaylistItemViewModel.hasMorePlaylistItems.collectAsState()
-    val isMorePlaylistItemsLoading by homePlaylistItemViewModel.isMorePlaylistItemsLoading.collectAsState()
-
+    val playlistItemsState by homePlaylistItemViewModel.playlistItemsState.collectAsState()
 
     BackHandler(
         enabled = bottomSheetState == SheetValue.Expanded
@@ -38,37 +34,45 @@ fun HomePlaylistItemScreen(
         mainViewModel.partialExpandBottomSheet()
     }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = itemId) {
         itemId?.let { id ->
             homePlaylistItemViewModel.initializePlaylistPager(id)
         }
     }
 
-    when(playlistItemUiState){
-        is UiState.Initial -> {
-
+    when (val state = playlistItemsState) {
+        is PaginatedState.Initial -> {
+            // 초기 상태 UI (예: 안내 메시지)
         }
-
-        is UiState.Error -> {
-
-        }
-        UiState.Loading -> {
+        is PaginatedState.Loading -> {
             LoadingIndicator()
         }
-        UiState.Success -> {
+        is PaginatedState.Success -> {
             EndlessLazyColumn(
-                items = playlistItems,
+                items = state.items,
                 headerData = playlistInfo,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = { item: NewPipeContentListData ->
-                    CommonVideoItem(item = item, onClick = {})
+                    CommonVideoItem(item = item, onClick = {
+                        // 비디오 아이템 클릭 처리
+                    })
                 },
-                headerContent = { PlaylistHeaderItem(playlistData = playlistInfo)},
-                loading = isMorePlaylistItemsLoading,
+                headerContent = { playlistData ->
+                    playlistData?.let { PlaylistHeaderItem(playlistData = it) }
+                },
+                loading = state.isLoadingMore,
                 loadMore = { homePlaylistItemViewModel.loadMorePlaylistItems() },
-                hasMoreItems = hasMoreItems
+                hasMoreItems = state.hasMore
             )
         }
+        is PaginatedState.Error -> {
+            // 에러 메시지 표시
+            ErrorMessage(message = state.message)
+        }
     }
+}
 
+@Composable
+fun ErrorMessage(message: String) {
+    // 에러 메시지 표시 구현
 }

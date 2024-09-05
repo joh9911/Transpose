@@ -21,125 +21,85 @@ class HomePlaylistViewModel @Inject constructor(
 ) : ViewModel(){
 
 
-    private val _nationalPlaylistState = MutableStateFlow(PlaylistState())
-    val nationalPlaylistState: StateFlow<PlaylistState> = _nationalPlaylistState.asStateFlow()
+    private val _nationalPlaylistState = MutableStateFlow<UiState<List<NewPipePlaylistData>>>(UiState.Initial)
+    val nationalPlaylistState: StateFlow<UiState<List<NewPipePlaylistData>>> = _nationalPlaylistState.asStateFlow()
 
-    private var nationalPlaylistPager: List<PlaylistPager> = emptyList()
+    private val _recommendedPlaylistState = MutableStateFlow<UiState<List<NewPipePlaylistData>>>(UiState.Initial)
+    val recommendedPlaylistState: StateFlow<UiState<List<NewPipePlaylistData>>> = _recommendedPlaylistState.asStateFlow()
 
-    private val _recommendedPlaylistState = MutableStateFlow(PlaylistState())
-    val recommendedPlaylistState: StateFlow<PlaylistState> = _recommendedPlaylistState.asStateFlow()
-
-    private val _typedPlaylistState = MutableStateFlow(PlaylistState())
-    val typedPlaylistState: StateFlow<PlaylistState> = _typedPlaylistState.asStateFlow()
+    private val _typedPlaylistState = MutableStateFlow<UiState<List<NewPipePlaylistData>>>(UiState.Initial)
+    val typedPlaylistState: StateFlow<UiState<List<NewPipePlaylistData>>> = _typedPlaylistState.asStateFlow()
 
 
     fun fetchNationalPlaylists() = viewModelScope.launch(Dispatchers.IO) {
-
-        _nationalPlaylistState.value = _nationalPlaylistState.value.copy(uiState = UiState.Loading)
-        val playlistPagerList = mutableListOf<PlaylistPager>()
+        _nationalPlaylistState.value = UiState.Loading
         val currentList = mutableListOf<NewPipePlaylistData>()
         var hasError = false
 
         val nationPlaylistUrls = MusicCategoryRepository().nationalPlaylistUrls
         nationPlaylistUrls.forEach { playlistId ->
-            val playlistPager = newPipeRepository.createPlaylistPager(playlistId)
-            playlistPagerList.add(playlistPager)
-            nationalPlaylistPager = playlistPagerList
-            val result = newPipeRepository.fetchPlaylistResult(playlistPager)
-
+            val result = newPipeRepository.fetchPlaylistResult(playlistId)
             when {
                 result.isSuccess -> {
                     val playlistData = result.getOrNull()
-
                     playlistData?.let {
                         currentList.add(playlistData)
-                        _nationalPlaylistState.value =
-                            PlaylistState(items = currentList.toList(), uiState = UiState.Success)
+                        _nationalPlaylistState.value = UiState.Success(currentList.toList())
                     }
                 }
-
                 result.isFailure -> {
                     hasError = true
                 }
             }
-            // firstPageItems를 처리할 수 있습니다 (필요한 경우).
         }
 
-        if (hasError && currentList.isEmpty()) {
-            _nationalPlaylistState.value =
-                PlaylistState(uiState = UiState.Error("Failed to fetch playlists"))
-        } else if (hasError) {
-            _nationalPlaylistState.value = PlaylistState(
-                items = currentList,
-                uiState = UiState.Error("Some playlists failed to load")
-            )
-        } else {
-            _nationalPlaylistState.value =
-                PlaylistState(items = currentList, uiState = UiState.Success)
+        _nationalPlaylistState.value = when {
+            hasError && currentList.isEmpty() -> UiState.Error("Failed to fetch playlists")
+            hasError -> UiState.Error("Some playlists failed to load")
+            else -> UiState.Success(currentList)
         }
     }
 
     fun fetchRecommendedPlaylists() = viewModelScope.launch(Dispatchers.IO) {
-
-        _recommendedPlaylistState.value = _recommendedPlaylistState.value.copy(uiState = UiState.Loading)
+        _recommendedPlaylistState.value = UiState.Loading
 
         val recommendedId = MusicCategoryRepository().recommendPlaylistChannelId
-
         val result = newPipeRepository.fetchPlaylistWithChannelId(recommendedId)
 
-        when {
+        _recommendedPlaylistState.value = when {
             result.isSuccess -> {
                 val contents = result.getOrNull()
                 contents?.let { contentList ->
                     val playlists = contentList.filterIsInstance<NewPipePlaylistData>()
-                    if (playlists.isNotEmpty()) {
-                        _recommendedPlaylistState.value = PlaylistState(items = playlists, uiState = UiState.Success)
-                    } else {
-                        _recommendedPlaylistState.value = PlaylistState(items = emptyList(), uiState = UiState.Error("No playlists found"))
-                    }
-                } ?: run {
-                    _recommendedPlaylistState.value = PlaylistState(items = emptyList(), uiState = UiState.Error("No content found"))
-                }
+                    if (playlists.isNotEmpty()) UiState.Success(playlists)
+                    else UiState.Error("No playlists found")
+                } ?: UiState.Error("No content found")
             }
-            result.isFailure -> {
-                _recommendedPlaylistState.value = PlaylistState(items = emptyList(), uiState = UiState.Error("${result.exceptionOrNull()}"))
-            }
+            result.isFailure -> UiState.Error("${result.exceptionOrNull()}")
+            else -> UiState.Error("${result.exceptionOrNull()}")
+
         }
     }
-
 
     fun fetchTypedPlaylists() = viewModelScope.launch(Dispatchers.IO) {
-
-        _typedPlaylistState.value = _typedPlaylistState.value.copy(uiState = UiState.Loading)
+        _typedPlaylistState.value = UiState.Loading
 
         val typedPlaylistId = MusicCategoryRepository().typedPlaylistChannelId
-
         val result = newPipeRepository.fetchPlaylistWithChannelId(typedPlaylistId)
 
-        when {
+        _typedPlaylistState.value = when {
             result.isSuccess -> {
                 val contents = result.getOrNull()
                 contents?.let { contentList ->
                     val playlists = contentList.filterIsInstance<NewPipePlaylistData>()
-                    if (playlists.isNotEmpty()) {
-                        _typedPlaylistState.value = PlaylistState(items = playlists, uiState = UiState.Success)
-                    } else {
-                        _typedPlaylistState.value = PlaylistState(items = emptyList(), uiState = UiState.Error("No playlists found"))
-                    }
-                } ?: run {
-                    _typedPlaylistState.value = PlaylistState(items = emptyList(), uiState = UiState.Error("No content found"))
-                }
+                    if (playlists.isNotEmpty()) UiState.Success(playlists)
+                    else UiState.Error("No playlists found")
+                } ?: UiState.Error("No content found")
             }
-            result.isFailure -> {
-                _typedPlaylistState.value = PlaylistState(items = emptyList(), uiState = UiState.Error("${result.exceptionOrNull()}"))
-            }
+            result.isFailure -> UiState.Error("${result.exceptionOrNull()}")
+            else -> UiState.Error("${result.exceptionOrNull()}")
+
         }
     }
-
-    data class PlaylistState(
-        val items: List<NewPipePlaylistData> = emptyList(),
-        val uiState: UiState = UiState.Initial
-    )
-
 
 }

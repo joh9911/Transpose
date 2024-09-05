@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.repository.VideoPager
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
+import com.example.transpose.ui.common.PaginatedState
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.utils.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,9 @@ class ConvertSearchResultViewModel @Inject constructor(
 ) : ViewModel(){
 
     // SearchResult Screen
-    private val _searchUiState = MutableStateFlow<UiState>(UiState.Initial)
-    val searchUiState= _searchUiState.asStateFlow()
 
-    private val _searchResults = MutableStateFlow<List<NewPipeContentListData>>(emptyList())
-    val searchResults= _searchResults.asStateFlow()
+    private val _searchResultsState = MutableStateFlow<PaginatedState>(PaginatedState.Initial)
+    val searchResultsState = _searchResultsState.asStateFlow()
 
     private val _hasMoreSearchItems = MutableStateFlow(false)
     val hasMoreSearchItems = _hasMoreSearchItems.asStateFlow()
@@ -35,56 +34,66 @@ class ConvertSearchResultViewModel @Inject constructor(
     private var searchPager: VideoPager? = null
 
     fun initializeSearchPager(query: String) = viewModelScope.launch(Dispatchers.IO) {
-        _searchUiState.value = UiState.Loading
+        _searchResultsState.value = PaginatedState.Loading
         try {
             searchPager = newPipeRepository.createSearchPager(query)
             firstFetchSearchResult()
         }catch (e: Exception){
-            _searchUiState.value = UiState.Error(e.toString())
+            _searchResultsState.value = PaginatedState.Error(e.toString())
         }
     }
 
     private fun firstFetchSearchResult() = viewModelScope.launch(Dispatchers.IO) {
         searchPager ?: return@launch
         try {
-            val searchResults = newPipeRepository.fetchSearchResult(searchPager!!)
+            val result = newPipeRepository.fetchSearchResult(searchPager!!)
 
-            if (searchResults.isSuccess){
-                _searchResults.value = searchResults.getOrElse { emptyList() }
-                _searchUiState.value = UiState.Success
+            if (result.isSuccess){
+                _searchResultsState.value = PaginatedState.Success(
+                    items = result.getOrElse { emptyList() },
+                    hasMore = searchPager!!.isHasNextPage()
+                )
                 _hasMoreSearchItems.value = searchPager!!.isHasNextPage()
             }
-            if (searchResults.isFailure){
-                _searchResults.value = emptyList()
-                _searchUiState.value = UiState.Error(searchResults.exceptionOrNull().toString())
+            if (result.isFailure){
+                _searchResultsState.value = PaginatedState.Error(result.exceptionOrNull().toString())
             }
             // 다음 페이지 로직은 주석 처리된 상태로 유지
         } catch (e: Exception) {
             Logger.e("Error fetching search results", e)
-            _searchUiState.value = UiState.Error(e.message ?: "Unknown error occurred")
+            _searchResultsState.value = PaginatedState.Error(e.message ?: "Unknown error occurred")
         }
     }
 
     fun loadMoreSearchResults() = viewModelScope.launch(Dispatchers.IO) {
-        _isMoreSearchItemsLoading.value = false
-        searchPager ?: return@launch
+        val currentState = _searchResultsState.value
+        if (currentState !is PaginatedState.Success || currentState.isLoadingMore) return@launch
+
+        _searchResultsState.value = currentState.copy(isLoadingMore = true, loadMoreError = null)
 
         try {
             val result = newPipeRepository.fetchSearchResult(searchPager!!)
-            if (result.isSuccess){
-                _searchResults.value += result.getOrDefault(emptyList())
-                _isMoreSearchItemsLoading.value = false
-                _hasMoreSearchItems.value = searchPager!!.isHasNextPage()
-            }
-            if (result.isFailure){
+            if (result.isSuccess) {
+                val newItems = result.getOrDefault(emptyList())
+                _searchResultsState.value = currentState.copy(
+                    items = currentState.items + newItems,
+                    hasMore = searchPager!!.isHasNextPage(),
+                    isLoadingMore = false
+                )
+            } else {
+                _searchResultsState.value = currentState.copy(
+                    isLoadingMore = false,
+                    loadMoreError = result.exceptionOrNull()?.toString()
+                )
                 Logger.d("loadMoreSearchResults ${result.exceptionOrNull()}")
-                _isMoreSearchItemsLoading.value = false
             }
-        }catch (e: Exception){
-            _isMoreSearchItemsLoading.value = false
+        } catch (e: Exception) {
+            _searchResultsState.value = currentState.copy(
+                isLoadingMore = false,
+                loadMoreError = e.toString()
+            )
             Logger.d("loadMoreSearchResults catch ${e}")
         }
     }
-
 
 }

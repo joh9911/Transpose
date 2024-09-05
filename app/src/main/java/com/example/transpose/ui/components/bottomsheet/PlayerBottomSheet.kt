@@ -297,6 +297,7 @@ fun PlayerBottomSheet(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.White)
                     .padding(paddingValues)
 
             ) {
