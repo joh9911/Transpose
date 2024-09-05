@@ -15,7 +15,6 @@ class NavigationViewModel @Inject constructor() : ViewModel() {
 
     fun changeMainCurrentRoute(route: String) {
         _mainNavCurrentRoute.value = route
-        Logger.d("changeMainCurrentRoute $route")
     }
 
 
