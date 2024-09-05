@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.transpose.data.model.newpipe.NewPipeChannelData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.data.repository.database.MyPlaylistDBRepository
 import com.example.transpose.data.repository.database.MyPlaylistDBRepositoryImpl
@@ -137,20 +138,42 @@ class MainViewModel @Inject constructor(
     val bottomSheetState = _bottomSheetState.asStateFlow()
 
     fun expandBottomSheet() {
-        _bottomSheetState.value = SheetValue.Expanded
+        viewModelScope.launch {
+            _bottomSheetState.value = SheetValue.Expanded
+
+        }
     }
 
     fun partialExpandBottomSheet(){
-        _bottomSheetState.value = SheetValue.PartiallyExpanded
+
+        viewModelScope.launch {
+            _bottomSheetState.value = SheetValue.PartiallyExpanded
+
+        }
     }
 
     fun hideBottomSheet() {
-        _bottomSheetState.value = SheetValue.Hidden
+
+        viewModelScope.launch {
+            _bottomSheetState.value = SheetValue.Hidden
+
+        }
     }
 
 
     fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) = viewModelScope.launch(Dispatchers.IO){
         playlistDBRepository.addVideoToPlaylist(video, playlistId)
+    }
+
+    private val _channelData = MutableStateFlow<NewPipeChannelData?>(null)
+    val channelData = _channelData.asStateFlow()
+
+    fun fetchChannelData(item: NewPipeVideoData) = viewModelScope.launch(Dispatchers.IO){
+        try {
+            newPipeRepository.fetchChannelDataByChannelUrl(item.uploaderUrl ?: "")
+        }catch (e: Exception){
+
+        }
     }
 
 

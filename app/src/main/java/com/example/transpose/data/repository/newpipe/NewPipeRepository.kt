@@ -17,4 +17,6 @@ interface NewPipeRepository{
     suspend fun fetchSearchResult(pager: VideoPager): Result<List<NewPipeContentListData>>
     suspend fun fetchSeparatedStreamByVideoId(videoId: String): Result<Pair<MutableList<VideoStream>?, MutableList<AudioStream>>>
     suspend fun fetchVideoStreamByVideoId(videoId: String): Result<MutableList<VideoStream>>
+
+    suspend fun fetchChannelDataByChannelUrl(channelUrl: String)
 }

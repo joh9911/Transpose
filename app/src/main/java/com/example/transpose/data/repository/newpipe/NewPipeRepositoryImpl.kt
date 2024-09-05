@@ -3,8 +3,10 @@ package com.example.transpose.data.repository.newpipe
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.repository.NewPipeException
+import com.example.transpose.data.repository.NewPipeUtils
 import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.VideoPager
+import com.example.transpose.utils.Logger
 import org.schabi.newpipe.extractor.Extractor
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
@@ -126,11 +128,8 @@ class NewPipeRepositoryImpl @Inject constructor(
     }
 
 
-
-
     private fun getChannelLinkHandler(channelId: String): ListLinkHandler{
         val factory: ListLinkHandlerFactory = youtubeService.channelLHFactory
-
         return try {
             factory.fromUrl(channelId)
         } catch (urlParsingException: Exception) {
@@ -218,6 +217,27 @@ class NewPipeRepositoryImpl @Inject constructor(
             return Result.failure(e)
         }
     }
+
+    private fun getChannelId(channelUrl: String): String {
+        return NewPipeUtils.removeChannelIdPrefix(channelUrl)
+    }
+
+    override suspend fun fetchChannelDataByChannelUrl(channelUrl: String) {
+        try {
+            val channelId = getChannelId(channelUrl)
+            val linkHandler = getChannelLinkHandler(channelId)
+            val channelExtractor = getChannelExtractor(linkHandler)
+            channelExtractor.fetchPage()
+
+        }catch (e: Exception){
+            Logger.d("fetchChannelDataByChannelUrl $e")
+        }
+
+    }
+
+
+
+
 
 
 }

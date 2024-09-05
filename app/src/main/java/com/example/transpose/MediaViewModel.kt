@@ -148,6 +148,12 @@ class MediaViewModel @Inject constructor(
         _currentPosition.value = controller.currentPosition
     }
 
+    private val _mediaItems = MutableStateFlow<List<MediaItem>>(emptyList())
+    val mediaItems: StateFlow<List<MediaItem>> = _mediaItems
+
+    private val _currentPlayingIndex = MutableStateFlow<Int?>(null)
+    val currentPlayingIndex: StateFlow<Int?> = _currentPlayingIndex
+
     private val _currentVideoItem = MutableStateFlow<NewPipeVideoData?>(null)
     val currentVideoItem = _currentVideoItem.asStateFlow()
 
@@ -160,6 +166,7 @@ class MediaViewModel @Inject constructor(
 
     fun updateCurrentVideoItem(item: NewPipeVideoData){
         _currentVideoItem.value = item
+        Logger.d("updateCurrentVideoItem ${item.uploaderUrl} ${item.uploaderName}")
         setMediaItemForNewPipeDataTemp(item)
     }
 
