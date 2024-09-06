@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.schabi.newpipe.extractor.InfoItem
 import javax.inject.Inject
+
 @OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -34,7 +35,7 @@ class MainViewModel @Inject constructor(
     private val newPipeRepository: NewPipeRepository,
     private val playlistDBRepository: MyPlaylistDBRepository,
     @ApplicationContext private val context: Context  // Application Context 주입
-): ViewModel() {
+) : ViewModel() {
 
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> = _permissionGranted.asStateFlow()
@@ -65,13 +66,13 @@ class MainViewModel @Inject constructor(
     private val _isSearchBarActive = MutableStateFlow(true)
     val isSearchBarActive = _isSearchBarActive.asStateFlow()
 
-    fun closeSearchBar(){
+    fun closeSearchBar() {
         _searchWidgetState.value = SearchWidgetState.CLOSED
         updateSearchTextState("")
         clearSuggestionKeywords()
     }
 
-    fun openSearchBar(){
+    fun openSearchBar() {
         _searchWidgetState.value = SearchWidgetState.OPENED
     }
 
@@ -79,7 +80,7 @@ class MainViewModel @Inject constructor(
         _searchTextState.value = newValue
     }
 
-    fun updateIsSearchBarExpanded(boolean: Boolean){
+    fun updateIsSearchBarExpanded(boolean: Boolean) {
         _isSearchBarActive.value = boolean
     }
 
@@ -89,22 +90,25 @@ class MainViewModel @Inject constructor(
     )
     val suggestionKeywords = _suggestionKeywords.asStateFlow()
 
-    fun clearSuggestionKeywords(){
+    fun clearSuggestionKeywords() {
         _suggestionKeywords.value = arrayListOf()
     }
 
-    fun getSuggestionKeyword(query: String) = viewModelScope.launch{
+    fun getSuggestionKeyword(query: String) = viewModelScope.launch {
         val suggestionKeywordStringExtractor = SuggestionKeywordStringExtractor()
         suggestionKeywordRepository.getSuggestionKeywords(query)
             .onSuccess { value: ResponseBody ->
                 value.string().let {
-                    val responseString = suggestionKeywordStringExtractor.convertStringUnicodeToKorean(it)
+                    val responseString =
+                        suggestionKeywordStringExtractor.convertStringUnicodeToKorean(it)
                     val splitBracketList = responseString.split('[')
                     val splitCommaList = splitBracketList[2].split(',')
                     if (splitCommaList[0] != "]]" && splitCommaList[0] != '"'.toString()) {
-                        _suggestionKeywords.value = suggestionKeywordStringExtractor.addSubstringToSuggestionKeyword(splitCommaList)
+                        _suggestionKeywords.value =
+                            suggestionKeywordStringExtractor.addSubstringToSuggestionKeyword(
+                                splitCommaList
+                            )
                     }
-                    Logger.d("${suggestionKeywords.value}")
                 }
             }
             .onFailure {
@@ -117,21 +121,21 @@ class MainViewModel @Inject constructor(
     private val _normalizedOffset = MutableStateFlow(0f)
     val normalizedOffset = _normalizedOffset.asStateFlow()
 
-    fun updateNormalizedOffset(requiredOffset: Float){
+    fun updateNormalizedOffset(requiredOffset: Float) {
         _normalizedOffset.value = requiredOffset
     }
 
     private val _bottomSheetDraggableArea = MutableStateFlow<Rect?>(null)
     val bottomSheetDraggableArea = _bottomSheetDraggableArea.asStateFlow()
 
-    fun updateBottomSheetDraggableArea(rect: Rect){
+    fun updateBottomSheetDraggableArea(rect: Rect) {
         _bottomSheetDraggableArea.value = rect
     }
 
     private val _isBottomSheetDraggable = MutableStateFlow(true)
     val isBottomSheetDraggable = _isBottomSheetDraggable.asStateFlow()
 
-    fun updateIsBottomSheetDraggable(boolean: Boolean){
+    fun updateIsBottomSheetDraggable(boolean: Boolean) {
         _isBottomSheetDraggable.value = boolean
     }
 
@@ -139,40 +143,41 @@ class MainViewModel @Inject constructor(
     val bottomSheetState = _bottomSheetState.asStateFlow()
 
     fun expandBottomSheet() {
-        viewModelScope.launch {
-            _bottomSheetState.value = SheetValue.Expanded
+        Logger.d("expandBottomSheet")
+        _bottomSheetState.value = SheetValue.Expanded
 
-        }
+
     }
 
-    fun partialExpandBottomSheet(){
+    fun partialExpandBottomSheet() {
+        Logger.d("partialExpandBottomSheet")
 
-        viewModelScope.launch {
-            _bottomSheetState.value = SheetValue.PartiallyExpanded
+        _bottomSheetState.value = SheetValue.PartiallyExpanded
 
-        }
+
     }
 
     fun hideBottomSheet() {
+        Logger.d("hideBottomSheet")
 
-        viewModelScope.launch {
-            _bottomSheetState.value = SheetValue.Hidden
+        _bottomSheetState.value = SheetValue.Hidden
 
+
+    }
+
+
+    fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) =
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistDBRepository.addVideoToPlaylist(video, playlistId)
         }
-    }
-
-
-    fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) = viewModelScope.launch(Dispatchers.IO){
-        playlistDBRepository.addVideoToPlaylist(video, playlistId)
-    }
 
     private val _channelData = MutableStateFlow<NewPipeChannelData?>(null)
     val channelData = _channelData.asStateFlow()
 
-    fun fetchChannelData(item: NewPipeVideoData) = viewModelScope.launch(Dispatchers.IO){
+    fun fetchChannelData(item: NewPipeVideoData) = viewModelScope.launch(Dispatchers.IO) {
         try {
             newPipeRepository.fetchChannelDataByChannelUrl(item.uploaderUrl ?: "")
-        }catch (e: Exception){
+        } catch (e: Exception) {
 
         }
     }
@@ -184,13 +189,13 @@ class MainViewModel @Inject constructor(
     fun fetchRelatedVideos(videoId: String) = viewModelScope.launch(Dispatchers.IO) {
         try {
             val result = newPipeRepository.fetchRelatedVideoStreamByVideoId(videoId)
-            if (result.isSuccess){
+            if (result.isSuccess) {
                 _relatedVideos.value = result.getOrNull()
             }
-            if (result.isFailure){
+            if (result.isFailure) {
 
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
 
         }
     }
