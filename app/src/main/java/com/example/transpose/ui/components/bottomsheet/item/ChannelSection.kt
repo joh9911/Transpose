@@ -32,9 +32,9 @@ import coil.compose.AsyncImage
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
-import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.media.model.PlayableItemData
-import com.example.transpose.media.model.PlayableItemUiState
+import com.example.transpose.ui.common.PlayableItemUiState
+import com.example.transpose.utils.TextFormatUtil
 import com.example.transpose.utils.constants.AppColors
 import com.valentinilk.shimmer.shimmer
 
@@ -97,10 +97,11 @@ fun ChannelSectionContent(videoItem: PlayableItemData, mainViewModel: MainViewMo
             color = Color.Black
         )
         Text(
-            text = videoItem.subscriberCountConverter(
+            text = TextFormatUtil.subscriberCountConverter(
                 videoItem.uploaderSubscriberCount.toString(),
                 subscriberArray = subscriberCountFormats
             ),
+
             modifier = Modifier
                 .padding(start = 10.dp, end = 20.dp),
             maxLines = 1,

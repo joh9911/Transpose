@@ -58,7 +58,7 @@ fun HomePlaylistItemScreen(
                     })
                 },
                 headerContent = { playlistData ->
-                    playlistData?.let { PlaylistHeaderItem(playlistData = it) }
+                    PlaylistHeaderItem(playlistData = playlistData)
                 },
                 loading = state.isLoadingMore,
                 loadMore = { homePlaylistItemViewModel.loadMorePlaylistItems() },

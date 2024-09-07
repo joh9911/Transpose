@@ -38,7 +38,6 @@ import com.example.transpose.ui.components.appbar.MainAppBar
 import com.example.transpose.ui.components.bottom_navigation.BottomNavigationBar
 import com.example.transpose.ui.components.bottomsheet.PlayerBottomSheetScaffold
 import com.example.transpose.ui.theme.TransposeTheme
-import com.example.transpose.utils.LogComposableLifecycle
 import com.example.transpose.utils.Logger
 import dagger.hilt.android.AndroidEntryPoint
 

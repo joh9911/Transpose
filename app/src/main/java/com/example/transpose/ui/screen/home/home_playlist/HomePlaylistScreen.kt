@@ -20,7 +20,6 @@ import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.items.NationalPlaylistItem
 import com.example.transpose.ui.components.items.RegularPlaylistItem
-import com.example.transpose.utils.LogComposableLifecycle
 import com.example.transpose.utils.Logger
 
 @OptIn(ExperimentalMaterial3Api::class)

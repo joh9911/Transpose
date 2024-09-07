@@ -17,25 +17,4 @@ data class NewPipeStreamInfoData(
     val uploaderAvatars: String? = null,
     val videoStreams: List<VideoStream>? = null,
     val relatedItems: MutableList<out InfoItem>? = null,  // 더 구체적인 타입으로 변경 필요
-){
-    fun toPlayableMediaItem(baseVideoData: NewPipeVideoData): PlayableItemData {
-        return PlayableItemData(
-            id = baseVideoData.id,
-            title = baseVideoData.title,
-            thumbnailUrl = baseVideoData.thumbnailUrl,
-            type = MediaItemType.YOUTUBE,
-            uploaderName = this.uploaderName ?: baseVideoData.uploaderName,
-            textualUploadDate = this.textualUploadDate,
-            description = this.description,
-            viewCount = this.viewCount,
-            likeCount = this.likeCount,
-            dislikeCount = this.dislikeCount,
-            uploaderUrl = this.uploaderUrl,
-            uploaderSubscriberCount = this.uploaderSubscriberCount,
-            uploaderAvatars = this.uploaderAvatars,
-            videoStream = this.videoStreams?.maxByOrNull { it.getResolution() },
-            relatedItems = this.relatedItems
-        )
-    }
-
-}
+)

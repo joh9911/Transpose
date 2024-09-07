@@ -1,4 +1,7 @@
-package com.example.transpose.media.model
+package com.example.transpose.ui.common
+
+import com.example.transpose.media.model.PlayableItemBasicInfoData
+import com.example.transpose.media.model.PlayableItemData
 
 sealed class PlayableItemUiState {
     data object Initial : PlayableItemUiState()

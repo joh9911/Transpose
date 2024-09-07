@@ -3,9 +3,11 @@ package com.example.transpose
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -25,10 +27,12 @@ import com.example.transpose.media.MediaService
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerPresets
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerSettings
 import com.example.transpose.media.audio_effect.data.reverb.ReverbPresets
-import com.example.transpose.media.model.PlayableItemData
-import com.example.transpose.media.model.PlayableItemUiState
+import com.example.transpose.media.model.PlayableItemBasicInfoData
+import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.ui.common.UiState
 import com.example.transpose.utils.Logger
+import com.example.transpose.utils.PlayableItemConverter
+import com.example.transpose.utils.PlayableItemConverter.toPlayableMediaItem
 import com.example.transpose.utils.constants.MediaSessionCallback
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -170,17 +174,17 @@ class MediaViewModel @Inject constructor(
     private var currentAudioStream: AudioStream? = null
 
 
-    fun updateCurrentVideoItem(item: NewPipeVideoData) = viewModelScope.launch{
-        _currentVideoItemState.value = PlayableItemUiState.BasicInfoLoaded(item.toPlayableItemBasicInfoData())
-        setMediaItemForNewPipeDataTemp(item)
-        getRelatedVideoItems(item)
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateCurrentVideoItem(item: Any) = viewModelScope.launch{
+        removeCurrentMediaItem()
+        val convertedData = PlayableItemConverter.toBasicInfoData(item)
+        _currentVideoItemState.value = PlayableItemUiState.BasicInfoLoaded(convertedData)
+        setMediaItemForNewPipeDataTemp(convertedData)
+        getRelatedVideoItems(convertedData)
     }
 
-    fun updateCurrentVideoItem(infoItem: InfoItem) = viewModelScope.launch {
 
-    }
-
-    private suspend fun getRelatedVideoItems(item: NewPipeVideoData) = viewModelScope.launch(Dispatchers.IO){
+    private suspend fun getRelatedVideoItems(item: PlayableItemBasicInfoData) = viewModelScope.launch(Dispatchers.IO){
         _relatedVideoItems.value = UiState.Loading
         try {
             val result = newPipeRepository.fetchRelatedVideoStreamByVideoId(item.id)
@@ -195,6 +199,7 @@ class MediaViewModel @Inject constructor(
 
         }
     }
+
 
     fun removeCurrentMediaItem(){
         _currentVideoItemState.value = PlayableItemUiState.Initial
@@ -217,9 +222,11 @@ class MediaViewModel @Inject constructor(
         }
     }
 
-    private suspend fun setMediaItemForNewPipeDataTemp(item: NewPipeVideoData){
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun setMediaItemForNewPipeDataTemp(item: PlayableItemBasicInfoData){
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                Logger.d("setMediaItemForNewPipeDataTemp ${item.id}")
                 val result = newPipeRepository.fetchStreamInfoByVideoId(item.id)
                 if (result.isSuccess){
                     val streamInfoData = result.getOrNull()
@@ -235,7 +242,6 @@ class MediaViewModel @Inject constructor(
                                             .setTitle(item.title)
                                             .setArtist(item.uploaderName ?: "Unknown Uploader")
                                             .setArtworkUri(item.thumbnailUrl?.let { Uri.parse(it) })
-                                            .setDescription(item.description)
                                             .build()
                                     )
                                     .build()
@@ -295,7 +301,7 @@ class MediaViewModel @Inject constructor(
     }
 
     fun changeResolution(resolution: String){
-        val selectedVideoStream = currentVideoStreams?.find { it.resolution == resolution }
+        val selectedVideoStream = currentVideoStreams?.find { it.getResolution() == resolution }
         val currentItem = mediaController.value?.currentMediaItem
 
 

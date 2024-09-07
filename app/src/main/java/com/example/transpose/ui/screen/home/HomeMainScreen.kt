@@ -18,7 +18,6 @@ import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.HomeNavHost
-import com.example.transpose.utils.LogComposableLifecycle
 import com.example.transpose.utils.Logger
 
 @Composable

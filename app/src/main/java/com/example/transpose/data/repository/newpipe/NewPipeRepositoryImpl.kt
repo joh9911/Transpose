@@ -190,7 +190,10 @@ class NewPipeRepositoryImpl @Inject constructor(
 
     private fun getVideoUrl(videoId: String): String {
         return try {
-            youtubeService.streamLHFactory.getUrl(videoId)
+            if (videoId.startsWith("https"))
+                videoId
+            else
+                youtubeService.streamLHFactory.getUrl(videoId)
         }
         catch (e: Exception){
             when(e){
@@ -236,7 +239,6 @@ class NewPipeRepositoryImpl @Inject constructor(
         return try {
             val extractor = getStreamExtractor(getVideoUrl(videoId))
             extractor.fetchPage()
-            Logger.d("fetchStreamInfoByVideoId ${extractor.textualUploadDate}")
             Result.success(NewPipeStreamInfoData(
                 textualUploadDate = extractor.textualUploadDate,
                 description = extractor.description.content,

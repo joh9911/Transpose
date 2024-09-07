@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -47,16 +46,11 @@ import androidx.media3.ui.PlayerView
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
-import com.example.transpose.media.model.PlayableItemUiState
+import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.ui.components.bottomsheet.GraphicsLayerConstants.PEEK_HEIGHT
-import com.example.transpose.ui.components.bottomsheet.item.ChannelSection
-import com.example.transpose.ui.components.bottomsheet.item.PitchControlItem
 import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicator
 import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
-import com.example.transpose.ui.components.bottomsheet.item.RelatedVideoItem
-import com.example.transpose.ui.components.bottomsheet.item.TempoControlItem
 import com.example.transpose.ui.components.bottomsheet.item.VideoDetailPanel
-import com.example.transpose.ui.components.bottomsheet.item.VideoInfoSection
 import com.example.transpose.utils.Logger
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map

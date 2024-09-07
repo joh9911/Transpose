@@ -1,5 +1,7 @@
 package com.example.transpose.ui.components.bottomsheet.item
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,13 +35,14 @@ import coil.compose.AsyncImage
 import com.example.transpose.MediaViewModel
 import org.schabi.newpipe.extractor.InfoItem
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RelatedVideoItem(infoItem: InfoItem, mediaViewModel: MediaViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable {  }
+            .clickable { mediaViewModel.updateCurrentVideoItem(infoItem) }
             .padding(vertical = 10.dp, horizontal = 10.dp)
     ) {
         AsyncImage(

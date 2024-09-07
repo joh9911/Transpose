@@ -3,7 +3,6 @@ package com.example.transpose.media.model
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.transpose.utils.CountFormatter
 import org.ocpsoft.prettytime.PrettyTime
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.stream.VideoStream
@@ -42,31 +41,4 @@ data class PlayableItemData(
 
     // 공통 필드
     val dateAdded: String? = null
-){
-    fun toBasicInfo(): PlayableItemBasicInfoData {
-        return PlayableItemBasicInfoData(
-            id, title, thumbnailUrl, type, uploaderName, textualUploadDate
-        )
-    }
-
-    fun viewCountCalculator(viewCountStringArray: Array<String>, viewCountString: String): String {
-        return CountFormatter.format(viewCountString.toLong(), viewCountStringArray)
-    }
-
-    fun subscriberCountConverter(subscriberCountString: String, subscriberArray: Array<String>): String {
-        return CountFormatter.format(subscriberCountString.toLong(), subscriberArray, isSubscriber = true)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun convertISOToPrettyTime(isoDateString: String?, locale: Locale = Locale.getDefault()): String {
-        return try {
-            val instant = Instant.parse(isoDateString)
-            val date = Date.from(instant)
-            val prettyTime = PrettyTime(locale)
-            prettyTime.format(date)
-        } catch (e: Exception) {
-            ""
-        }
-    }
-
-}
+)

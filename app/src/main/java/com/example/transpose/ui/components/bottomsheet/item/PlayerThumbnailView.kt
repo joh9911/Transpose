@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.transpose.MediaViewModel
-import com.example.transpose.media.model.PlayableItemUiState
+import com.example.transpose.ui.common.PlayableItemUiState
 
 @Composable
 fun PlayerThumbnailView(

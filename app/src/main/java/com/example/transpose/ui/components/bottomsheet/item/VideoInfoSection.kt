@@ -23,9 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
-import com.example.transpose.data.model.newpipe.NewPipeVideoData
-import com.example.transpose.media.model.PlayableItemUiState
-import com.example.transpose.ui.common.UiState
+import com.example.transpose.ui.common.PlayableItemUiState
+import com.example.transpose.utils.TextFormatUtil
 import com.valentinilk.shimmer.shimmer
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -43,8 +42,10 @@ fun VideoInfoSection(mediaViewModel: MediaViewModel) {
             is PlayableItemUiState.Initial -> {
                 FullShimmerEffect()
             }
+
             is PlayableItemUiState.BasicInfoLoaded -> {
-                val basicInfo = (currentVideoItemState as PlayableItemUiState.BasicInfoLoaded).basicInfo
+                val basicInfo =
+                    (currentVideoItemState as PlayableItemUiState.BasicInfoLoaded).basicInfo
                 Text(
                     text = basicInfo.title,
                     modifier = Modifier
@@ -58,8 +59,10 @@ fun VideoInfoSection(mediaViewModel: MediaViewModel) {
                 )
                 PartialShimmerEffect()
             }
+
             is PlayableItemUiState.FullInfoLoaded -> {
-                val fullInfo = (currentVideoItemState as PlayableItemUiState.FullInfoLoaded).fullInfo
+                val fullInfo =
+                    (currentVideoItemState as PlayableItemUiState.FullInfoLoaded).fullInfo
                 Text(
                     text = fullInfo.title,
                     modifier = Modifier
@@ -73,14 +76,16 @@ fun VideoInfoSection(mediaViewModel: MediaViewModel) {
                 )
                 Text(
                     text = "${
-                        fullInfo.viewCountCalculator(
+                        TextFormatUtil.viewCountCalculator(
                             viewCountStringArray = viewCountFormats,
                             viewCountString = fullInfo.viewCount.toString()
                         )
-                    } • ${fullInfo.convertISOToPrettyTime(fullInfo.textualUploadDate)}",
+
+                    } • ${TextFormatUtil.convertISOToPrettyTime(fullInfo.textualUploadDate)}",
                     modifier = Modifier.padding(top = 5.dp, start = 10.dp)
                 )
             }
+
             is PlayableItemUiState.Error -> {
                 Text(
                     text = "Error: ${(currentVideoItemState as PlayableItemUiState.Error).message}",
@@ -128,6 +133,7 @@ fun PartialShimmerEffect() {
             .background(Color.LightGray)
     )
 }
+
 @Composable
 fun rememberStringArrayResource(resourceId: Int): Array<String> {
     val context = LocalContext.current
