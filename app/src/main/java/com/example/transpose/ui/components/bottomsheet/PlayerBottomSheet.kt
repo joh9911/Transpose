@@ -1,5 +1,7 @@
 package com.example.transpose.ui.components.bottomsheet
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Box
@@ -45,6 +47,7 @@ import androidx.media3.ui.PlayerView
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
+import com.example.transpose.media.model.PlayableItemUiState
 import com.example.transpose.ui.components.bottomsheet.GraphicsLayerConstants.PEEK_HEIGHT
 import com.example.transpose.ui.components.bottomsheet.item.ChannelSection
 import com.example.transpose.ui.components.bottomsheet.item.PitchControlItem
@@ -52,7 +55,8 @@ import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicat
 import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
 import com.example.transpose.ui.components.bottomsheet.item.RelatedVideoItem
 import com.example.transpose.ui.components.bottomsheet.item.TempoControlItem
-import com.example.transpose.ui.components.bottomsheet.item.VideoInfoItem
+import com.example.transpose.ui.components.bottomsheet.item.VideoDetailPanel
+import com.example.transpose.ui.components.bottomsheet.item.VideoInfoSection
 import com.example.transpose.utils.Logger
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
@@ -67,6 +71,7 @@ object GraphicsLayerConstants {
     val DEFAULT_HEIGHT = 250.dp
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,8 +87,7 @@ fun PlayerBottomSheet(
 
     val isPlaying by mediaViewModel.isPlaying.collectAsState()
 
-    val currentVideoItem by mediaViewModel.currentVideoItem.collectAsState()
-
+    val currentVideoItemState by mediaViewModel.currentVideoItemState.collectAsState()
     val draggableAreaBounds by mainViewModel.bottomSheetDraggableArea.collectAsState()
 
 
@@ -151,8 +155,13 @@ fun PlayerBottomSheet(
         )
 
         // bottomTitleTextView
+
         Text(
-            text = currentVideoItem?.title ?: "",
+            text = when (val state = currentVideoItemState) {
+                is PlayableItemUiState.BasicInfoLoaded -> state.basicInfo.title
+                is PlayableItemUiState.FullInfoLoaded -> state.fullInfo.title
+                else -> ""
+            },
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = Color.White,
@@ -166,6 +175,8 @@ fun PlayerBottomSheet(
                 }
                 .bottomSheetAlpha(normalizedOffset)
         )
+
+
 
         // bottomPlayerCloseButton
         IconButton(
@@ -241,8 +252,6 @@ fun PlayerBottomSheet(
                     } ?: run {
                         view.player = null
                     }
-                    Logger.d("AndroidView $bottomSheetState")
-
                     view.useController = when (bottomSheetState) {
                         SheetValue.Expanded -> true
                         else -> false
@@ -288,40 +297,21 @@ fun PlayerBottomSheet(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
-                }.graphicsLayer(
+                }
+                .graphicsLayer(
                     translationY = -playerViewHeight * (1 - calculateScaleFactorY(normalizedOffset))
                 )
                 .changeMainBackgroundAlpha(normalizedOffset)
-        ){ paddingValues ->
+        ) { paddingValues ->
 
-            LazyColumn(
+            VideoDetailPanel(
+                mediaViewModel = mediaViewModel,
+                mainViewModel = mainViewModel,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
                     .padding(paddingValues)
-
-            ) {
-                item {
-                    VideoInfoItem(currentVideoItem)
-                }
-                item {
-                    ChannelSection(
-                        currentVideoItem = currentVideoItem,
-                        mediaViewModel = mediaViewModel,
-                        mainViewModel = mainViewModel
-                    )
-                }
-                item {
-                    PitchControlItem(mediaViewModel)
-                }
-                item {
-                    TempoControlItem(mediaViewModel)
-                }
-
-                items(20) { index ->
-                    RelatedVideoItem(index)
-                }
-            }
+            )
         }
     }
 

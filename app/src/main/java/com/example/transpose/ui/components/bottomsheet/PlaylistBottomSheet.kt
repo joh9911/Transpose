@@ -132,9 +132,7 @@ fun PlaylistBottomSheet(
                                 .fillMaxSize()
                                 .weight(1f)
                         ) {
-                            items(20) { index ->
-                                RelatedVideoItem(index)
-                            }
+
                         }
                     }
                 }

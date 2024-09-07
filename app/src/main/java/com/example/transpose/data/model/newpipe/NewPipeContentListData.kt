@@ -11,7 +11,7 @@ interface NewPipeContentListData {
     val publishTimestamp: Long?
     val thumbnailUrl: String?
 
-    fun getPublishDatePretty(locale: Locale = Locale.getDefault()): String {
+    fun getPublishDatePretty(locale: Locale = Locale.getDefault(), ): String {
         val prettyTime = PrettyTime(locale)
         return publishTimestamp?.let { timestamp ->
             prettyTime.format(Date(timestamp))

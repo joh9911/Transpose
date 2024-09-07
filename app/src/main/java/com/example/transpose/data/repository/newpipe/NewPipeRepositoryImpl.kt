@@ -2,6 +2,7 @@ package com.example.transpose.data.repository.newpipe
 
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
+import com.example.transpose.data.model.newpipe.NewPipeStreamInfoData
 import com.example.transpose.data.repository.NewPipeException
 import com.example.transpose.data.repository.NewPipeUtils
 import com.example.transpose.data.repository.PlaylistPager
@@ -23,7 +24,6 @@ import org.schabi.newpipe.extractor.search.SearchExtractor
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService
 import org.schabi.newpipe.extractor.stream.AudioStream
 import org.schabi.newpipe.extractor.stream.StreamExtractor
-import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.extractor.stream.VideoStream
 import javax.inject.Inject
 
@@ -225,8 +225,33 @@ class NewPipeRepositoryImpl @Inject constructor(
         return try {
             val extractor = getStreamExtractor(getVideoUrl(videoId))
             extractor.fetchPage()
+
             Result.success(extractor.videoStreams)
         }catch (e: Exception){
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchStreamInfoByVideoId(videoId: String): Result<NewPipeStreamInfoData> {
+        return try {
+            val extractor = getStreamExtractor(getVideoUrl(videoId))
+            extractor.fetchPage()
+            Logger.d("fetchStreamInfoByVideoId ${extractor.textualUploadDate}")
+            Result.success(NewPipeStreamInfoData(
+                textualUploadDate = extractor.textualUploadDate,
+                description = extractor.description.content,
+                viewCount = extractor.viewCount,
+                likeCount = extractor.likeCount,
+                dislikeCount = extractor.dislikeCount,
+                uploaderUrl = extractor.uploaderUrl,
+                uploaderName = extractor.uploaderName,
+                uploaderAvatars = extractor.uploaderAvatars.first().url,
+                uploaderSubscriberCount = extractor.uploaderSubscriberCount,
+                videoStreams= extractor.videoStreams,
+                relatedItems = extractor.relatedItems?.items
+            ))
+        }catch (e: Exception){
+            Logger.d("fetchStreamInfoByVideoId $e")
             return Result.failure(e)
         }
     }

@@ -8,23 +8,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.transpose.MediaViewModel
+import com.example.transpose.media.model.PlayableItemUiState
 
 @Composable
 fun PlayerThumbnailView(
     mediaViewModel: MediaViewModel,
     modifier: Modifier = Modifier
 ) {
-    val showThumbnail by mediaViewModel.isShowingThumbnail.collectAsState()
-    val currentItem by mediaViewModel.currentVideoItem.collectAsState()
+    val currentVideoItemState by mediaViewModel.currentVideoItemState.collectAsState()
 
-    Box(modifier = modifier) {
-        if (showThumbnail) {
-            AsyncImage(
-                model = currentItem?.thumbnailUrl,
-                contentDescription = "Video Thumbnail",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
+    when (val state = currentVideoItemState) {
+
+        PlayableItemUiState.Initial -> {}
+        is PlayableItemUiState.BasicInfoLoaded -> {
+            val data = state.basicInfo
+            Box(modifier = modifier) {
+
+                AsyncImage(
+                    model = data.thumbnailUrl,
+                    contentDescription = "Video Thumbnail",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+
+            }
         }
+
+        is PlayableItemUiState.Error -> {
+        }
+
+        is PlayableItemUiState.FullInfoLoaded -> {}
     }
+
 }

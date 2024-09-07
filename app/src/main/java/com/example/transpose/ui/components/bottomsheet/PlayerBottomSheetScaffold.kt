@@ -2,12 +2,9 @@ package com.example.transpose.ui.components.bottomsheet
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -20,37 +17,28 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 import com.example.transpose.utils.Logger
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
@@ -84,7 +72,6 @@ fun PlayerBottomSheetScaffold(
     val hasLaunched = remember { mutableStateOf(false) }
 
 
-
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false
@@ -102,7 +89,6 @@ fun PlayerBottomSheetScaffold(
             searchBarOpenedSheetPeekHeight
         }
     }
-
 
 
     val scaffoldBottomPadding =
@@ -126,29 +112,34 @@ fun PlayerBottomSheetScaffold(
 
 
     LaunchedEffect(bottomSheetState) {
-            when (bottomSheetState) {
-                SheetValue.Expanded -> {
-                    sheetState.expand()
-                }
-                SheetValue.PartiallyExpanded -> {
-
-                    sheetState.partialExpand()
-                }
-                SheetValue.Hidden -> {
-
-                }
+        Logger.d("LaunchedEffect(bottomSheetState) $bottomSheetState")
+        when (bottomSheetState) {
+            SheetValue.Expanded -> {
+                sheetState.expand()
             }
+
+            SheetValue.PartiallyExpanded -> {
+                sheetState.partialExpand()
+            }
+
+            SheetValue.Hidden -> {
+
+            }
+        }
     }
 
 
     // BottomSheetState의 변경을 ViewModel에 반영
     LaunchedEffect(sheetState) {
         snapshotFlow { sheetState.currentValue }.collect {
-            when(it){
+            Logger.d("LaunchedEffect(sheetState)  ${it}")
+            when (it) {
+
                 SheetValue.Hidden -> {
                     mainViewModel.hideBottomSheet()
                     mediaViewModel.removeCurrentMediaItem()
                 }
+
                 SheetValue.Expanded -> mainViewModel.expandBottomSheet()
                 SheetValue.PartiallyExpanded -> mainViewModel.partialExpandBottomSheet()
             }
@@ -173,12 +164,12 @@ fun PlayerBottomSheetScaffold(
             }
     }
 
+
     BottomSheetScaffold(
         sheetContainerColor = Color.White,
         scaffoldState = scaffoldState,
         modifier = Modifier
-            .padding(bottom = scaffoldBottomPadding)
-            ,
+            .padding(bottom = scaffoldBottomPadding),
         sheetContent = {
             PlayerBottomSheet(
                 mediaViewModel = mediaViewModel,
