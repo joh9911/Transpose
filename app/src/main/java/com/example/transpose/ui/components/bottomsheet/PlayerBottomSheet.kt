@@ -103,11 +103,6 @@ fun PlayerBottomSheet(
     }
 
 
-    LaunchedEffect(isFocused) {
-        Logger.d("LaunchedEffect(isFocused) ")
-        mainViewModel.updateIsBottomSheetDraggable(false)
-    }
-
 
     ConstraintLayout(
         modifier = Modifier
@@ -250,36 +245,47 @@ fun PlayerBottomSheet(
                         SheetValue.Expanded -> true
                         else -> false
                     }
-
+                    view.useController = when (currentVideoItemState){
+                        is PlayableItemUiState.BasicInfoLoaded -> false
+                        is PlayableItemUiState.Error -> true
+                        is PlayableItemUiState.FullInfoLoaded -> true
+                        PlayableItemUiState.Initial -> false
+                    }
                 },
                 modifier = Modifier.fillMaxSize()
+            )
+            PlayerThumbnailView(
+                mediaViewModel = mediaViewModel,
+                modifier = Modifier.fillMaxSize()
+
             )
             PlayerLoadingIndicator(
                 mediaViewModel = mediaViewModel,
                 modifier = Modifier.align(Alignment.Center)
             )
+
         }
 
         // playerThumbnailView
-        PlayerThumbnailView(
-            mediaViewModel = mediaViewModel,
-            modifier = Modifier
-                .constrainAs(playerThumbnailView) {
-                    top.linkTo(playerContainer.top)
-                    start.linkTo(playerContainer.start)
-                    end.linkTo(playerContainer.end)
-                    bottom.linkTo(playerContainer.bottom)
-                }
-                .graphicsLayer(
-                    scaleX = when {
-                        normalizedOffset < 0f -> GraphicsLayerConstants.MIN_SCALE
-                        normalizedOffset < 0.2f -> calculateDefaultScaleX(normalizedOffset)
-                        else -> 1f
-                    },
-                    scaleY = calculateScaleFactorY(normalizedOffset),
-                    transformOrigin = TransformOrigin(0f, 0f)
-                )
-        )
+//        PlayerThumbnailView(
+//            mediaViewModel = mediaViewModel,
+//            modifier = Modifier
+//                .constrainAs(playerThumbnailView) {
+//                    top.linkTo(playerContainer.top)
+//                    start.linkTo(playerContainer.start)
+//                    end.linkTo(playerContainer.end)
+//                    bottom.linkTo(playerContainer.bottom)
+//                }
+//                .graphicsLayer(
+//                    scaleX = when {
+//                        normalizedOffset < 0f -> GraphicsLayerConstants.MIN_SCALE
+//                        normalizedOffset < 0.2f -> calculateDefaultScaleX(normalizedOffset)
+//                        else -> 1f
+//                    },
+//                    scaleY = calculateScaleFactorY(normalizedOffset),
+//                    transformOrigin = TransformOrigin(0f, 0f)
+//                )
+//        )
 
         PlaylistBottomSheet(
             mainViewModel = mainViewModel,

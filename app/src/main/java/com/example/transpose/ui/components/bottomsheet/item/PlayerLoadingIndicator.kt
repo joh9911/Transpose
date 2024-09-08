@@ -6,16 +6,27 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.transpose.MediaViewModel
+import com.example.transpose.ui.common.PlayableItemUiState
 
 @Composable
 fun PlayerLoadingIndicator(
     mediaViewModel: MediaViewModel, modifier: Modifier = Modifier
 ) {
-    val isShowingLoadingIndicator by mediaViewModel.isShowingLoadingIndicator.collectAsState()
-    if (isShowingLoadingIndicator){
-        CircularProgressIndicator(
-            modifier = modifier
-        )
+    val currentVideoState by mediaViewModel.currentVideoItemState.collectAsState()
+    when (val state = currentVideoState) {
+        is PlayableItemUiState.BasicInfoLoaded -> {
+            CircularProgressIndicator(
+                modifier = modifier
+            )
+        }
+
+        is PlayableItemUiState.Error -> {}
+        is PlayableItemUiState.FullInfoLoaded -> {}
+        PlayableItemUiState.Initial -> {
+            CircularProgressIndicator(
+                modifier = modifier
+            )
+        }
     }
 
 }
