@@ -1,5 +1,6 @@
 package com.example.transpose.data.model.newpipe
 
+import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo
 
 data class NewPipePlaylistData(
@@ -8,9 +9,10 @@ data class NewPipePlaylistData(
     override val description: String,
     override val publishTimestamp: Long?,
     override val thumbnailUrl: String?,
+    override val infoType: InfoItem.InfoType,
     val uploaderName: String,
     val uploaderUrl: String?,
     val uploaderVerified: Boolean,
     val streamCount: Long,
-    val playlistType: PlaylistInfo.PlaylistType?
+    val playlistType: PlaylistInfo.PlaylistType?,
 ): NewPipeContentListData

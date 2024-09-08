@@ -1,6 +1,8 @@
 package com.example.transpose.ui.screen.home.search_result
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
@@ -11,14 +13,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
+import com.example.transpose.data.model.newpipe.NewPipeChannelData
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.common.PaginatedState
+import com.example.transpose.ui.components.items.ChannelItem
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
+import com.example.transpose.ui.components.items.PlaylistItem
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
+import org.schabi.newpipe.extractor.InfoItem
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeSearchResultScreen(
@@ -46,9 +54,11 @@ fun HomeSearchResultScreen(
     when (val state = searchResultsState) {
         is PaginatedState.Initial -> {
         }
+
         is PaginatedState.Loading -> {
             LoadingIndicator()
         }
+
         is PaginatedState.Success -> {
             EndlessLazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -56,19 +66,40 @@ fun HomeSearchResultScreen(
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = { item: NewPipeContentListData ->
-                    CommonVideoItem(
-                        item = item,
-                        onClick = {
-                            mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
-                            mainViewModel.expandBottomSheet()
+                    when (item.infoType) {
+                        InfoItem.InfoType.PLAYLIST -> {
+                            PlaylistItem(playlist = (item as NewPipePlaylistData), onClick = {})
                         }
-                    )
+
+                        InfoItem.InfoType.STREAM -> {
+                            CommonVideoItem(
+                                item = item,
+                                onClick = {
+                                    mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
+                                    mainViewModel.expandBottomSheet()
+                                }
+                            )
+
+                        }
+
+                        InfoItem.InfoType.CHANNEL -> {
+                            ChannelItem(
+                                channel = item as NewPipeChannelData,
+                                onClick = {
+                                }
+                            )
+                        }
+
+                        InfoItem.InfoType.COMMENT -> {}
+                    }
+
                 },
                 loading = state.isLoadingMore,
                 loadMore = { homeSearchResultViewModel.loadMoreSearchResults() },
                 hasMoreItems = state.hasMore
             )
         }
+
         is PaginatedState.Error -> {
             ErrorMessage(message = state.message)
         }
