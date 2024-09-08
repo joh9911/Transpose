@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import org.ocpsoft.prettytime.PrettyTime
 import org.schabi.newpipe.extractor.InfoItem
+import org.schabi.newpipe.extractor.InfoItem.InfoType
 import org.schabi.newpipe.extractor.stream.VideoStream
 import java.time.Instant
 import java.util.Date
@@ -22,6 +23,7 @@ data class PlayableItemData(
     val type: MediaItemType,
 
     // YouTube 특정 필드
+    val infoType: InfoType? = null,
     val textualUploadDate: String? = null,
     val description: String? = null,
     val viewCount: Long = -1,
