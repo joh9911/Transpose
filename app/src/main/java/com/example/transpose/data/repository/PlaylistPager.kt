@@ -56,7 +56,8 @@ class PlaylistPager(
                 title = playlistExtractor.name,
                 description = playlistExtractor.description.content,
                 publishTimestamp = null,
-                thumbnailUrl = NewPipeUtils.getThumbnailUrl(playlistExtractor.thumbnails),
+                thumbnailUrl = NewPipeUtils.getHighestResolutionThumbnail(playlistExtractor.thumbnails.firstOrNull()?.url),
+                infoType = InfoItem.InfoType.PLAYLIST,
                 uploaderName = playlistExtractor.uploaderName,
                 uploaderUrl = uploaderUrl,
                 uploaderVerified = false,  // You might want to get this from playlistExtractor if available

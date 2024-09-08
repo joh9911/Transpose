@@ -27,15 +27,20 @@ object NewPipeUtils {
     }
 
 
-    fun getThumbnailUrl(images: List<Image?>): String? {
-        return images.filterNotNull()
-            .maxByOrNull { it.width }
-            ?.url
+    fun getHighestResolutionThumbnail(thumbnailUrl: String?): String? {
+        if (thumbnailUrl == null) return null
+        val videoId = extractVideoId(thumbnailUrl)
+        val resolutions = listOf("maxresdefault", "sddefault", "hqdefault", "mqdefault", "default")
+
+
+        return "https://i.ytimg.com/vi/$videoId/maxresdefault.jpg"
     }
 
-
-    fun getThumbnailUrl(comment: InfoItem): String? {
-        return getThumbnailUrl(comment.thumbnails)
+    private fun extractVideoId(url: String): String {
+        // URL에서 비디오 ID 추출
+        val regex = "vi/([^/]+)/".toRegex()
+        val matchResult = regex.find(url)
+        return matchResult?.groupValues?.get(1) ?: ""
     }
 
     fun removeChannelIdPrefix(channelId: String): String {
