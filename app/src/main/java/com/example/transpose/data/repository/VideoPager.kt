@@ -71,7 +71,8 @@ open class VideoPager(
             title = item.name,
             description = item.shortDescription ?: "",
             publishTimestamp = item.uploadDate?.date()?.time?.time,
-            thumbnailUrl = item.thumbnails.firstOrNull()?.url,
+            thumbnailUrl = NewPipeUtils.getHighestResolutionThumbnail(item.thumbnails.firstOrNull()?.url),
+            infoType = item.infoType,
             uploaderName = item.uploaderName,
             uploaderUrl = item.uploaderUrl,
             uploaderAvatars = item.uploaderAvatars,
@@ -90,7 +91,8 @@ open class VideoPager(
             title = playlistInfoItem.name,
             description = playlistInfoItem.description?.content ?: "",
             publishTimestamp = null,  // PlaylistInfoItem doesn't have this information
-            thumbnailUrl = playlistInfoItem.thumbnails.firstOrNull()?.url,
+            thumbnailUrl = NewPipeUtils.getHighestResolutionThumbnail(playlistInfoItem.thumbnails.firstOrNull()?.url),
+            infoType = playlistInfoItem.infoType,
             uploaderName = playlistInfoItem.uploaderName ?: "",
             uploaderUrl = playlistInfoItem.uploaderUrl,
             uploaderVerified = playlistInfoItem.isUploaderVerified,
@@ -106,7 +108,8 @@ open class VideoPager(
             title = channelInfoItem.name,
             description = channelInfoItem.description ?: "",
             publishTimestamp = null,  // ChannelInfoItem doesn't have this information
-            thumbnailUrl = channelInfoItem.thumbnails.firstOrNull()?.url,
+            thumbnailUrl = NewPipeUtils.getHighestResolutionThumbnail(channelInfoItem.thumbnails.firstOrNull()?.url),
+            infoType = channelInfoItem.infoType,
             subscriberCount = channelInfoItem.subscriberCount,
             streamCount = channelInfoItem.streamCount,
             verified = channelInfoItem.isVerified
@@ -122,39 +125,6 @@ open class VideoPager(
         }
     }
 
-    private fun getHighestResolutionThumbnail(thumbnailUrl: String?): String? {
-        if (thumbnailUrl == null) return null
-        val videoId = extractVideoId(thumbnailUrl)
-        val resolutions = listOf("maxresdefault", "sddefault", "hqdefault", "mqdefault", "default")
 
-        for (resolution in resolutions) {
-            val url = "https://i.ytimg.com/vi/$videoId/$resolution.jpg"
-            if (doesImageExist(url)) {
-                return url
-            }
-        }
 
-        // 모든 해상도를 시도해도 실패하면 원본 URL 반환
-        return thumbnailUrl
-    }
-
-    private fun extractVideoId(url: String): String {
-        // URL에서 비디오 ID 추출
-        val regex = "vi/([^/]+)/".toRegex()
-        val matchResult = regex.find(url)
-        return matchResult?.groupValues?.get(1) ?: ""
-    }
-
-    private fun doesImageExist(urlString: String): Boolean {
-        return try {
-            val url = URL(urlString)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "HEAD"
-            connection.connectTimeout = 5000
-            connection.readTimeout = 5000
-            connection.responseCode == HttpURLConnection.HTTP_OK
-        } catch (e: Exception) {
-            false
-        }
-    }
 }
