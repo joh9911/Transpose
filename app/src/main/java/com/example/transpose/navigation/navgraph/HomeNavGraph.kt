@@ -31,6 +31,7 @@ fun NavGraphBuilder.homeNavGraph(
             mainViewModel = mainViewModel,
             homePlaylistItemViewModel = hiltViewModel(),
             navigationViewModel = hiltViewModel(),
+            mediaViewModel = mediaViewModel,
             itemId = itemId
         )
     }

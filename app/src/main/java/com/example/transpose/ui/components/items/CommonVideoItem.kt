@@ -33,7 +33,8 @@ import com.example.transpose.data.model.newpipe.NewPipeContentListData
 @Composable
 fun CommonVideoItem(
     item: NewPipeContentListData,
-    onClick: (NewPipeContentListData) -> Unit
+    currentIndex: Int,
+    onClick: (NewPipeContentListData) -> Unit,
 ) {
     Row(
         modifier = Modifier

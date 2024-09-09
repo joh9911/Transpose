@@ -65,7 +65,7 @@ fun HomeSearchResultScreen(
                 items = state.items,
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
-                itemContent = { item: NewPipeContentListData ->
+                itemContent = {index, item: NewPipeContentListData ->
                     when (item.infoType) {
                         InfoItem.InfoType.PLAYLIST -> {
                             PlaylistItem(playlist = (item as NewPipePlaylistData), onClick = {})
@@ -74,8 +74,9 @@ fun HomeSearchResultScreen(
                         InfoItem.InfoType.STREAM -> {
                             CommonVideoItem(
                                 item = item,
+                                currentIndex = index,
                                 onClick = {
-                                    mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
+                                    mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
                                     mainViewModel.expandBottomSheet()
                                 }
                             )

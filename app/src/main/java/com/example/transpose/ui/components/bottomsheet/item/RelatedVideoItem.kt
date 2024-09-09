@@ -28,25 +28,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.transpose.MediaViewModel
+import com.example.transpose.data.repository.NewPipeUtils
 import org.schabi.newpipe.extractor.InfoItem
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RelatedVideoItem(infoItem: InfoItem, mediaViewModel: MediaViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable { mediaViewModel.updateCurrentVideoItem(infoItem) }
+            .clickable { mediaViewModel.onMediaItemClick(infoItem) }
             .padding(vertical = 10.dp, horizontal = 10.dp)
     ) {
         AsyncImage(
-            model = infoItem.thumbnails.first().url,
+            model = NewPipeUtils.getHighestResolutionThumbnail(infoItem.thumbnails.first().url),
             contentDescription = "Thumbnail",
             modifier = Modifier
                 .width(150.dp)
@@ -65,6 +66,7 @@ fun RelatedVideoItem(infoItem: InfoItem, mediaViewModel: MediaViewModel) {
             Text(
                 text = infoItem.name,
                 fontSize = 13.sp,
+                minLines = 2,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -72,16 +74,11 @@ fun RelatedVideoItem(infoItem: InfoItem, mediaViewModel: MediaViewModel) {
             Text(
                 text = infoItem.infoType.toString(),
                 fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
                 maxLines = 1
             )
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = infoItem.name,
-                fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
-            )
+
         }
         IconButton(
             onClick = { /* Handle options click */ },

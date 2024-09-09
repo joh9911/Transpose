@@ -46,6 +46,7 @@ class HomePlaylistItemViewModel @Inject constructor(
 
             if (playlistItemsResult.isSuccess) {
                 val items = playlistItemsResult.getOrElse { emptyList() }
+
                 _playlistItemsState.value = PaginatedState.Success(
                     items = items,
                     hasMore = playlistPager!!.isHasNextPage(),

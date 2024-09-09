@@ -11,7 +11,6 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun VideoInfoHeader(mediaViewModel: MediaViewModel, mainViewModel: MainViewModel){
     Column {

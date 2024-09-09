@@ -3,6 +3,7 @@ package com.example.transpose.ui.components.bottomsheet.item
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -12,7 +13,6 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.common.PlayableItemUiState
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun VideoDetailPanel(
     mediaViewModel: MediaViewModel,
@@ -20,6 +20,7 @@ fun VideoDetailPanel(
     modifier: Modifier,
 ) {
     val currentVideoItemState by mediaViewModel.currentVideoItemState.collectAsState()
+    val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
 
     LazyColumn(
         modifier = modifier

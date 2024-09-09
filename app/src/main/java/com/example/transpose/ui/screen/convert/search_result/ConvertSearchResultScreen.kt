@@ -61,11 +61,12 @@ fun ConvertSearchResultScreen(
                 items = state.items,
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
-                itemContent = { item: NewPipeContentListData ->
+                itemContent = {index, item: NewPipeContentListData ->
                     CommonVideoItem(
                         item = item,
+                        currentIndex = index,
                         onClick = {
-                            mediaViewModel.updateCurrentVideoItem(item as NewPipeVideoData)
+                            mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
                             mainViewModel.expandBottomSheet()
                         }
                     )

@@ -13,19 +13,23 @@ fun PlayerLoadingIndicator(
     mediaViewModel: MediaViewModel, modifier: Modifier = Modifier
 ) {
     val currentVideoState by mediaViewModel.currentVideoItemState.collectAsState()
+    val isPlaying by mediaViewModel.isPlaying.collectAsState()
+
     when (val state = currentVideoState) {
         is PlayableItemUiState.BasicInfoLoaded -> {
-            CircularProgressIndicator(
-                modifier = modifier
-            )
+
+                CircularProgressIndicator(
+                    modifier = modifier
+                )
         }
 
         is PlayableItemUiState.Error -> {}
         is PlayableItemUiState.FullInfoLoaded -> {}
         PlayableItemUiState.Initial -> {
-            CircularProgressIndicator(
-                modifier = modifier
-            )
+
+                CircularProgressIndicator(
+                    modifier = modifier
+                )
         }
     }
 

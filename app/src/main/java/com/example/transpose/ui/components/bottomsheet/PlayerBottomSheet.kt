@@ -65,7 +65,6 @@ object GraphicsLayerConstants {
     val DEFAULT_HEIGHT = 250.dp
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -228,6 +227,7 @@ fun PlayerBottomSheet(
                     transformOrigin = TransformOrigin(0f, 0f)
                 )
         ) {
+
             AndroidView(
                 factory = { ctx ->
                     PlayerView(ctx).apply {
@@ -245,12 +245,7 @@ fun PlayerBottomSheet(
                         SheetValue.Expanded -> true
                         else -> false
                     }
-                    view.useController = when (currentVideoItemState){
-                        is PlayableItemUiState.BasicInfoLoaded -> false
-                        is PlayableItemUiState.Error -> true
-                        is PlayableItemUiState.FullInfoLoaded -> true
-                        PlayableItemUiState.Initial -> false
-                    }
+
                 },
                 modifier = Modifier.fillMaxSize()
             )
@@ -266,53 +261,51 @@ fun PlayerBottomSheet(
 
         }
 
-        // playerThumbnailView
-//        PlayerThumbnailView(
-//            mediaViewModel = mediaViewModel,
-//            modifier = Modifier
-//                .constrainAs(playerThumbnailView) {
-//                    top.linkTo(playerContainer.top)
-//                    start.linkTo(playerContainer.start)
-//                    end.linkTo(playerContainer.end)
-//                    bottom.linkTo(playerContainer.bottom)
-//                }
-//                .graphicsLayer(
-//                    scaleX = when {
-//                        normalizedOffset < 0f -> GraphicsLayerConstants.MIN_SCALE
-//                        normalizedOffset < 0.2f -> calculateDefaultScaleX(normalizedOffset)
-//                        else -> 1f
-//                    },
-//                    scaleY = calculateScaleFactorY(normalizedOffset),
-//                    transformOrigin = TransformOrigin(0f, 0f)
-//                )
-//        )
-
-        PlaylistBottomSheet(
-            mainViewModel = mainViewModel,
+        VideoDetailPanel(
             mediaViewModel = mediaViewModel,
+            mainViewModel = mainViewModel,
             modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
                 .constrainAs(playlistBottomSheet) {
                     top.linkTo(playerContainer.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
-                }
-                .graphicsLayer(
+                }.graphicsLayer(
                     translationY = -playerViewHeight * (1 - calculateScaleFactorY(normalizedOffset))
                 )
                 .changeMainBackgroundAlpha(normalizedOffset)
-        ) { paddingValues ->
+        )
 
-            VideoDetailPanel(
-                mediaViewModel = mediaViewModel,
-                mainViewModel = mainViewModel,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(paddingValues)
-            )
-        }
+
+//        PlaylistBottomSheet(
+//            mainViewModel = mainViewModel,
+//            mediaViewModel = mediaViewModel,
+//            modifier = Modifier
+//                .constrainAs(playlistBottomSheet) {
+//                    top.linkTo(playerContainer.bottom)
+//                    start.linkTo(parent.start)
+//                    end.linkTo(parent.end)
+//                    bottom.linkTo(parent.bottom)
+//                    height = Dimension.fillToConstraints
+//                }
+//                .graphicsLayer(
+//                    translationY = -playerViewHeight * (1 - calculateScaleFactorY(normalizedOffset))
+//                )
+//                .changeMainBackgroundAlpha(normalizedOffset)
+//        ) { paddingValues ->
+//
+//            VideoDetailPanel(
+//                mediaViewModel = mediaViewModel,
+//                mainViewModel = mainViewModel,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(Color.White)
+//                    .padding(paddingValues)
+//            )
+//        }
     }
 
 

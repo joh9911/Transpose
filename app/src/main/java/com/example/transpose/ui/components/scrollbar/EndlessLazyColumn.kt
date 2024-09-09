@@ -22,7 +22,7 @@ internal fun <H, T> EndlessLazyColumn(
     headerData: H? = null,
     itemKey: (T) -> Any,
     headerContent: (@Composable (H) -> Unit)? = null,
-    itemContent: @Composable (T) -> Unit,
+    itemContent: @Composable (Int, T) -> Unit,
     loadMore: () -> Unit
 ) {
 
@@ -41,7 +41,7 @@ internal fun <H, T> EndlessLazyColumn(
         }
         items(items.size){ index ->
             val item = items[index]
-            itemContent(item)
+            itemContent(index, item)
             if (index == items.size - 1 && hasMoreItems)
                 LoadingIndicator()
         }

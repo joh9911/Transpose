@@ -1,7 +1,5 @@
 package com.example.transpose.ui.components.bottomsheet.item
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +25,6 @@ import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.TextFormatUtil
 import com.valentinilk.shimmer.shimmer
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun VideoInfoSection(mediaViewModel: MediaViewModel) {
     val viewCountFormats = rememberStringArrayResource(R.array.view_count_formats)
@@ -81,7 +78,7 @@ fun VideoInfoSection(mediaViewModel: MediaViewModel) {
                             viewCountString = fullInfo.viewCount.toString()
                         )
 
-                    } • ${TextFormatUtil.convertISOToPrettyTime(fullInfo.textualUploadDate)}",
+                    } • ${fullInfo.textualUploadDate}",
                     modifier = Modifier.padding(top = 5.dp, start = 10.dp)
                 )
             }

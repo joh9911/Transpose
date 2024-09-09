@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.transpose.MainViewModel
+import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.ui.common.PaginatedState
@@ -22,6 +23,7 @@ fun HomePlaylistItemScreen(
     mainViewModel: MainViewModel,
     homePlaylistItemViewModel: HomePlaylistItemViewModel,
     navigationViewModel: NavigationViewModel,
+    mediaViewModel: MediaViewModel,
     itemId: String?,
 ) {
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
@@ -52,9 +54,14 @@ fun HomePlaylistItemScreen(
                 items = state.items,
                 headerData = playlistInfo,
                 itemKey = { item: NewPipeContentListData -> item.id },
-                itemContent = { item: NewPipeContentListData ->
-                    CommonVideoItem(item = item, onClick = {
-                        // 비디오 아이템 클릭 처리
+                itemContent = { index, item: NewPipeContentListData ->
+                    CommonVideoItem(item = item, currentIndex = index, onClick = {
+                        mainViewModel.expandBottomSheet()
+                        mediaViewModel.onMediaItemClick(
+                            item = item,
+                            playlistItems = state.items,
+                            clickedIndex = index
+                        )
                     })
                 },
                 headerContent = { playlistData ->
