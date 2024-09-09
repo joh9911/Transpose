@@ -1,17 +1,18 @@
 package com.example.transpose.utils
 
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import com.example.transpose.data.model.local_file.LocalFileData
 import com.example.transpose.data.model.newpipe.NewPipeStreamInfoData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
+import com.example.transpose.data.repository.NewPipeUtils
 import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.media.model.PlayableItemBasicInfoData
 import com.example.transpose.media.model.PlayableItemData
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.InfoItem.InfoType
 
-@RequiresApi(Build.VERSION_CODES.O)
 
 object PlayableItemConverter {
 
@@ -70,7 +71,7 @@ object PlayableItemConverter {
             PlayableItemBasicInfoData(
                 id = url,
                 title = name,
-                thumbnailUrl = thumbnails.firstOrNull()?.url,
+                thumbnailUrl = NewPipeUtils.getHighestResolutionThumbnail(thumbnails.firstOrNull()?.url),
                 type = MediaItemType.YOUTUBE,
                 infoType = infoType,
                 uploaderName = null,
@@ -83,14 +84,16 @@ object PlayableItemConverter {
     }
 
     fun NewPipeStreamInfoData.toPlayableMediaItem(baseVideoData: PlayableItemBasicInfoData): PlayableItemData {
+        Logger.d("NewPipeStreamInfoData.toPlayableMediaItem ${baseVideoData.uploadedDate}")
         return try {
             PlayableItemData(
                 id = baseVideoData.id,
                 title = baseVideoData.title,
                 thumbnailUrl = baseVideoData.thumbnailUrl,
                 type = MediaItemType.YOUTUBE,
+                infoType = baseVideoData.infoType,
                 uploaderName = this.uploaderName ?: baseVideoData.uploaderName,
-                textualUploadDate = this.textualUploadDate,
+                textualUploadDate = TextFormatUtil.convertISOToPrettyTime(this.textualUploadDate),
                 description = this.description,
                 viewCount = this.viewCount,
                 likeCount = this.likeCount,
@@ -105,5 +108,29 @@ object PlayableItemConverter {
             Logger.d("toPlayableMediaItem $e")
             throw IllegalArgumentException("Failed to convert toPlayableMediaItem: ${e.message}", e)
         }
+    }
+
+    fun PlayableItemBasicInfoData.toBundle(): Bundle {
+        return Bundle().apply {
+            putString("id", id)
+            putString("title", title)
+            putString("thumbnailUrl", thumbnailUrl)
+            putString("type", type.name)
+            putString("infoType", infoType?.name)
+            putString("uploaderName", uploaderName)
+            putString("uploadedDate", uploadedDate)
+        }
+    }
+
+    fun Bundle.toPlayableItemBasicInfoData(): PlayableItemBasicInfoData {
+        return PlayableItemBasicInfoData(
+            id = getString("id") ?: "",
+            title = getString("title") ?: "",
+            thumbnailUrl = getString("thumbnailUrl"),
+            type = MediaItemType.valueOf(getString("type") ?: MediaItemType.YOUTUBE.name),
+            infoType = getString("infoType")?.let { InfoItem.InfoType.valueOf(it) },
+            uploaderName = getString("uploaderName"),
+            uploadedDate = getString("uploadedDate")
+        )
     }
 }

@@ -38,7 +38,10 @@ fun ReverbSection(
             isExpanded = isExpanded,
             title = title,
             isEnabled = isEnabled,
-            onSwitchChange = { mediaViewModel.updateIsReverbEnabled() },
+            onSwitchChange = {
+                mediaViewModel.updateIsReverbEnabled()
+                mediaViewModel.disablePreset()
+            },
             onInitButton = { mediaViewModel.initEqualizerValue() }
         )
 
@@ -53,8 +56,8 @@ fun ReverbSection(
                 SliderSection(
                     title = "Reverb",
                     displayValueText = "+$reverbValue",
-                    onValueChange = {mediaViewModel.updateReverbValue(it)},
-                    onValueChangeFinished = {mediaViewModel.setPresetReverb()},
+                    onValueChange = { mediaViewModel.updateReverbValue(it) },
+                    onValueChangeFinished = { mediaViewModel.setPresetReverb() },
                     onReset = { mediaViewModel.initReverbValue() },
                     currentValue = reverbValue,
                     valueRange = 0f..1000f

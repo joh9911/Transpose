@@ -47,7 +47,11 @@ class CustomMediaSessionCallback @Inject constructor(
         val equalizerCustomCommand =
             SessionCommand(MediaSessionCallback.SET_EQUALIZER_CUSTOM, Bundle())
 
+        val disableEqualizerCommand = SessionCommand(MediaSessionCallback.DISABLE_EQUALIZER,Bundle())
+
         val reverbCommand = SessionCommand(MediaSessionCallback.SET_REVERB, Bundle())
+
+        val disableReverbCommand = SessionCommand(MediaSessionCallback.DISABLE_REVERB, Bundle())
 
         val virtualizerCommand = SessionCommand(MediaSessionCallback.SET_VIRTUALIZER, Bundle())
 
@@ -62,6 +66,9 @@ class CustomMediaSessionCallback @Inject constructor(
 
         val tempMinusCommand = SessionCommand(MediaSessionCallback.TEMPO_MINUS, Bundle())
 
+        val setHapticGenerator = SessionCommand(MediaSessionCallback.SET_HAPTIC_GENERATOR, Bundle())
+
+
         myCommands.add(pitchCommand)
         myCommands.add(tempoCommand)
         myCommands.add(bassBoostCommand)
@@ -75,6 +82,7 @@ class CustomMediaSessionCallback @Inject constructor(
         myCommands.add(pitchMinusCommand)
         myCommands.add(tempoPlusCommand)
         myCommands.add(tempMinusCommand)
+        myCommands.add(setHapticGenerator)
         return myCommands
     }
 
@@ -225,6 +233,10 @@ class CustomMediaSessionCallback @Inject constructor(
 
             }
 
+            MediaSessionCallback.DISABLE_EQUALIZER -> {
+                audioEffectHandlerImpl.disableEqualizer()
+            }
+
             MediaSessionCallback.SET_VIRTUALIZER -> {
                 val value =
                     customCommand.customExtras.getInt("value")
@@ -240,8 +252,36 @@ class CustomMediaSessionCallback @Inject constructor(
 
             }
 
-            MediaSessionCallback.SET_ENVIRONMENT_REVERB -> {
+            MediaSessionCallback.DISABLE_REVERB -> {
+                audioEffectHandlerImpl.disableReverb()
+            }
 
+            MediaSessionCallback.SET_ENVIRONMENT_REVERB -> {
+                val isEnabled = customCommand.customExtras.getBoolean("isEnabled")
+                val roomLevel = customCommand.customExtras.getInt("roomLevel")
+                val roomHFLevel = customCommand.customExtras.getInt("roomHFLevel")
+                val decayTime = customCommand.customExtras.getInt("decayTime")
+                val decayHFRatio = customCommand.customExtras.getInt("decayHFRatio")
+                val reflectionsLevel = customCommand.customExtras.getInt("reflectionsLevel")
+                val reflectionsDelay = customCommand.customExtras.getInt("reflectionsDelay")
+                val reverbLevel = customCommand.customExtras.getInt("reverbLevel")
+                val reverbDelay = customCommand.customExtras.getInt("reverbDelay")
+                val diffusion = customCommand.customExtras.getInt("diffusion")
+                val density = customCommand.customExtras.getInt("density")
+
+                audioEffectHandlerImpl.setEnvironmentalReverb(
+                    isEnabled,
+                    roomLevel,
+                    roomHFLevel,
+                    decayTime,
+                    decayHFRatio,
+                    reflectionsLevel,
+                    reflectionsDelay,
+                    reverbLevel,
+                    reverbDelay,
+                    diffusion,
+                    density
+                )
             }
 
             MediaSessionCallback.PITCH_MINUS -> {
@@ -258,6 +298,12 @@ class CustomMediaSessionCallback @Inject constructor(
             MediaSessionCallback.TEMPO_PLUS -> {
                 audioEffectHandlerImpl.tempoPlusOne()
             }
+            MediaSessionCallback.SET_HAPTIC_GENERATOR -> {
+                val isEnabled =
+                    customCommand.customExtras.getBoolean("isEnabled")
+                audioEffectHandlerImpl.setHapticGenerator(isEnabled)
+            }
+
 
         }
         return super.onCustomCommand(session, controller, customCommand, args)

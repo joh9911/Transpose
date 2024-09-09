@@ -5,9 +5,11 @@ import android.media.audiofx.BassBoost
 import android.media.audiofx.DynamicsProcessing
 import android.media.audiofx.EnvironmentalReverb
 import android.media.audiofx.Equalizer
+import android.media.audiofx.HapticGenerator
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
 import android.media.audiofx.Virtualizer
+import android.os.Build
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.AuxEffectInfo
@@ -24,7 +26,7 @@ import kotlin.math.pow
 @Singleton
 class AudioEffectHandlerImpl @Inject constructor(
     private val exoPlayer: ExoPlayer
-):AudioEffectHandler {
+) : AudioEffectHandler {
 
     private val audioSessionId: Int
         get() = exoPlayer.audioSessionId
@@ -36,13 +38,14 @@ class AudioEffectHandlerImpl @Inject constructor(
     private var presetReverb: PresetReverb? = null
     private var environmentalReverb: EnvironmentalReverb? = null
     private var dynamicsProcessing: DynamicsProcessing? = null
+    private var hapticGenerator: HapticGenerator? = null
+
 
     override fun setPitch(value: Int) {
         val semitonesFromCenter = (value - 100) * 0.1
         val adjustedPitch = 2.0.pow(semitonesFromCenter / 12.0).toFloat()
         val currentTempoValue = exoPlayer.playbackParameters.speed
         exoPlayer.playbackParameters = PlaybackParameters(currentTempoValue, adjustedPitch)
-        Logger.d("setPitch $value")
     }
 
     override fun setTempo(value: Int) {
@@ -54,138 +57,226 @@ class AudioEffectHandlerImpl @Inject constructor(
 
 
     override fun setBassBoost(value: Int) {
-        if (bassBoost == null){
-            try{
+        try {
+            if (value == 0) {
+                disableBassBoost()
+                return
+            }
+
+            if (bassBoost == null) {
                 bassBoost = BassBoost(0, audioSessionId)
                 bassBoost?.enabled = true
             }
-            catch (e: Exception){
-            }
-        }
-
-        if (audioSessionId != AudioEffect.ERROR_BAD_VALUE) {
-            bassBoost?.let {
-                if (it.strengthSupported) {
-                    it.setStrength(value.toShort())
-                    exoPlayer.setAuxEffectInfo(AuxEffectInfo(it.id, 1f))
+            if (audioSessionId != AudioEffect.ERROR_BAD_VALUE) {
+                bassBoost?.let {
+                    if (it.strengthSupported) {
+                        it.setStrength(value.toShort())
+                        exoPlayer.setAuxEffectInfo(AuxEffectInfo(it.id, 1f))
+                    }
                 }
+
             }
 
+        } catch (e: Exception) {
+            Logger.d("setBassBoost $e")
         }
+
+
     }
 
-    private fun initAudioEffect(){
-        try{
-            equalizer = Equalizer(0, exoPlayer.audioSessionId)
-            equalizer?.enabled = true
-
-            bassBoost = BassBoost(0, audioSessionId)
-            bassBoost?.enabled = true
-
-            loudnessEnhancer = LoudnessEnhancer(audioSessionId)
-            loudnessEnhancer?.enabled = true
-
-            virtualizer = Virtualizer(0, audioSessionId)
-            virtualizer?.enabled = true
-            virtualizer?.forceVirtualizationMode(Virtualizer.VIRTUALIZATION_MODE_BINAURAL)
-
-            presetReverb = PresetReverb(1, 0)
-            presetReverb?.enabled = true
-        }
-        catch (e: Exception){
-        }
-
+    override fun disableBassBoost() {
+        bassBoost?.release()
+        bassBoost = null
     }
+
 
     override fun setLoudnessEnhancer(value: Int) {
-        if (loudnessEnhancer == null){
-            loudnessEnhancer = LoudnessEnhancer(audioSessionId)
-            loudnessEnhancer?.enabled = true
+        try {
+            if (value == 0) {
+                disableLoudnessEnhancer()
+                return
+            }
+
+            if (loudnessEnhancer == null) {
+                loudnessEnhancer = LoudnessEnhancer(audioSessionId)
+                loudnessEnhancer?.enabled = true
+            }
+
+            if (audioSessionId != AudioEffect.ERROR_BAD_VALUE) {
+                loudnessEnhancer?.setTargetGain(value)
+            }
+        } catch (e: Exception) {
+            Logger.d("setLoudnessEnhancer $e")
         }
 
-        if (audioSessionId != AudioEffect.ERROR_BAD_VALUE){
-            loudnessEnhancer?.setTargetGain(value)
-        }
+    }
+
+    override fun disableLoudnessEnhancer() {
+        loudnessEnhancer?.release()
+        loudnessEnhancer = null
     }
 
     override fun setEqualizerWithPreset(value: Int) {
-        if (equalizer == null){
-            try{
+        try {
+            if (equalizer == null) {
                 equalizer = Equalizer(0, exoPlayer.audioSessionId)
                 equalizer?.enabled = true
             }
-            catch (e: Exception){
-            }
-        }
-        for (i in 0 until equalizer!!.numberOfPresets) {
-            Logger.d("이퀼라이저 ${equalizer!!.getPresetName(i.toShort())}")
-        }
 
-        equalizer?.usePreset(value.toShort())
+            for (i in 0 until equalizer!!.numberOfPresets) {
+                Logger.d("이퀼라이저 ${equalizer!!.getPresetName(i.toShort())}")
+            }
+
+            equalizer?.usePreset(value.toShort())
+        } catch (e: Exception) {
+            Logger.d("setEqualizerWithPreset $e")
+
+        }
     }
 
 
     override fun setEqualizerWithCustomValue(changedBand: Int, newGainLevel: Int) {
-        if (equalizer == null){
-            try{
+        try {
+            if (equalizer == null) {
                 equalizer = Equalizer(0, exoPlayer.audioSessionId)
                 equalizer?.enabled = true
-            }
-            catch (e: Exception){
-            }
-        }
 
-        equalizer?.setBandLevel(changedBand.toShort(), newGainLevel.toShort())
+                equalizer?.setBandLevel(changedBand.toShort(), newGainLevel.toShort())
+
+            }
+
+        } catch (e: Exception) {
+            Logger.d("setEqualizerWithCustomValue $e")
+
+        }
     }
 
-    private fun disableEqualizer(){
-        setEqualizerWithPreset(3)
+
+    override fun disableEqualizer() {
         equalizer?.release()
         equalizer = null
     }
 
+
     override fun setVirtualizer(value: Int) {
-        if (virtualizer == null){
-            virtualizer = Virtualizer(0, audioSessionId)
+
+        try {
+            if (value == 0) {
+                virtualizer?.release()
+                virtualizer = null
+                return
+            }
+            if (virtualizer == null) {
+                virtualizer = Virtualizer(0, audioSessionId)
+                virtualizer?.enabled = true
+                virtualizer?.forceVirtualizationMode(Virtualizer.VIRTUALIZATION_MODE_BINAURAL)
+            }
+
+            virtualizer?.setStrength(value.toShort())
             virtualizer?.enabled = true
             virtualizer?.forceVirtualizationMode(Virtualizer.VIRTUALIZATION_MODE_BINAURAL)
+
+            exoPlayer.setAuxEffectInfo(AuxEffectInfo(virtualizer!!.id, 0.5f))
+        } catch (e: Exception) {
+            Logger.d("setVirtualizer $virtualizer")
         }
 
-        virtualizer?.setStrength(value.toShort())
-        virtualizer?.enabled = true
+    }
 
-        exoPlayer.setAuxEffectInfo(AuxEffectInfo(virtualizer!!.id, 0.5f))
+    override fun disableVirtualizer() {
+        virtualizer?.release()
+        virtualizer = null
     }
 
     override fun setPresetReverb(presetIndex: Int, sendLevel: Int) {
-        if (presetReverb == null) {
-            try {
-                presetReverb = PresetReverb(1, audioSessionId)
-                presetReverb?.enabled = true
-            } catch (e: Exception) {
-                return
-            }
-        }
-
         try {
+            if (presetReverb == null) {
+                presetReverb = PresetReverb(0, 0)
+                presetReverb?.enabled = true
+            }
+
             presetReverb?.preset = presetIndex.toShort()
 
             val auxEffectSendLevel = sendLevel.toFloat()
 
             exoPlayer.setAuxEffectInfo(AuxEffectInfo(presetReverb!!.id, auxEffectSendLevel))
-        } catch (e: Exception) {
-            Log.d("예외", "프리셋 리버브 설정 오류: $e")
+        }catch (e: Exception){
+            Logger.d("setPresetReverb $e")
         }
     }
 
-    private fun disablePresetReverb() {
-        presetReverb?.enabled = false
-        exoPlayer.setAuxEffectInfo(AuxEffectInfo(0, 0f))  // 효과 비활성화
+    override fun disableReverb() {
         presetReverb?.release()
         presetReverb = null
     }
 
-    override fun setEnvironmentalReverb() {
+
+    override fun setEnvironmentalReverb(
+        isEnabled: Boolean,
+        roomLevel: Int,
+        roomHFLevel: Int,
+        decayTime: Int,
+        decayHFRatio: Int,
+        reflectionsLevel: Int,
+        reflectionsDelay: Int,
+        reverbLevel: Int,
+        reverbDelay: Int,
+        diffusion: Int,
+        density: Int
+    ) {
+
+        try {
+            if (!isEnabled) {
+                disableEnvironmentReverb()
+
+                return
+            }
+
+            if (environmentalReverb == null) {
+                environmentalReverb = EnvironmentalReverb(0, 0)
+                environmentalReverb?.enabled = true
+            }
+
+            environmentalReverb?.apply {
+                setRoomLevel(roomLevel.toShort())
+                setRoomHFLevel(roomHFLevel.toShort())
+                setDecayTime(decayTime)
+                setDecayHFRatio(decayHFRatio.toShort())
+                setReflectionsLevel(reflectionsLevel.toShort())
+                setReflectionsDelay(reflectionsDelay)
+                setReverbLevel(reverbLevel.toShort())
+                setReverbDelay(reverbDelay)
+                setDiffusion(diffusion.toShort())
+                setDensity(density.toShort())
+            }
+            Logger.d("setEnvironmentalReverb ${EnvironmentalReverb.ERROR_BAD_VALUE} ${environmentalReverb?.enabled} ${environmentalReverb?.roomLevel}")
+
+
+            exoPlayer.setAuxEffectInfo(AuxEffectInfo(environmentalReverb!!.id, 1f))
+        } catch (e: Exception) {
+            Logger.d("setEnvironmentalReverb $e")
+        }
+    }
+
+    override fun disableEnvironmentReverb() {
+        Logger.d("disableEnvironmentReverb")
+        environmentalReverb?.release()
+        environmentalReverb = null
+    }
+
+    override fun setHapticGenerator(isEnabled: Boolean) {
+        if (isEnabled){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && HapticGenerator.isAvailable()) {
+                hapticGenerator = HapticGenerator.create(audioSessionId)
+                hapticGenerator?.enabled = true
+            }
+
+        }else{
+            hapticGenerator?.release()
+            hapticGenerator = null
+        }
+
+
 
     }
 
@@ -212,7 +303,8 @@ class AudioEffectHandlerImpl @Inject constructor(
 
         val newPitch = 2.0.pow(newSemitones / 12.0).toFloat()
 
-        exoPlayer.playbackParameters = PlaybackParameters(currentTempoValue, newPitch)    }
+        exoPlayer.playbackParameters = PlaybackParameters(currentTempoValue, newPitch)
+    }
 
     override fun tempoPlusOne() {
         val currentPitch = exoPlayer.playbackParameters.pitch
@@ -224,7 +316,8 @@ class AudioEffectHandlerImpl @Inject constructor(
 
         val newTempo = 2.0.pow(newSemitones / 12.0).toFloat()
 
-        exoPlayer.playbackParameters = PlaybackParameters(newTempo, currentPitch)    }
+        exoPlayer.playbackParameters = PlaybackParameters(newTempo, currentPitch)
+    }
 
     override fun tempoMinusOne() {
         val currentPitch = exoPlayer.playbackParameters.pitch
@@ -236,5 +329,6 @@ class AudioEffectHandlerImpl @Inject constructor(
 
         val newTempo = 2.0.pow(newSemitones / 12.0).toFloat()
 
-        exoPlayer.playbackParameters = PlaybackParameters(newTempo, currentPitch)    }
+        exoPlayer.playbackParameters = PlaybackParameters(newTempo, currentPitch)
+    }
 }

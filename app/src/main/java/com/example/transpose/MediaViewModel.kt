@@ -819,6 +819,192 @@ class MediaViewModel @Inject constructor(
         mediaController.value?.sendCustomCommand(sessionCommand, bundle)
     }
 
+    private val _isHapticGeneratorEnabled = MutableStateFlow(false)
+    val isHapticGeneratorEnabled = _isHapticGeneratorEnabled.asStateFlow()
+
+    private fun setHapticGenerator(){
+        val action = MediaSessionCallback.SET_HAPTIC_GENERATOR
+        val bundle = Bundle().apply {
+            putBoolean("isEnabled", isHapticGeneratorEnabled.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    fun updateIsHapticGenerator() {
+        if (isHapticGeneratorEnabled.value) {
+            setHapticGenerator()
+        }
+        _isHapticGeneratorEnabled.value = !isHapticGeneratorEnabled.value
+    }
+
+
+    private val _isEnvironmentalReverbEnabled = MutableStateFlow(false)
+    val isEnvironmentalReverbEnabled = _isEnvironmentalReverbEnabled.asStateFlow()
+
+    private val _roomLevel = MutableStateFlow(0)
+    val roomLevel = _roomLevel.asStateFlow()
+
+    private val _roomHFLevel = MutableStateFlow(0)
+    val roomHFLevel = _roomHFLevel.asStateFlow()
+
+    private val _decayTime = MutableStateFlow(0)
+    val decayTime = _decayTime.asStateFlow()
+
+    private val _decayHFRatio = MutableStateFlow(0)
+    val decayHFRatio = _decayHFRatio.asStateFlow()
+
+    private val _reflectionsLevel = MutableStateFlow(0)
+    val reflectionsLevel = _reflectionsLevel.asStateFlow()
+
+    private val _reflectionsDelay = MutableStateFlow(0)
+    val reflectionsDelay = _reflectionsDelay.asStateFlow()
+
+    private val _reverbLevel = MutableStateFlow(0)
+    val reverbLevel = _reverbLevel.asStateFlow()
+
+    private val _reverbDelay = MutableStateFlow(0)
+    val reverbDelay = _reverbDelay.asStateFlow()
+
+    private val _diffusion = MutableStateFlow(0)
+    val diffusion = _diffusion.asStateFlow()
+
+    private val _density = MutableStateFlow(0)
+    val density = _density.asStateFlow()
+
+    fun updateIsEnvironmentalReverbEnabled(isEnabled: Boolean) {
+        _isEnvironmentalReverbEnabled.value = isEnabled
+        setEnvironmentalReverb()
+    }
+
+    fun updateRoomLevel(value: Int) {
+        _roomLevel.value = value
+    }
+
+    fun updateRoomHFLevel(value: Int) {
+        _roomHFLevel.value = value
+    }
+
+    fun updateDecayTime(value: Int) {
+        _decayTime.value = value
+    }
+
+    fun updateDecayHFRatio(value: Int) {
+        _decayHFRatio.value = value
+    }
+
+    fun updateReflectionsLevel(value: Int) {
+        _reflectionsLevel.value = value
+    }
+
+    fun updateReflectionsDelay(value: Int) {
+        _reflectionsDelay.value = value
+    }
+
+    fun updateReverbLevel(value: Int) {
+        _reverbLevel.value = value
+    }
+
+    fun updateReverbDelay(value: Int) {
+        _reverbDelay.value = value
+    }
+
+    fun updateDiffusion(value: Int) {
+        _diffusion.value = value
+
+    }
+
+    fun updateDensity(value: Int) {
+        _density.value = value
+    }
+
+    fun initEnvironmentalReverbValues() {
+        _roomLevel.value = 0
+        _roomHFLevel.value = 0
+        _decayTime.value = 0
+        _decayHFRatio.value = 0
+        _reflectionsLevel.value = 0
+        _reflectionsDelay.value = 0
+        _reverbLevel.value = 0
+        _reverbDelay.value = 0
+        _diffusion.value = 0
+        _density.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initRoomLevel() {
+        _roomLevel.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initRoomHFLevel() {
+        _roomHFLevel.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initDecayTime() {
+        _decayTime.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initDecayHFRatio() {
+        _decayHFRatio.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initReflectionsLevel() {
+        _reflectionsLevel.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initReflectionsDelay() {
+        _reflectionsDelay.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initReverbLevel() {
+        _reverbLevel.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initReverbDelay() {
+        _reverbDelay.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initDiffusion() {
+        _diffusion.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun initDensity() {
+        _density.value = 0
+        setEnvironmentalReverb()
+    }
+
+    fun setEnvironmentalReverb() {
+        val action = MediaSessionCallback.SET_ENVIRONMENT_REVERB
+        val bundle = Bundle().apply {
+            putBoolean("isEnabled", isEnvironmentalReverbEnabled.value)
+            putInt("roomLevel", roomLevel.value)
+            putInt("roomHFLevel", roomHFLevel.value)
+            putInt("decayTime", decayTime.value)
+            putInt("decayHFRatio", decayHFRatio.value)
+            putInt("reflectionsLevel", reflectionsLevel.value)
+            putInt("reflectionsDelay", reflectionsDelay.value)
+            putInt("reverbLevel", reverbLevel.value)
+            putInt("reverbDelay", reverbDelay.value)
+            putInt("diffusion", diffusion.value)
+            putInt("density", density.value)
+        }
+        val sessionCommand = SessionCommand(action, bundle)
+        mediaController.value?.sendCustomCommand(sessionCommand, bundle)
+    }
+
+    fun disableEnvironmentalReverb() {
+        _isEnvironmentalReverbEnabled.value = false
+        setEnvironmentalReverb()
+    }
 
     fun releaseMediaController() {
         viewModelScope.launch {

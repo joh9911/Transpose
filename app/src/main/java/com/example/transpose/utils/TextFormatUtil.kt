@@ -22,19 +22,24 @@ object TextFormatUtil {
         return format(subscriberCountString.toLong(), subscriberArray, isSubscriber = true)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     fun convertISOToPrettyTime(isoDateString: String?, locale: Locale = Locale.getDefault()): String {
         return try {
-            val instant = Instant.parse(isoDateString)
-            val date = Date.from(instant)
-            val prettyTime = PrettyTime(locale)
-            prettyTime.format(date)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                val instant = Instant.parse(isoDateString)
+                val date = Date.from(instant)
+                val prettyTime = PrettyTime(locale)
+                prettyTime.format(date)
+            }else{
+                ""
+            }
         } catch (e: Exception) {
             ""
         }
     }
 
-    fun formatTimestampToPrettyTime(timestamp: Long, locale: Locale = Locale.getDefault()): String {
+    fun formatTimestampToPrettyTime(timestamp: Long?, locale: Locale = Locale.getDefault()): String {
+        if (timestamp == null) return ""
         return try {
             val date = Date(timestamp)
             val prettyTime = PrettyTime(locale)

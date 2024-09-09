@@ -38,9 +38,12 @@ fun EqualizerSection(
             isExpanded = isExpanded,
             title = title,
             isEnabled = isEnabled,
-            onSwitchChange = { mediaViewModel.updateIsEqualizerEnabled() },
-            onInitButton = { mediaViewModel.initEqualizerValue()}
-            )
+            onSwitchChange = {
+                mediaViewModel.updateIsEqualizerEnabled()
+                mediaViewModel.disableEqualizer()
+            },
+            onInitButton = { mediaViewModel.initEqualizerValue() }
+        )
 
         AnimatedVisibility(
             modifier = Modifier
