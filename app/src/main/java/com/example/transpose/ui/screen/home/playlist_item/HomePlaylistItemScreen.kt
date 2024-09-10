@@ -68,7 +68,8 @@ fun HomePlaylistItemScreen(
                         )
 
                     },
-                        dropDownMenuClick = { mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)})
+                        dropDownMenuClick = { mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)
+                        })
                 },
                 headerContent = { playlistData ->
                     PlaylistHeaderItem(playlistData = playlistData)

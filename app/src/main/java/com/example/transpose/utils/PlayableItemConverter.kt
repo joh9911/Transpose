@@ -3,6 +3,7 @@ package com.example.transpose.utils
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
+import com.example.transpose.data.database.entity.VideoEntity
 import com.example.transpose.data.model.local_file.LocalFileData
 import com.example.transpose.data.model.newpipe.NewPipeStreamInfoData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
@@ -28,6 +29,7 @@ object PlayableItemConverter {
             is NewPipeVideoData -> item.toBasicInfoData()
             is LocalFileData -> item.toBasicInfoData()
             is InfoItem -> item.toBasicInfoData()
+            is VideoEntity -> item.toBasicInfoData()
             else -> throw IllegalArgumentException("Unsupported type: ${item::class.java.name}")
         }
     }
@@ -81,6 +83,24 @@ object PlayableItemConverter {
             Logger.d("Error in InfoItem.toBasicInfoData: ${e.message}")
             throw IllegalArgumentException("Failed to convert InfoItem: ${e.message}", e)
         }
+    }
+
+    private fun VideoEntity.toBasicInfoData(): PlayableItemBasicInfoData {
+        return try {
+            PlayableItemBasicInfoData(
+                id = this.id,
+                title = this.title,
+                thumbnailUrl = NewPipeUtils.getHighestResolutionThumbnail(this.thumbnailUrl),
+                type = MediaItemType.YOUTUBE,
+                infoType = InfoType.STREAM,
+                uploaderName = this.uploaderName,
+                uploadedDate = this.textualUploadDate
+            )
+        }catch (e: Exception) {
+            Logger.d("Error in VideoEntity.toBasicInfoData(): ${e.message}")
+            throw IllegalArgumentException("Failed to convert InfoItem: ${e.message}", e)
+        }
+
     }
 
     fun NewPipeStreamInfoData.toPlayableMediaItem(baseVideoData: PlayableItemBasicInfoData): PlayableItemData {

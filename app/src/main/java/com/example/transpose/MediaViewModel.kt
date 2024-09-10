@@ -176,7 +176,8 @@ class MediaViewModel @Inject constructor(
                 if (cachedFullInfo != null) {
                     _currentVideoItemState.value = PlayableItemUiState.FullInfoLoaded(cachedFullInfo)
                 } else {
-                    loadFullItemInfo(mediaItem.mediaId)
+                    if (basicInfoData.infoType != null)
+                        loadFullItemInfo(mediaItem.mediaId)
                 }
 
                 getRelatedVideoItems(mediaItem.mediaId)
@@ -254,10 +255,10 @@ class MediaViewModel @Inject constructor(
                 mediaController.value?.prepare()
                 mediaController.value?.play()
 
-                // 전체 정보 로드
-                loadFullItemInfo(currentItem.id)
+                if (currentItem.infoType != null)
+                    loadFullItemInfo(currentItem.id)
             }catch (e: Exception){
-                Logger.d("onMEdiaItemClick $e")
+                Logger.d("onMediaItemClick $e")
             }
 
         }
@@ -287,7 +288,6 @@ class MediaViewModel @Inject constructor(
 
             mediaController.value?.setMediaItems(initialItems, clickedIndex - startLoadIndex, 0)
 
-            // 나머지 아이템 비동기 로드
             launch(Dispatchers.Default) {
                 val precedingItems = items.subList(0, startLoadIndex)
                 val followingItems = items.subList(endLoadIndex, items.size)
@@ -392,60 +392,7 @@ class MediaViewModel @Inject constructor(
         }
 
 
-    private var currentFetchJob: Job? = null
 
-
-    private suspend fun setMediaItemForNewPipeDataTemp(videoId: String) {
-        when (val currentItemState = currentVideoItemState.value) {
-            is PlayableItemUiState.BasicInfoLoaded -> {
-                val item = currentItemState.basicInfo
-                currentFetchJob?.cancel()
-                currentFetchJob = viewModelScope.launch(Dispatchers.IO) {
-                    try {
-                        val result = newPipeRepository.fetchStreamInfoByVideoId(videoId)
-                        if (result.isSuccess) {
-                            val streamInfoData = result.getOrNull()
-                            streamInfoData?.let { streamInfo ->
-                                val selectedVideoStream = streamInfo.videoStreams?.maxByOrNull { it.getResolution() }
-                                if (selectedVideoStream != null) {
-                                    withContext(Dispatchers.Main) {
-                                        val mediaItem = MediaItem.Builder()
-                                            .setMediaId(videoId)
-                                            .setUri(selectedVideoStream.content)
-                                            .setMediaMetadata(
-                                                MediaMetadata.Builder()
-                                                    .setExtras(item.toBundle())
-                                                    .setTitle(item.title)
-                                                    .setArtist(item.uploaderName ?: "Unknown Uploader")
-                                                    .setArtworkUri(item.thumbnailUrl?.let { Uri.parse(it) })
-                                                    .build()
-                                            )
-                                            .build()
-
-                                        val fullInfo = streamInfo.toPlayableMediaItem(item)
-                                        fullInfoCache[videoId] = fullInfo
-
-                                        val currentIndex = mediaController.value?.currentMediaItemIndex ?: 0
-                                        mediaController.value?.replaceMediaItem(currentIndex, mediaItem)
-
-                                        _currentVideoItemState.value = PlayableItemUiState.FullInfoLoaded(
-                                            streamInfo.toPlayableMediaItem(item)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        if (result.isFailure) {
-                            _currentVideoItemState.value = PlayableItemUiState.Error(result.exceptionOrNull()?.message)
-                        }
-                    } catch (e: Exception) {
-                        _currentVideoItemState.value = PlayableItemUiState.Error(e.message)
-                    }
-                }
-            }
-            else -> {}
-        }
-    }
 
     fun setMediaItemForNewPipeData(item: NewPipeVideoData) {
         viewModelScope.launch {

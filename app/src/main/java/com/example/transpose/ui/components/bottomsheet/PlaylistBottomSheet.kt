@@ -28,8 +28,10 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +44,7 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
 import com.example.transpose.ui.components.bottomsheet.item.RelatedVideoItem
+import com.example.transpose.utils.Logger
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,27 +54,30 @@ fun PlaylistBottomSheet(
     modifier: Modifier,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val mediaController by mediaViewModel.mediaController.collectAsState()
-    val mediaItemCount = mediaController?.mediaItemCount
+    val currentPlaylistItems by mediaViewModel.currentPlaylistItems.collectAsState()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Expanded,
+            skipHiddenState = false
+        )
+    )
+    LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+        snapshotFlow { scaffoldState.bottomSheetState.currentValue }.collect {
 
+            Logger.d("playlist $it")
+        }
+    }
     BoxWithConstraints(modifier = modifier) {
 
         val parentHeight = maxHeight
 
-        val scaffoldState = rememberBottomSheetScaffoldState(
-            bottomSheetState = rememberStandardBottomSheetState(
-                initialValue = SheetValue.Expanded,
-                skipHiddenState = false
-            )
-        )
+
 
         BottomSheetScaffold(
             sheetContainerColor = Color.White,
-            sheetPeekHeight = 0.dp,
+            sheetPeekHeight = 50.dp,
             sheetContent = {
-                if (mediaItemCount == null) return@BottomSheetScaffold
-
-                if (mediaItemCount >= 2){
+                if (currentPlaylistItems.isEmpty()){
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -138,7 +144,6 @@ fun PlaylistBottomSheet(
                 }
 
             }, scaffoldState = scaffoldState,
-            sheetDragHandle = null
         ) { paddingValues ->
             content(paddingValues)
         }

@@ -16,6 +16,7 @@ class LibraryMyPlaylistItemViewModel @Inject constructor(
     private val myPlaylistDBRepositoryImpl: MyPlaylistDBRepositoryImpl
 ): ViewModel() {
 
+
     private val _myPlaylistItems = MutableStateFlow<List<VideoEntity>>(emptyList())
     val myPlaylistItems = _myPlaylistItems.asStateFlow()
 
@@ -25,6 +26,15 @@ class LibraryMyPlaylistItemViewModel @Inject constructor(
 
         }catch (e: Exception){
             Logger.d("getVideosForPlaylist $e")
+        }
+    }
+
+    fun deleteVideo(playlistId: Long, videoEntity: VideoEntity) = viewModelScope.launch {
+        try {
+            myPlaylistDBRepositoryImpl.deleteVideo(videoEntity)
+            getVideosForPlaylist(playlistId)
+        }catch (e: Exception){
+            Logger.d("deleteVideo")
         }
     }
 }

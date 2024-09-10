@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.transpose.data.database.entity.PlaylistEntity
+import com.example.transpose.ui.screen.library.my_playlist.items.PlaylistItem
 
 @Composable
 fun AddVideoToPlaylistDialog(
@@ -25,13 +26,12 @@ fun AddVideoToPlaylistDialog(
             LazyColumn {
                 items(playlists.size) { index ->
                     val item = playlists[index]
-                    Text(
-                        text = item.name,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onPlaylistSelected(item.playlistId) }
-                            .padding(vertical = 8.dp)
-                    )
+                    PlaylistItem(
+                        title = item.name,
+                        onClick = { onPlaylistSelected(item.playlistId)
+                                  onDismiss()},
+                        dropDownMenuClick = {})
+
                 }
             }
         },

@@ -41,8 +41,11 @@ import com.example.transpose.ui.components.dropdown_menu.DropDownMenu
 fun PlaylistVideoItem(
     item: VideoEntity,
     onClick: (VideoEntity) -> Unit,
+    dropDownMenuClick: () -> Unit
 ){
-
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,6 +90,15 @@ fun PlaylistVideoItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
             )
+            Box{
+                IconButton(onClick = {isExpanded = true}) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More options"
+                    )
+                }
+                DropDownMenu(text = "delete",isExpanded = isExpanded, onDismissRequest = {isExpanded = false}, onClick = { dropDownMenuClick()})
+            }
         }
 
 
