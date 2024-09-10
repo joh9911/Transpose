@@ -25,10 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -71,6 +73,13 @@ fun PlayerBottomSheetScaffold(
 
     val hasLaunched = remember { mutableStateOf(false) }
 
+    val isBottomSheetDraggable by mainViewModel.isBottomSheetDraggable.collectAsState()
+
+    // if I scroll the bottomSheet and it goes to the state Hidden, then the LaunchedEffect is invoked, which changes the state to PartiallyExpanded
+    // it's temporary variable to stop the
+    // if It's true,
+    val bugFlag = remember { mutableStateOf(false) }
+
 
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
@@ -112,7 +121,7 @@ fun PlayerBottomSheetScaffold(
 
 
     LaunchedEffect(bottomSheetState) {
-        Logger.d("LaunchedEffect(bottomSheetState) $bottomSheetState")
+        Logger.d("LaunchedEffect(bottomSheetState) $bottomSheetState ${bugFlag.value}")
         when (bottomSheetState) {
             SheetValue.Expanded -> {
                 sheetState.expand()
@@ -120,10 +129,10 @@ fun PlayerBottomSheetScaffold(
 
             SheetValue.PartiallyExpanded -> {
                 sheetState.partialExpand()
+
             }
 
             SheetValue.Hidden -> {
-
             }
         }
     }
@@ -136,12 +145,15 @@ fun PlayerBottomSheetScaffold(
             when (it) {
 
                 SheetValue.Hidden -> {
+
                     mainViewModel.hideBottomSheet()
-                    mediaViewModel.removeCurrentMediaItem()
+                    mediaViewModel.clearCurrentPlayback()
                 }
 
                 SheetValue.Expanded -> mainViewModel.expandBottomSheet()
-                SheetValue.PartiallyExpanded -> mainViewModel.partialExpandBottomSheet()
+                SheetValue.PartiallyExpanded -> {
+                    mainViewModel.partialExpandBottomSheet()
+                }
             }
         }
     }
@@ -169,7 +181,8 @@ fun PlayerBottomSheetScaffold(
         sheetContainerColor = Color.White,
         scaffoldState = scaffoldState,
         modifier = Modifier
-            .padding(bottom = scaffoldBottomPadding),
+            .padding(bottom = scaffoldBottomPadding)
+            ,
         sheetContent = {
             PlayerBottomSheet(
                 mediaViewModel = mediaViewModel,

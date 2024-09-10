@@ -1,15 +1,12 @@
 package com.example.transpose.ui.components.bottomsheet
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,18 +15,23 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
@@ -51,9 +53,6 @@ import com.example.transpose.ui.components.bottomsheet.GraphicsLayerConstants.PE
 import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicator
 import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
 import com.example.transpose.ui.components.bottomsheet.item.VideoDetailPanel
-import com.example.transpose.utils.Logger
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
 
 
 object GraphicsLayerConstants {
@@ -84,29 +83,29 @@ fun PlayerBottomSheet(
     val draggableAreaBounds by mainViewModel.bottomSheetDraggableArea.collectAsState()
 
 
-    val listState = rememberLazyListState()
-
-    val isFocused by listState.interactionSource.interactions
-        .filterIsInstance<DragInteraction>()
-        .map { dragInteraction ->
-            dragInteraction is DragInteraction.Start
-        }
-        .collectAsState(false)
-
     var playerViewHeight by remember { mutableStateOf(0) }
 
-    val playerViewKey = remember { mutableStateOf(0) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val interactions = remember { mutableStateListOf<Interaction>() }
 
-    LaunchedEffect(bottomSheetState) {
-        playerViewKey.value += 1
-    }
+    val coroutineScope = rememberCoroutineScope()
 
-
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    var isDragging by remember { mutableStateOf(false) }
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .zIndex(2f)
+            .nestedScroll(object : NestedScrollConnection {
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource
+                ) = available
+            })
+
     ) {
 
         val (playerContainer, mainContainerLayout, playerView, playerThumbnailView, tempPlayerView, bottomPlayerCloseButton, bottomPlayerPauseButton, bottomTitleTextView, contentLazyColumn, playlistShowButton, playlistBottomSheet) = createRefs()
@@ -273,7 +272,8 @@ fun PlayerBottomSheet(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
-                }.graphicsLayer(
+                }
+                .graphicsLayer(
                     translationY = -playerViewHeight * (1 - calculateScaleFactorY(normalizedOffset))
                 )
                 .changeMainBackgroundAlpha(normalizedOffset)

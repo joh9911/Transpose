@@ -6,12 +6,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.common.PlayableItemUiState
+import com.example.transpose.utils.Logger
 
 @Composable
 fun VideoDetailPanel(
@@ -22,8 +26,9 @@ fun VideoDetailPanel(
     val currentVideoItemState by mediaViewModel.currentVideoItemState.collectAsState()
     val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
 
+
     LazyColumn(
-        modifier = modifier
+        modifier = modifier,
     ) {
         item {
             VideoInfoHeader(mediaViewModel = mediaViewModel, mainViewModel = mainViewModel)
