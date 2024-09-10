@@ -1,6 +1,9 @@
 package com.example.transpose.ui.components.bottomsheet
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
@@ -53,6 +57,7 @@ import com.example.transpose.ui.components.bottomsheet.GraphicsLayerConstants.PE
 import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicator
 import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
 import com.example.transpose.ui.components.bottomsheet.item.VideoDetailPanel
+import com.example.transpose.utils.Logger
 
 
 object GraphicsLayerConstants {
@@ -122,9 +127,23 @@ fun PlayerBottomSheet(
                     transformOrigin = TransformOrigin(0.5f, 0f)  // pivotY = 0f에 해당
                 )
                 .background(Color.Blue)
-                .onGloballyPositioned { coordinates ->
-                    mainViewModel.updateBottomSheetDraggableArea(coordinates.boundsInWindow())
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        // 첫 번째 터치 다운 이벤트를 기다립니다
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        Logger.d("Touch Down detected at: ${down.position}")
+
+                        // 터치 업 이벤트를 기다립니다
+                        val up = waitForUpOrCancellation()
+                        if (up != null) {
+                            Logger.d("Touch Up detected at: ${up.position}")
+                            mainViewModel.expandBottomSheet()
+                        } else {
+                            Logger.d("Touch cancelled")
+                        }
+                    }
                 }
+
         )
 
         val centerGuideline = createGuidelineFromTop(PEEK_HEIGHT / 2)
