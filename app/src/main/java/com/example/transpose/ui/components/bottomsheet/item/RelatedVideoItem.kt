@@ -38,12 +38,12 @@ import com.example.transpose.data.repository.NewPipeUtils
 import org.schabi.newpipe.extractor.InfoItem
 
 @Composable
-fun RelatedVideoItem(infoItem: InfoItem, mediaViewModel: MediaViewModel) {
+fun RelatedVideoItem(infoItem: InfoItem, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable { mediaViewModel.onMediaItemClick(infoItem) }
+            .clickable { onClick() }
             .padding(vertical = 10.dp, horizontal = 10.dp)
     ) {
         AsyncImage(

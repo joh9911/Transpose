@@ -1,6 +1,7 @@
 package com.example.transpose.ui.components.bottomsheet.item
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -11,11 +12,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.Logger
+import kotlinx.coroutines.launch
 
 @Composable
 fun VideoDetailPanel(
@@ -24,11 +27,12 @@ fun VideoDetailPanel(
     modifier: Modifier,
 ) {
     val currentVideoItemState by mediaViewModel.currentVideoItemState.collectAsState()
-    val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
-
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     LazyColumn(
         modifier = modifier,
+        state = listState
     ) {
         item {
             VideoInfoHeader(mediaViewModel = mediaViewModel, mainViewModel = mainViewModel)
@@ -55,7 +59,11 @@ fun VideoDetailPanel(
                         val item = videoList[index]
                         RelatedVideoItem(
                             infoItem = item,
-                            mediaViewModel = mediaViewModel
+                            onClick = { mediaViewModel.onMediaItemClick(item)
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(0)
+                                }
+                            }
                         )
                     }
                 }
