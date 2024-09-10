@@ -1,4 +1,3 @@
-package com.example.transpose.ui.components.items
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

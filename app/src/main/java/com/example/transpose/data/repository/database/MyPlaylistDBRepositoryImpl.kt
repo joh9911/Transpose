@@ -20,12 +20,20 @@ class MyPlaylistDBRepositoryImpl @Inject constructor(
         return playlistDao.getAllPlaylists()
     }
 
+    override suspend fun deletePlaylist(playlist: PlaylistEntity) {
+        return playlistDao.deletePlaylist(playlist)
+    }
+
     override suspend fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) {
         videoDao.insertVideo(video.toVideoEntity(playlistId))
     }
 
     override suspend fun getVideosForPlaylist(playlistId: Long): List<VideoEntity> {
         return videoDao.getVideosForPlaylist(playlistId)
+    }
+
+    override suspend fun deleteVideo(videoEntity: VideoEntity) {
+        return videoDao.deleteVideo(videoEntity)
     }
 }
 

@@ -1,5 +1,6 @@
-package com.example.transpose.ui.components.items
+package com.example.transpose.ui.screen.library.my_playlist_item.items
 
+import android.provider.MediaStore.Video
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
@@ -34,19 +34,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.database.entity.VideoEntity
 import com.example.transpose.ui.components.dropdown_menu.DropDownMenu
 
 @Composable
-fun CommonVideoItem(
-    item: NewPipeContentListData,
-    currentIndex: Int,
-    onClick: (NewPipeContentListData) -> Unit,
-    dropDownMenuClick: () -> Unit,
-) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
+fun PlaylistVideoItem(
+    item: VideoEntity,
+    onClick: (VideoEntity) -> Unit,
+){
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,21 +88,8 @@ fun CommonVideoItem(
                 maxLines = 1
             )
         }
-        Box(
-            modifier = Modifier.align(Alignment.CenterVertically)
-        ) {
-            IconButton(
-                onClick = { isExpanded = true },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options"
-                )
-            }
-            DropDownMenu(text = "add to playlist", isExpanded = isExpanded, onDismissRequest = { isExpanded = false }, onClick = {dropDownMenuClick()})
-        }
+
 
     }
     HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
-
 }

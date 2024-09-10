@@ -1,4 +1,4 @@
-package com.example.transpose.ui.components.items
+package com.example.transpose.ui.screen.home.home_playlist.items
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

@@ -1,5 +1,6 @@
 package com.example.transpose.ui.screen.home.home_playlist
 
+import RegularPlaylistItem
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 
@@ -18,8 +19,7 @@ import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.ui.common.UiState
-import com.example.transpose.ui.components.items.NationalPlaylistItem
-import com.example.transpose.ui.components.items.RegularPlaylistItem
+import com.example.transpose.ui.screen.home.home_playlist.items.NationalPlaylistItem
 import com.example.transpose.utils.Logger
 
 @OptIn(ExperimentalMaterial3Api::class)

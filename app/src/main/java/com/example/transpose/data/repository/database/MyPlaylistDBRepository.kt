@@ -7,6 +7,8 @@ import com.example.transpose.data.model.newpipe.NewPipeVideoData
 interface MyPlaylistDBRepository {
     suspend fun createPlaylist(name: String): Long
     suspend fun getAllPlaylists(): List<PlaylistEntity>
+    suspend fun deletePlaylist(playlist: PlaylistEntity)
     suspend fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long)
     suspend fun getVideosForPlaylist(playlistId: Long): List<VideoEntity>
+    suspend fun deleteVideo(videoEntity: VideoEntity)
 }

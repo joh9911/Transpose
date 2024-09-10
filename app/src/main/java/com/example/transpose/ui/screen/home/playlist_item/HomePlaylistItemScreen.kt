@@ -11,10 +11,12 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.common.PaginatedState
+import com.example.transpose.ui.components.dialog.AddVideoToPlaylistDialog
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
-import com.example.transpose.ui.components.items.PlaylistHeaderItem
+import com.example.transpose.ui.screen.home.playlist_item.items.PlaylistHeaderItem
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +31,9 @@ fun HomePlaylistItemScreen(
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val playlistInfo by homePlaylistItemViewModel.playlistInfo.collectAsState()
     val playlistItemsState by homePlaylistItemViewModel.playlistItemsState.collectAsState()
-
+    val isShowingPlaylistDialog  by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
+    val myPlaylists by mainViewModel.myPlaylists.collectAsState()
+    val selectedVideo by mainViewModel.selectedVideo.collectAsState()
     BackHandler(
         enabled = bottomSheetState == SheetValue.Expanded
     ) {
@@ -62,7 +66,9 @@ fun HomePlaylistItemScreen(
                             playlistItems = state.items,
                             clickedIndex = index
                         )
-                    })
+
+                    },
+                        dropDownMenuClick = { mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)})
                 },
                 headerContent = { playlistData ->
                     PlaylistHeaderItem(playlistData = playlistData)
@@ -76,6 +82,17 @@ fun HomePlaylistItemScreen(
             // 에러 메시지 표시
             ErrorMessage(message = state.message)
         }
+    }
+    if (isShowingPlaylistDialog) {
+        AddVideoToPlaylistDialog(
+            playlists = myPlaylists,
+            onDismiss = { mainViewModel.dismissPlaylistDialog() },
+            onPlaylistSelected = { playlistId ->
+                selectedVideo?.let {
+                    mainViewModel.addVideoToPlaylist(it, playlistId)
+                }
+            }
+        )
     }
 }
 

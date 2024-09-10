@@ -1,4 +1,4 @@
-package com.example.transpose.ui.components.items
+package com.example.transpose.ui.screen.home.playlist_item.items
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -19,6 +19,7 @@ import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.common.PaginatedState
+import com.example.transpose.ui.components.dialog.AddVideoToPlaylistDialog
 import com.example.transpose.ui.components.items.ChannelItem
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
@@ -38,6 +39,9 @@ fun HomeSearchResultScreen(
 ) {
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val searchResultsState by homeSearchResultViewModel.searchResultsState.collectAsState()
+    val isShowingPlaylistDialog  by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
+    val myPlaylists by mainViewModel.myPlaylists.collectAsState()
+    val selectedVideo by mainViewModel.selectedVideo.collectAsState()
 
     BackHandler(
         enabled = bottomSheetState == SheetValue.Expanded
@@ -78,7 +82,8 @@ fun HomeSearchResultScreen(
                                 onClick = {
                                     mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
                                     mainViewModel.expandBottomSheet()
-                                }
+                                },
+                                dropDownMenuClick = {mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)}
                             )
 
                         }
@@ -104,6 +109,17 @@ fun HomeSearchResultScreen(
         is PaginatedState.Error -> {
             ErrorMessage(message = state.message)
         }
+    }
+    if (isShowingPlaylistDialog) {
+        AddVideoToPlaylistDialog(
+            playlists = myPlaylists,
+            onDismiss = { mainViewModel.dismissPlaylistDialog() },
+            onPlaylistSelected = { playlistId ->
+                selectedVideo?.let {
+                    mainViewModel.addVideoToPlaylist(it, playlistId)
+                }
+            }
+        )
     }
 }
 

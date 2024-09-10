@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.transpose.data.database.entity.PlaylistEntity
 import com.example.transpose.data.model.newpipe.NewPipeChannelData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.data.repository.database.MyPlaylistDBRepository
@@ -132,7 +133,7 @@ class MainViewModel @Inject constructor(
         _bottomSheetDraggableArea.value = rect
     }
 
-    private val _isBottomSheetDraggable = MutableStateFlow(true)
+    private val _isBottomSheetDraggable = MutableStateFlow(false)
     val isBottomSheetDraggable = _isBottomSheetDraggable.asStateFlow()
 
     fun updateIsBottomSheetDraggable(boolean: Boolean) {
@@ -143,14 +144,14 @@ class MainViewModel @Inject constructor(
     val bottomSheetState = _bottomSheetState.asStateFlow()
 
     fun expandBottomSheet() {
-        Logger.d("expandBottomSheet")
+//        Logger.d("expandBottomSheet")
         _bottomSheetState.value = SheetValue.Expanded
 
 
     }
 
     fun partialExpandBottomSheet() {
-        Logger.d("partialExpandBottomSheet")
+//        Logger.d("partialExpandBottomSheet")
 
         _bottomSheetState.value = SheetValue.PartiallyExpanded
 
@@ -158,7 +159,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun hideBottomSheet() {
-        Logger.d("hideBottomSheet")
+//        Logger.d("hideBottomSheet")
 
         _bottomSheetState.value = SheetValue.Hidden
 
@@ -166,10 +167,7 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) =
-        viewModelScope.launch(Dispatchers.IO) {
-            playlistDBRepository.addVideoToPlaylist(video, playlistId)
-        }
+
 
     private val _channelData = MutableStateFlow<NewPipeChannelData?>(null)
     val channelData = _channelData.asStateFlow()
@@ -199,6 +197,42 @@ class MainViewModel @Inject constructor(
 
         }
     }
+
+    private val _isShowingAddVideoToPlaylistDialog = MutableStateFlow(false)
+    val isShowAddVideoToPlaylistDialog = _isShowingAddVideoToPlaylistDialog.asStateFlow()
+
+    private val _myPlaylists = MutableStateFlow<List<PlaylistEntity>>(emptyList())
+    val myPlaylists = _myPlaylists.asStateFlow()
+
+    private val _selectedVideo = MutableStateFlow<NewPipeVideoData?>(null)
+    val selectedVideo = _selectedVideo.asStateFlow()
+
+    fun showAddToPlaylistDialog(video: NewPipeVideoData) {
+        getAllMyPlaylist()
+        _selectedVideo.value = video
+        _isShowingAddVideoToPlaylistDialog.value = true
+
+    }
+
+    fun dismissPlaylistDialog() {
+        _isShowingAddVideoToPlaylistDialog.value = false
+        _myPlaylists.value = emptyList()
+        _selectedVideo.value = null
+    }
+
+    private fun getAllMyPlaylist() = viewModelScope.launch {
+        try {
+            _myPlaylists.value = playlistDBRepository.getAllPlaylists()
+
+        }catch (e: Exception){
+            Logger.d("getAllMyPlaylist $e")
+        }
+    }
+
+    fun addVideoToPlaylist(video: NewPipeVideoData, playlistId: Long) =
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistDBRepository.addVideoToPlaylist(video, playlistId)
+        }
 
 
 }

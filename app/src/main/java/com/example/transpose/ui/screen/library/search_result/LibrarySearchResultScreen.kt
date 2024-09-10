@@ -11,13 +11,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
+import com.example.transpose.data.model.newpipe.NewPipeChannelData
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.common.PaginatedState
+import com.example.transpose.ui.components.dialog.AddVideoToPlaylistDialog
+import com.example.transpose.ui.components.items.ChannelItem
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
+import com.example.transpose.ui.components.items.PlaylistItem
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
+import org.schabi.newpipe.extractor.InfoItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +36,9 @@ fun LibrarySearchResultScreen(
 ) {
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val searchResultsState by librarySearchResultViewModel.searchResultsState.collectAsState()
-
+    val isShowingPlaylistDialog  by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
+    val myPlaylists by mainViewModel.myPlaylists.collectAsState()
+    val selectedVideo by mainViewModel.selectedVideo.collectAsState()
     BackHandler(
         enabled = bottomSheetState == SheetValue.Expanded
     ) {
@@ -57,14 +65,34 @@ fun LibrarySearchResultScreen(
                 headerData = null,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = {index, item: NewPipeContentListData ->
-                    CommonVideoItem(
-                        item = item,
-                        currentIndex = index,
-                        onClick = {
-                            mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
-                            mainViewModel.expandBottomSheet()
+                    when (item.infoType) {
+                        InfoItem.InfoType.PLAYLIST -> {
+                            PlaylistItem(playlist = (item as NewPipePlaylistData), onClick = {})
                         }
-                    )
+
+                        InfoItem.InfoType.STREAM -> {
+                            CommonVideoItem(
+                                item = item,
+                                currentIndex = index,
+                                onClick = {
+                                    mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
+                                    mainViewModel.expandBottomSheet()
+                                },
+                                dropDownMenuClick = {mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)}
+                            )
+
+                        }
+
+                        InfoItem.InfoType.CHANNEL -> {
+                            ChannelItem(
+                                channel = item as NewPipeChannelData,
+                                onClick = {
+                                }
+                            )
+                        }
+
+                        InfoItem.InfoType.COMMENT -> {}
+                    }
                 },
                 loading = state.isLoadingMore,
                 loadMore = { librarySearchResultViewModel.loadMoreSearchResults() },
@@ -74,6 +102,17 @@ fun LibrarySearchResultScreen(
         is PaginatedState.Error -> {
             ErrorMessage(message = state.message)
         }
+    }
+    if (isShowingPlaylistDialog) {
+        AddVideoToPlaylistDialog(
+            playlists = myPlaylists,
+            onDismiss = { mainViewModel.dismissPlaylistDialog() },
+            onPlaylistSelected = { playlistId ->
+                selectedVideo?.let {
+                    mainViewModel.addVideoToPlaylist(it, playlistId)
+                }
+            }
+        )
     }
 }
 
