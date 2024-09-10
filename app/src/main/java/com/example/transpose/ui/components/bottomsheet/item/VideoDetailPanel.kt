@@ -14,6 +14,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.common.PlayableItemUiState
@@ -30,9 +33,10 @@ fun VideoDetailPanel(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
+
     LazyColumn(
         modifier = modifier,
-        state = listState
+
     ) {
         item {
             VideoInfoHeader(mediaViewModel = mediaViewModel, mainViewModel = mainViewModel)
@@ -60,9 +64,7 @@ fun VideoDetailPanel(
                         RelatedVideoItem(
                             infoItem = item,
                             onClick = { mediaViewModel.onMediaItemClick(item)
-                                coroutineScope.launch {
-                                    listState.animateScrollToItem(0)
-                                }
+
                             }
                         )
                     }

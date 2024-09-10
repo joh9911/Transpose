@@ -37,6 +37,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.view.NestedScrollingChildHelper
+import androidx.core.view.ViewCompat
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
@@ -181,8 +183,9 @@ fun PlayerBottomSheetScaffold(
         sheetContainerColor = Color.White,
         scaffoldState = scaffoldState,
         modifier = Modifier
-            .padding(bottom = scaffoldBottomPadding)
-            ,
+            .padding(bottom = scaffoldBottomPadding),
+
+
         sheetContent = {
             PlayerBottomSheet(
                 mediaViewModel = mediaViewModel,
@@ -318,3 +321,45 @@ fun keyboardAsState(): State<Boolean> {
 @ExperimentalMaterial3Api
 val SheetState.shouldShowModalBottomSheet
     get() = isVisible || targetValue == SheetValue.Expanded || targetValue == SheetValue.PartiallyExpanded
+
+
+@Composable
+fun rememberNestedScrollInteropConnection(): NestedScrollConnection {
+    val view = LocalView.current
+    return remember(view) {
+        object : NestedScrollConnection {
+            private val helper = NestedScrollingChildHelper(view)
+
+            init {
+                ViewCompat.setNestedScrollingEnabled(view, true)
+            }
+
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                helper.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL)
+                var consumed = Offset.Zero
+                helper.dispatchNestedPreScroll(
+                    available.x.toInt(),
+                    available.y.toInt(),
+                    intArrayOf(0, 0),
+                    null
+                )
+                return consumed
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                helper.dispatchNestedScroll(
+                    consumed.x.toInt(),
+                    consumed.y.toInt(),
+                    available.x.toInt(),
+                    available.y.toInt(),
+                    null
+                )
+                return Offset.Zero
+            }
+        }
+    }
+}

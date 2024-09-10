@@ -35,12 +35,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toIntRect
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
@@ -85,18 +88,12 @@ fun PlayerBottomSheet(
     val isPlaying by mediaViewModel.isPlaying.collectAsState()
 
     val currentVideoItemState by mediaViewModel.currentVideoItemState.collectAsState()
-    val draggableAreaBounds by mainViewModel.bottomSheetDraggableArea.collectAsState()
+    val bottomSheetDraggableArea by mainViewModel.bottomSheetDraggableArea.collectAsState()
 
 
     var playerViewHeight by remember { mutableStateOf(0) }
 
-    val interactionSource = remember { MutableInteractionSource() }
-    val interactions = remember { mutableStateListOf<Interaction>() }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+    var dragStartPosition by remember { mutableStateOf(Offset.Zero) }
     var isDragging by remember { mutableStateOf(false) }
 
     ConstraintLayout(
@@ -110,6 +107,44 @@ fun PlayerBottomSheet(
                     source: NestedScrollSource
                 ) = available
             })
+//            .pointerInput(Unit) {
+//                awaitPointerEventScope {
+//                    while (true) {
+//                        val event = awaitPointerEvent()
+//                        when (event.type) {
+//                            PointerEventType.Press -> {
+//                                dragStartPosition = event.changes.first().position
+//                                isDragging = true
+//                                Logger.d("Press $dragStartPosition")
+//                            }
+//
+//                            PointerEventType.Move -> {
+//                                if (isDragging) {
+//                                    val currentPosition = event.changes.first().position
+//                                    val dragAmount = currentPosition - dragStartPosition
+//                                    Logger.d("Move $currentPosition ${bottomSheetDraggableArea?.contains(currentPosition)}")
+//
+//                                    bottomSheetDraggableArea?.let {
+//                                        mainViewModel.updateIsBottomSheetDraggable(
+//                                            it.contains(
+//                                                currentPosition
+//                                            )
+//                                        )
+//                                    }
+//                                }
+//                            }
+//
+//                            PointerEventType.Release -> {
+//                                if (isDragging) {
+//                                    isDragging = false
+//                                    Logger.d("Release $dragStartPosition")
+//
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
     ) {
 
@@ -143,6 +178,9 @@ fun PlayerBottomSheet(
                         }
                     }
                 }
+//                .onGloballyPositioned { coordinates ->
+//                    mainViewModel.updateBottomSheetDraggableArea(coordinates.boundsInParent())
+//                }
 
         )
 
@@ -181,7 +219,6 @@ fun PlayerBottomSheet(
                 }
                 .bottomSheetAlpha(normalizedOffset)
         )
-
 
 
         // bottomPlayerCloseButton
@@ -296,6 +333,7 @@ fun PlayerBottomSheet(
                     translationY = -playerViewHeight * (1 - calculateScaleFactorY(normalizedOffset))
                 )
                 .changeMainBackgroundAlpha(normalizedOffset)
+
         )
 
 
