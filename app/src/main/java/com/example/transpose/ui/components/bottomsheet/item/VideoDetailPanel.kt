@@ -36,7 +36,7 @@ fun VideoDetailPanel(
 
     LazyColumn(
         modifier = modifier,
-
+        state = listState
     ) {
         item {
             VideoInfoHeader(mediaViewModel = mediaViewModel, mainViewModel = mainViewModel)
@@ -64,7 +64,9 @@ fun VideoDetailPanel(
                         RelatedVideoItem(
                             infoItem = item,
                             onClick = { mediaViewModel.onMediaItemClick(item)
-
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(0)
+                                }
                             }
                         )
                     }
