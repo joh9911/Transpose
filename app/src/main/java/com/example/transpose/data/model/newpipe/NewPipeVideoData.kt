@@ -15,7 +15,7 @@ data class NewPipeVideoData(
     override val infoType: InfoItem.InfoType,
     val uploaderName: String?,
     val uploaderUrl: String?,
-    val uploaderAvatars: List<Image>,
+    val uploaderAvatars: List<Image>?,
     val uploaderVerified: Boolean,
     val duration: Long,
     val viewCount: Long,

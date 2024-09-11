@@ -22,6 +22,7 @@ import com.example.transpose.media.MediaService
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerPresets
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerSettings
 import com.example.transpose.media.audio_effect.data.reverb.ReverbPresets
+import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.media.model.PlayableItemBasicInfoData
 import com.example.transpose.media.model.PlayableItemData
 import com.example.transpose.ui.common.PlayableItemUiState
@@ -176,11 +177,11 @@ class MediaViewModel @Inject constructor(
                 if (cachedFullInfo != null) {
                     _currentVideoItemState.value = PlayableItemUiState.FullInfoLoaded(cachedFullInfo)
                 } else {
-                    if (basicInfoData.infoType != null)
+                    if (basicInfoData.type == MediaItemType.YOUTUBE)
                         loadFullItemInfo(mediaItem.mediaId)
                 }
-
-                getRelatedVideoItems(mediaItem.mediaId)
+                if (basicInfoData.type == MediaItemType.YOUTUBE)
+                    getRelatedVideoItems(mediaItem.mediaId)
             }
         }
     }
@@ -255,7 +256,7 @@ class MediaViewModel @Inject constructor(
                 mediaController.value?.prepare()
                 mediaController.value?.play()
 
-                if (currentItem.infoType != null)
+                if (currentItem.type == MediaItemType.YOUTUBE)
                     loadFullItemInfo(currentItem.id)
             }catch (e: Exception){
                 Logger.d("onMediaItemClick $e")
@@ -297,9 +298,13 @@ class MediaViewModel @Inject constructor(
     }
 
     private fun createMediaItem(basicInfo: PlayableItemBasicInfoData): MediaItem {
+        val uri = when (basicInfo.type) {
+            MediaItemType.LOCAL_FILE -> Uri.parse(basicInfo.id)
+            MediaItemType.YOUTUBE -> Uri.parse("asset:///15-seconds-of-silence.mp3")
+        }
         return MediaItem.Builder()
             .setMediaId(basicInfo.id)
-            .setUri("asset:///15-seconds-of-silence.mp3")
+            .setUri(uri)
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setTitle(basicInfo.title)

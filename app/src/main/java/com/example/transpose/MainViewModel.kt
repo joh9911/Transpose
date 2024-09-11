@@ -14,6 +14,7 @@ import com.example.transpose.data.repository.database.MyPlaylistDBRepository
 import com.example.transpose.data.repository.database.MyPlaylistDBRepositoryImpl
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.data.repository.suggestion_keyword.SuggestionKeywordRepository
+import com.example.transpose.media.model.PlayableItemData
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 import com.example.transpose.utils.Logger
 import com.example.transpose.utils.PermissionUtils
@@ -167,8 +168,6 @@ class MainViewModel @Inject constructor(
     }
 
 
-
-
     private val _channelData = MutableStateFlow<NewPipeChannelData?>(null)
     val channelData = _channelData.asStateFlow()
 
@@ -224,7 +223,7 @@ class MainViewModel @Inject constructor(
         try {
             _myPlaylists.value = playlistDBRepository.getAllPlaylists()
 
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Logger.d("getAllMyPlaylist $e")
         }
     }
@@ -233,6 +232,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             playlistDBRepository.addVideoToPlaylist(video, playlistId)
         }
+
 
 
 }

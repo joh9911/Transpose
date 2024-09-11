@@ -50,7 +50,8 @@ fun LibraryMyLocalItemScreen(
                 LazyColumn {
                     items(audioFiles.size){ index ->
                         val item = audioFiles[index]
-                        LocalFileData(item = item, onClick = { mediaViewModel.onMediaItemClick(item) })
+                        LocalFileData(item = item, onClick = { mediaViewModel.onMediaItemClick(item)
+                        mainViewModel.expandBottomSheet()})
 
                     }
                 }

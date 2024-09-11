@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
+import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.TextFormatUtil
 import com.valentinilk.shimmer.shimmer
@@ -54,7 +56,10 @@ fun VideoInfoSection(mediaViewModel: MediaViewModel) {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                PartialShimmerEffect()
+                if (basicInfo.type == MediaItemType.YOUTUBE)
+                    PartialShimmerEffect()
+                else
+                    Spacer(modifier = Modifier.size(10.dp))
             }
 
             is PlayableItemUiState.FullInfoLoaded -> {
@@ -87,7 +92,7 @@ fun VideoInfoSection(mediaViewModel: MediaViewModel) {
                 Text(
                     text = "Error: ${(currentVideoItemState as PlayableItemUiState.Error).message}",
                     color = Color.Red,
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(16.dp)
                 )
             }
         }

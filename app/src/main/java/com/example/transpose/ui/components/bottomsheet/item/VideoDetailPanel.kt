@@ -19,6 +19,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
+import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.Logger
 import kotlinx.coroutines.launch
@@ -45,15 +46,15 @@ fun VideoDetailPanel(
         when (val state = currentVideoItemState) {
 
             is PlayableItemUiState.BasicInfoLoaded -> {
-                items(5){
-                    RelatedVideoShimmerItem()
-                }
+                if (state.basicInfo.type == MediaItemType.YOUTUBE)
+                    items(5){
+                        RelatedVideoShimmerItem()
+                    }
             }
             is PlayableItemUiState.Error -> {
                 val data = state.message
                 item{
                     Text(data ?: "")
-
                 }
             }
             is PlayableItemUiState.FullInfoLoaded -> {

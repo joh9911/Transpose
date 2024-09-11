@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.transpose.MediaViewModel
+import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.Logger
 
@@ -25,8 +26,8 @@ fun PlayerThumbnailView(
         is PlayableItemUiState.BasicInfoLoaded -> {
 
             val data = state.basicInfo
-
-                    Box(modifier = modifier) {
+            if (data.type == MediaItemType.YOUTUBE){
+                Box(modifier = modifier) {
                     AsyncImage(
                         model = data.thumbnailUrl,
                         contentDescription = "Video Thumbnail",
@@ -34,7 +35,7 @@ fun PlayerThumbnailView(
                         modifier = Modifier.matchParentSize()
                     )
                 }
-
+            }
 
         }
 

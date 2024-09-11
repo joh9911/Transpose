@@ -11,8 +11,10 @@ import com.example.transpose.data.repository.NewPipeUtils
 import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.media.model.PlayableItemBasicInfoData
 import com.example.transpose.media.model.PlayableItemData
+import org.schabi.newpipe.extractor.Image
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.InfoItem.InfoType
+import org.schabi.newpipe.extractor.stream.StreamType
 
 
 object PlayableItemConverter {
@@ -54,7 +56,7 @@ object PlayableItemConverter {
     private fun LocalFileData.toBasicInfoData(): PlayableItemBasicInfoData {
         return try {
             PlayableItemBasicInfoData(
-                id = id.toString(),
+                id = uri.toString(),
                 title = title,
                 thumbnailUrl = album,  // Note: Is this correct? album as thumbnailUrl?
                 type = MediaItemType.LOCAL_FILE,  // Changed from YOUTUBE to LOCAL_FILE
@@ -153,4 +155,26 @@ object PlayableItemConverter {
             uploadedDate = getString("uploadedDate")
         )
     }
+
+    fun PlayableItemData.toNewPipeVideoData(): NewPipeVideoData {
+        return NewPipeVideoData(
+            id = id,
+            title = title,
+            description = description ?: "",
+            publishTimestamp = null,
+            thumbnailUrl = thumbnailUrl,
+            infoType = infoType ?: InfoItem.InfoType.STREAM,
+            uploaderName = uploaderName,
+            uploaderUrl = uploaderUrl,
+            uploaderAvatars = null,
+            uploaderVerified = false, // PlayableItemData에는 이 정보가 없으므로 기본값으로 false 설정
+            duration = -1, // PlayableItemData에는 duration 정보가 없으므로 -1로 설정
+            viewCount = viewCount,
+            textualUploadDate = textualUploadDate,
+            streamType = StreamType.VIDEO_STREAM, // 기본값으로 VIDEO_STREAM 설정
+            shortFormContent = false // PlayableItemData에는 이 정보가 없으므로 기본값으로 false 설정
+        )
+    }
+
+
 }

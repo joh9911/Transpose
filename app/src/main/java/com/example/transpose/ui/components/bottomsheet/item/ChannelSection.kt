@@ -32,8 +32,10 @@ import coil.compose.AsyncImage
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
+import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.media.model.PlayableItemData
 import com.example.transpose.ui.common.PlayableItemUiState
+import com.example.transpose.utils.PlayableItemConverter.toNewPipeVideoData
 import com.example.transpose.utils.TextFormatUtil
 import com.example.transpose.utils.constants.AppColors
 import com.valentinilk.shimmer.shimmer
@@ -49,11 +51,12 @@ fun ChannelSection(
 
     when (val state = currentVideoItemState) {
         is PlayableItemUiState.BasicInfoLoaded -> {
-            ChannelSectionShimmer()
+            if (state.basicInfo.type == MediaItemType.YOUTUBE)
+                ChannelSectionShimmer()
         }
 
         is PlayableItemUiState.Error -> {
-            ChannelSectionShimmer()
+
         }
 
         is PlayableItemUiState.FullInfoLoaded -> {
@@ -110,14 +113,14 @@ fun ChannelSectionContent(videoItem: PlayableItemData, mainViewModel: MainViewMo
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { },
+            onClick = {mainViewModel.showAddToPlaylistDialog(videoItem.toNewPipeVideoData()) },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
             elevation = ButtonDefaults.buttonElevation(0.dp),
             shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(1.dp, AppColors.BeforeGettingDataColor),
+            border = BorderStroke(1.dp, Color.Gray),
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier
-                .padding(end = 10.dp)
+                .padding(end = 15.dp)
                 .width(60.dp)
                 .height(30.dp)
         ) {
@@ -150,8 +153,8 @@ fun ChannelSectionShimmer() {
             modifier = Modifier
                 .weight(1f)
                 .height(20.dp)
-                .padding(end = 10.dp)
-                .background(Color.LightGray)
+                .padding(end = 15.dp)
+                .background(AppColors.GrayBackground)
         )
         Spacer(modifier = Modifier.weight(1f))
         // 버튼은 shimmer 상태에서 제거됨
