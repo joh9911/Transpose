@@ -61,7 +61,7 @@ fun ConvertAudioEditScreen(
         VirtualizerSection(
             mediaViewModel = mediaViewModel)
         HapticGeneratorSection(mediaViewModel = mediaViewModel)
-        EnvironmentalReverbSection(mediaViewModel = mediaViewModel)
+//        EnvironmentalReverbSection(mediaViewModel = mediaViewModel)
     }
 
 

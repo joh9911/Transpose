@@ -191,14 +191,14 @@ class AudioEffectHandlerImpl @Inject constructor(
     override fun setPresetReverb(presetIndex: Int, sendLevel: Int) {
         try {
             if (presetReverb == null) {
-                presetReverb = PresetReverb(0, 0)
+                presetReverb = PresetReverb(1, 0)
                 presetReverb?.enabled = true
             }
 
             presetReverb?.preset = presetIndex.toShort()
 
             val auxEffectSendLevel = sendLevel.toFloat()
-
+            Logger.d("preset ${presetReverb?.preset} ${presetReverb?.enabled}")
             exoPlayer.setAuxEffectInfo(AuxEffectInfo(presetReverb!!.id, auxEffectSendLevel))
         }catch (e: Exception){
             Logger.d("setPresetReverb $e")
