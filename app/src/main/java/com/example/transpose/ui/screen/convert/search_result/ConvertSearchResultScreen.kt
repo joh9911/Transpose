@@ -38,7 +38,7 @@ fun ConvertSearchResultScreen(
 ) {
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val searchResultsState by convertSearchResultViewModel.searchResultsState.collectAsState()
-    val isShowingPlaylistDialog  by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
+    val isShowingPlaylistDialog by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
     val myPlaylists by mainViewModel.myPlaylists.collectAsState()
     val selectedVideo by mainViewModel.selectedVideo.collectAsState()
 
@@ -74,7 +74,9 @@ fun ConvertSearchResultScreen(
                 itemContent = { index, item: NewPipeContentListData ->
                     when (item.infoType) {
                         InfoItem.InfoType.PLAYLIST -> {
-                            PlaylistItem(playlist = (item as NewPipePlaylistData), onClick = {})
+                            PlaylistItem(
+                                playlist = (item as NewPipePlaylistData),
+                                onClick = { })
                         }
 
                         InfoItem.InfoType.STREAM -> {
@@ -85,7 +87,7 @@ fun ConvertSearchResultScreen(
                                     mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
                                     mainViewModel.expandBottomSheet()
                                 },
-                                dropDownMenuClick = {mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)}
+                                dropDownMenuClick = { mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData) }
                             )
 
                         }
