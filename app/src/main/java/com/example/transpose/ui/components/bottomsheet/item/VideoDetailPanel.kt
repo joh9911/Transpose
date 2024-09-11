@@ -23,6 +23,7 @@ import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.Logger
 import kotlinx.coroutines.launch
+import org.schabi.newpipe.extractor.InfoItem
 
 @Composable
 fun VideoDetailPanel(
@@ -62,14 +63,16 @@ fun VideoDetailPanel(
                 items?.let { videoList ->
                     items(videoList.size) { index ->
                         val item = videoList[index]
-                        RelatedVideoItem(
-                            infoItem = item,
-                            onClick = { mediaViewModel.onMediaItemClick(item)
-                                coroutineScope.launch {
-                                    listState.animateScrollToItem(0)
+                        if (item.infoType == InfoItem.InfoType.STREAM){
+                            RelatedVideoItem(
+                                infoItem = item,
+                                onClick = { mediaViewModel.onMediaItemClick(item)
+                                    coroutineScope.launch {
+                                        listState.animateScrollToItem(0)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
 
