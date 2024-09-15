@@ -1,7 +1,4 @@
-<div style="display: flex; align-items: center; margin-bottom: 20px;">
-  <h1 style="margin: 0; margin-right: 10px;">Transpose</h1>
-  <img src="app/src/main/res/mipmap-xhdpi/transpose_app_icon.png" alt="Transpose Icon" width="50" height="50">
-</div>
+<img src="app/src/main/res/mipmap-xhdpi/transpose_app_icon.png" alt="Transpose Icon" width="32" height="32" style="vertical-align: middle; margin-right: 10px;"> Transpose
 
 ---
 
