@@ -1,7 +1,4 @@
 # Transpose
----
-
-## About Transpose
 
 Transpose is an open-source, ad-free YouTube client for Android, built with Kotlin and Jetpack Compose. It offers a unique feature set focused on audio manipulation and an enhanced viewing experience.
 
