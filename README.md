@@ -1,17 +1,7 @@
-<h1 align="center">
-  <br>
-  <img src="app/src/main/res/mipmap-xhdpi/transpose_app_icon.png" alt="Transpose" width="200" height="200">
-  <br>
-  Transpose
-  <br>
-</h1>
-<h4 align="center">Advanced YouTube Client with Real-time Audio Effects</h4>
-<p align="center">
-  <em>Transform your YouTube experience with on-the-fly audio manipulation</em>
-</p>
-<p align="center">
-  <small>App icon designed by Kiranshastry</small>
-</p>
+<div style="display: flex; align-items: center; margin-bottom: 20px;">
+  <h1 style="margin: 0; margin-right: 10px;">Transpose</h1>
+  <img src="app/src/main/res/mipmap-xhdpi/transpose_app_icon.png" alt="Transpose Icon" width="50" height="50">
+</div>
 
 ---
 
