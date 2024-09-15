@@ -1,5 +1,4 @@
-<img src="app/src/main/res/mipmap-xhdpi/transpose_app_icon.png" alt="Transpose Icon" width="32" height="32" style="vertical-align: middle; margin-right: 10px;"> Transpose
-
+# Transpose
 ---
 
 ## About Transpose
