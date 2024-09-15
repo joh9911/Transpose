@@ -35,6 +35,11 @@ Our standout feature is the ability to apply audio effects to YouTube videos in 
 
 - Enjoy YouTube content without any advertisements
 
+### 💾 Local File Playback
+
+Browse and play local video and audio files
+Apply the same powerful audio effects to your local media
+
 ## Screenshots
 
 [Insert your screenshots here]
@@ -69,7 +74,7 @@ We welcome contributions! If you'd like to contribute, please follow these steps
 
 ## License
 
-This project is licensed under [Your chosen license]. See the `LICENSE` file for details.
+This project is licensed under GPL-3.0 license. See the `LICENSE` file for details.
 
 ## Disclaimer
 
@@ -77,6 +82,5 @@ This project is not affiliated with, endorsed by, or sponsored by YouTube or any
 
 ## Contact
 
-[Your Name] - [Your Email]
+Sungmin Joh - joh9911@naver.com
 
-Project Link: [https://github.com/yourusername/transpose](https://github.com/yourusername/transpose)anshastry
