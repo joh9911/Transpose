@@ -40,7 +40,6 @@ fun HomePlaylistScreen(
     BackHandler(
         enabled = bottomSheetState == SheetValue.Expanded
     ) {
-        Logger.d("HomePlaylistScreen")
         mainViewModel.partialExpandBottomSheet()
     }
 
