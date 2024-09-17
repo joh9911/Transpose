@@ -3,7 +3,6 @@ package com.example.transpose.data.repository.database
 import com.example.transpose.data.database.entity.PlaylistEntity
 import com.example.transpose.data.database.entity.VideoEntity
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
-import com.example.transpose.media.model.PlayableItemData
 
 interface MyPlaylistDBRepository {
     suspend fun createPlaylist(name: String): Long

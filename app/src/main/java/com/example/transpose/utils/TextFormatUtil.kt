@@ -1,13 +1,11 @@
 package com.example.transpose.utils
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import org.ocpsoft.prettytime.PrettyTime
 import java.text.DecimalFormat
 import java.time.Instant
 import java.util.Date
 import java.util.Locale
-
 
 
 object TextFormatUtil {

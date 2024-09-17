@@ -2,7 +2,6 @@ package com.example.transpose.navigation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.transpose.navigation.Route
-import com.example.transpose.utils.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

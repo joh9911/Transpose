@@ -1,24 +1,19 @@
 package com.example.transpose.ui.screen.home
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
-import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.HomeNavHost
-import com.example.transpose.utils.Logger
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 
 @Composable
 fun HomeMainScreen(

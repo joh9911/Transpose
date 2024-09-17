@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.repository.MusicCategoryRepository
-import com.example.transpose.data.repository.PlaylistPager
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.ui.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel

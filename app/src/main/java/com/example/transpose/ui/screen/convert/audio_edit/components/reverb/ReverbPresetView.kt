@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
-import com.example.transpose.media.audio_effect.data.equalizer.EqualizerPresets
 import com.example.transpose.media.audio_effect.data.reverb.ReverbPresets
 import com.example.transpose.utils.constants.AppColors
 

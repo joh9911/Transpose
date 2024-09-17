@@ -1,17 +1,14 @@
 package com.example.transpose.data.repository
 
-import org.schabi.newpipe.extractor.InfoItem
-import org.schabi.newpipe.extractor.ListExtractor.InfoItemsPage
-import org.schabi.newpipe.extractor.StreamingService
-import org.schabi.newpipe.extractor.playlist.PlaylistExtractor
-
-
 
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
+import org.schabi.newpipe.extractor.InfoItem
+import org.schabi.newpipe.extractor.ListExtractor.InfoItemsPage
+import org.schabi.newpipe.extractor.StreamingService
 import org.schabi.newpipe.extractor.exceptions.ExtractionException
-
 import org.schabi.newpipe.extractor.exceptions.ParsingException
+import org.schabi.newpipe.extractor.playlist.PlaylistExtractor
 
 class PlaylistPager(
     streamingService: StreamingService,

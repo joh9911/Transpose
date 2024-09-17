@@ -1,7 +1,5 @@
 package com.example.transpose.data.model.newpipe
 
-import com.example.transpose.media.model.MediaItemType
-import com.example.transpose.media.model.PlayableItemData
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.stream.VideoStream
 

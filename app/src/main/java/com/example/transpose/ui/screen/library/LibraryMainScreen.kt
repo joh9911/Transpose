@@ -7,9 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -18,7 +15,6 @@ import com.example.transpose.MediaViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.navigation.navhost.LibraryNavHost
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
-import com.example.transpose.utils.Logger
 
 @Composable
 fun LibraryMainScreen(

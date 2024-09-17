@@ -3,7 +3,6 @@ package com.example.transpose
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,10 +10,8 @@ import com.example.transpose.data.database.entity.PlaylistEntity
 import com.example.transpose.data.model.newpipe.NewPipeChannelData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.data.repository.database.MyPlaylistDBRepository
-import com.example.transpose.data.repository.database.MyPlaylistDBRepositoryImpl
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.data.repository.suggestion_keyword.SuggestionKeywordRepository
-import com.example.transpose.media.model.PlayableItemData
 import com.example.transpose.ui.components.appbar.SearchWidgetState
 import com.example.transpose.utils.Logger
 import com.example.transpose.utils.PermissionUtils

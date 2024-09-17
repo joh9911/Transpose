@@ -19,11 +19,8 @@ import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.R
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
-import com.example.transpose.ui.screen.convert.audio_edit.components.ExpandableSectionTitle
 import com.example.transpose.ui.screen.convert.audio_edit.components.bassboost.BassBoostSection
-import com.example.transpose.ui.screen.convert.audio_edit.components.environmental_reverb.EnvironmentalReverbSection
 import com.example.transpose.ui.screen.convert.audio_edit.components.equalizer.EqualizerSection
-import com.example.transpose.ui.screen.convert.audio_edit.components.haptic_generator.HapticGeneratorSection
 import com.example.transpose.ui.screen.convert.audio_edit.components.loudness_enhancer.LoudnessEnhancerSection
 import com.example.transpose.ui.screen.convert.audio_edit.components.pitch.PitchSection
 import com.example.transpose.ui.screen.convert.audio_edit.components.reverb.ReverbSection

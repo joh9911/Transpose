@@ -1,15 +1,9 @@
 package com.example.transpose.media.model
 
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
-import org.ocpsoft.prettytime.PrettyTime
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.InfoItem.InfoType
 import org.schabi.newpipe.extractor.stream.VideoStream
-import java.time.Instant
-import java.util.Date
-import java.util.Locale
 
 enum class MediaItemType {
     YOUTUBE,

@@ -14,10 +14,10 @@ import androidx.compose.ui.Modifier
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
 import com.example.transpose.data.model.newpipe.NewPipeChannelData
-import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.common.PaginatedState
 import com.example.transpose.ui.components.dialog.AddVideoToPlaylistDialog
 import com.example.transpose.ui.components.items.ChannelItem

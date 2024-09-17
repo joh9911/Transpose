@@ -3,8 +3,6 @@ package com.example.transpose.data.repository
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.safety.Safelist
-import org.schabi.newpipe.extractor.Image
-import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.stream.Description
 
 

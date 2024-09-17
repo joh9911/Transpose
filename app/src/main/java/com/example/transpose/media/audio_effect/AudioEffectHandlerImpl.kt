@@ -10,7 +10,6 @@ import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
 import android.media.audiofx.Virtualizer
 import android.os.Build
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.PlaybackParameters

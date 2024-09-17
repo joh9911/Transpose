@@ -5,9 +5,7 @@ import com.example.transpose.data.database.dao.VideoDao
 import com.example.transpose.data.database.entity.PlaylistEntity
 import com.example.transpose.data.database.entity.VideoEntity
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
-import com.example.transpose.media.model.PlayableItemData
 import com.google.gson.Gson
-import org.schabi.newpipe.extractor.stream.StreamType
 import javax.inject.Inject
 
 class MyPlaylistDBRepositoryImpl @Inject constructor(

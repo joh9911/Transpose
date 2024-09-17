@@ -9,15 +9,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
-import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
+import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.common.PaginatedState
 import com.example.transpose.ui.components.dialog.AddVideoToPlaylistDialog
 import com.example.transpose.ui.components.items.CommonVideoItem
 import com.example.transpose.ui.components.items.LoadingIndicator
-import com.example.transpose.ui.screen.home.playlist_item.items.PlaylistHeaderItem
 import com.example.transpose.ui.components.scrollbar.EndlessLazyColumn
+import com.example.transpose.ui.screen.home.playlist_item.items.PlaylistHeaderItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

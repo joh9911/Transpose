@@ -2,7 +2,6 @@ package com.example.transpose.ui.screen.convert.search_result
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -18,7 +17,6 @@ import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.common.PaginatedState
-import com.example.transpose.ui.common.UiState
 import com.example.transpose.ui.components.dialog.AddVideoToPlaylistDialog
 import com.example.transpose.ui.components.items.ChannelItem
 import com.example.transpose.ui.components.items.CommonVideoItem

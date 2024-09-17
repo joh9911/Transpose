@@ -1,16 +1,11 @@
 package com.example.transpose.ui.screen.convert.audio_edit.components.environmental_reverb
 
-import com.example.transpose.ui.screen.convert.audio_edit.components.equalizer.EqualizerPresetView
-import com.example.transpose.ui.screen.convert.audio_edit.components.equalizer.EqualizerView
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

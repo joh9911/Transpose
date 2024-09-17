@@ -1,6 +1,5 @@
 package com.example.transpose.data.repository.local_file
 
-import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore

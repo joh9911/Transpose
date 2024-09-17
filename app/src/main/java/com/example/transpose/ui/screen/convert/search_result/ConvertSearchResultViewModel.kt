@@ -2,11 +2,9 @@ package com.example.transpose.ui.screen.convert.search_result
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.repository.VideoPager
 import com.example.transpose.data.repository.newpipe.NewPipeRepository
 import com.example.transpose.ui.common.PaginatedState
-import com.example.transpose.ui.common.UiState
 import com.example.transpose.utils.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

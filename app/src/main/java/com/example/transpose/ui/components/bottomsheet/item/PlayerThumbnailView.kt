@@ -11,7 +11,6 @@ import coil.compose.AsyncImage
 import com.example.transpose.MediaViewModel
 import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.ui.common.PlayableItemUiState
-import com.example.transpose.utils.Logger
 import com.example.transpose.utils.constants.AppColors
 
 @Composable

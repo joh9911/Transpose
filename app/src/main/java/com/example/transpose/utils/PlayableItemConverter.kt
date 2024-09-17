@@ -1,8 +1,6 @@
 package com.example.transpose.utils
 
-import android.os.Build
 import android.os.Bundle
-import androidx.annotation.RequiresApi
 import com.example.transpose.data.database.entity.VideoEntity
 import com.example.transpose.data.model.local_file.LocalFileData
 import com.example.transpose.data.model.newpipe.NewPipeStreamInfoData
@@ -11,7 +9,6 @@ import com.example.transpose.data.repository.NewPipeUtils
 import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.media.model.PlayableItemBasicInfoData
 import com.example.transpose.media.model.PlayableItemData
-import org.schabi.newpipe.extractor.Image
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.InfoItem.InfoType
 import org.schabi.newpipe.extractor.stream.StreamType
