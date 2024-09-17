@@ -42,20 +42,9 @@ Apply the same powerful audio effects to your local media
 
 ## Screenshots
 
-### Home Screen
-<img src="assets/home_screen.jpeg" alt="Home Screen" width="30%">
-
-The Home Screen provides a quick overview of trending videos and easy access to search functionality.
-
-### Convert Screen
-<img src="assets/convert_screen.jpeg" alt="Convert Screen" width="30%">
-
-On the Convert Screen, users can apply various audio effects and manipulations to their selected media.
-
-### Library Screen
-<img src="assets/library_screen.jpeg" alt="Library Screen" width="30%">
-
-The Library Screen allows users to manage their saved playlists and access local media files.
+| Home Screen | Convert Screen | Library Screen |
+|:-----------:|:--------------:|:--------------:|
+| <img src="assets/home_screen.jpeg" alt="Home Screen" width="100%"> | <img src="assets/convert_screen.jpeg" alt="Convert Screen" width="100%"> | <img src="assets/library_screen.jpeg" alt="Library Screen" width="100%"> |
 
 ## Upcoming Features (Todo List)
 
