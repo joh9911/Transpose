@@ -32,6 +32,7 @@ fun NationalPlaylistItem(
     Column(
         modifier = Modifier
             .width(330.dp)
+            .padding(vertical = 10.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onClick(playlistData.id) }
     ) {
