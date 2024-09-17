@@ -30,10 +30,12 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.transpose.R
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
 import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.components.dropdown_menu.DropDownMenu
@@ -103,7 +105,7 @@ fun CommonVideoItem(
                     contentDescription = "More options"
                 )
             }
-            DropDownMenu(text = "add to playlist", isExpanded = isExpanded, onDismissRequest = { isExpanded = false }, onClick = {dropDownMenuClick()})
+            DropDownMenu(text = stringResource(id = R.string.video_pop_up_menu_add_playlist_text), isExpanded = isExpanded, onDismissRequest = { isExpanded = false }, onClick = {dropDownMenuClick()})
         }
 
     }

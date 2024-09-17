@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.transpose.R
@@ -37,7 +38,7 @@ fun AudioStorageItem(onClick: () -> Unit) {
                 modifier = Modifier.size(70.dp)
             )
             Text(
-                text = "Search My Music",
+                text = stringResource(id = R.string.my_audio_file_searchView_hint),
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 15.dp),

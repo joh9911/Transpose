@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.transpose.R
 import com.example.transpose.data.database.entity.PlaylistEntity
 import com.example.transpose.ui.screen.library.my_playlist.items.PlaylistItem
 
@@ -21,7 +23,7 @@ fun AddVideoToPlaylistDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add to Playlist") },
+        title = { Text(stringResource(id = R.string.video_pop_up_menu_add_playlist_text)) },
         text = {
             LazyColumn {
                 items(playlists.size) { index ->
@@ -37,7 +39,7 @@ fun AddVideoToPlaylistDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.dialog_cancel_text))
             }
         }
     )

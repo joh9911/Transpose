@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.transpose.R
@@ -69,7 +70,7 @@ fun PlaylistItem(
                         contentDescription = "More options"
                     )
                 }
-                DropDownMenu(text = "delete",isExpanded = isExpanded, onDismissRequest = {isExpanded = false}, onClick = { dropDownMenuClick()})
+                DropDownMenu(text = stringResource(id = R.string.my_playlist_pop_up_menu_delete_playlist_text),isExpanded = isExpanded, onDismissRequest = {isExpanded = false}, onClick = { dropDownMenuClick()})
             }
 
         }
