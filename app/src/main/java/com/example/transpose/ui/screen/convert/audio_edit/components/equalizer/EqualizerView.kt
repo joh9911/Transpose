@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.transpose.MediaViewModel
+import com.example.transpose.utils.constants.AppColors
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +71,7 @@ fun EqualizerView(mediaViewModel: MediaViewModel) {
                             .wrapContentWidth()
                             .align(Alignment.CenterStart)
                             .rotate(90f),
-                        color = Color.Black,
+                        color = AppColors.BlueBackground,
                         fontSize = 8.sp,
                         textAlign = TextAlign.Start
                     )
@@ -89,9 +90,9 @@ fun EqualizerView(mediaViewModel: MediaViewModel) {
                         },
                         valueRange = -1500f..1500f,
                         colors = SliderDefaults.colors(
-                            thumbColor = Color.Black,
-                            activeTrackColor = Color.Black,
-                            inactiveTrackColor = Color.Black
+                            thumbColor = AppColors.StatusBarBackground,
+                            activeTrackColor = AppColors.BlueBackgroundAlpha30,
+                            inactiveTrackColor = AppColors.BlueBackgroundAlpha30
                         ),
                         thumb = {
                             // Customized appearance of the slider's thumb
@@ -104,7 +105,7 @@ fun EqualizerView(mediaViewModel: MediaViewModel) {
                                         CircleShape
                                     )
                                     .clip(CircleShape)
-                                    .background(Color.Black, CircleShape)
+                                    .background(AppColors.StatusBarBackground, CircleShape)
                             )
                         }
                     )
@@ -118,7 +119,7 @@ fun EqualizerView(mediaViewModel: MediaViewModel) {
                             .wrapContentWidth()
                             .align(Alignment.CenterStart)
                             .rotate(90f),
-                        color = Color.Black,
+                        color = AppColors.BlueBackground,
                         fontSize = 8.sp,
                         textAlign = TextAlign.Start
                     )

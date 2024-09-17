@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.transpose.utils.constants.AppColors
 import java.util.Locale
 
 @Composable
@@ -46,7 +49,7 @@ fun SliderSection(
         Text(
             text = title,
             fontSize = 14.sp,
-            color = Color.Blue,
+            color = AppColors.BlueBackground,
             modifier = Modifier.constrainAs(titleText) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
@@ -57,7 +60,7 @@ fun SliderSection(
         Text(
             text = displayValueText,
             fontSize = 14.sp,
-            color = Color.Blue,
+            color = AppColors.BlueBackground,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .constrainAs(valueText) {
@@ -79,7 +82,8 @@ fun SliderSection(
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
-                contentDescription = "Reset $title"
+                contentDescription = "Reset $title",
+                tint = AppColors.BlueBackground
             )
         }
 
@@ -88,13 +92,17 @@ fun SliderSection(
             valueRange = valueRange,
             onValueChange = { onValueChange(it.toInt()) },
             onValueChangeFinished = { onValueChangeFinished() },
+            colors = SliderDefaults.colors(
+                thumbColor = AppColors.StatusBarBackground,
+                activeTrackColor = AppColors.StatusBarBackground
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(slider) {
                     top.linkTo(titleText.bottom, margin = 10.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
+                },
         )
     }
 }

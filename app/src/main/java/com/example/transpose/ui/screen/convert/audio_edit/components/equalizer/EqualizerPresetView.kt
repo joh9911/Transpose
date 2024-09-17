@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,13 +35,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.transpose.MediaViewModel
+import com.example.transpose.R
 import com.example.transpose.media.audio_effect.data.equalizer.EqualizerPresets
+import com.example.transpose.utils.constants.AppColors
 
 @Composable
 fun EqualizerPresetView(mediaViewModel: MediaViewModel) {
     Column {
         val equalizerCurrentPreset by mediaViewModel.equalizerCurrentPreset.collectAsState()
-        val effectType = EqualizerPresets.effectTypes
+        val effectType = stringArrayResource(id = R.array.equalizer_label).toList()
         val groupedList = effectType.chunked(3)
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -49,15 +53,15 @@ fun EqualizerPresetView(mediaViewModel: MediaViewModel) {
                     .weight(1f)
                     .height(4.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = Color.Black,
+                color = AppColors.BlueBackground,
                 thickness = 1.dp
             )
 
             Text(
-                text = "타이틀",
+                text = stringResource(id = R.string.equalizer_preset),
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                color = AppColors.BlueBackground,
                 modifier = Modifier
                     .wrapContentWidth()
                     .weight(0.5f)
@@ -71,7 +75,7 @@ fun EqualizerPresetView(mediaViewModel: MediaViewModel) {
                     .weight(1f)
                     .height(4.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = Color.Black,
+                color = AppColors.BlueBackground,
                 thickness = 1.dp
             )
         }
@@ -119,7 +123,7 @@ fun EqualizerPresetView(mediaViewModel: MediaViewModel) {
                                     // Notify the ViewModel when a preset is selected
                                     mediaViewModel.updateEqualizerWithPreset(index)
                                 }
-                                .background(if (index == equalizerCurrentPreset) Color.Black else Color.White),
+                                .background(if (index == equalizerCurrentPreset) AppColors.BlueBackground else Color.White),
                             contentAlignment = Alignment.Center
                         ) { val size = this.maxWidth
                             Text(

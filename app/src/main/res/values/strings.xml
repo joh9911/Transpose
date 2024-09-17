@@ -99,22 +99,24 @@
         <item>@string/equalizer_classic</item>
         <item>@string/equalizer_dance</item>
         <item>@string/equalizer_flat</item>
-        <item>@string/equalizer_fork</item>
+        <item>@string/equalizer_folk</item>
         <item>@string/equalizer_heavy_metal</item>
         <item>@string/equalizer_hiphop</item>
         <item>@string/equalizer_jazz</item>
         <item>@string/equalizer_pop</item>
+        <item>@string/equalizer_rock</item>
     </string-array>
 
 
     <string-array name="preset_reverb_labels">
         <item>@string/preset_reverb_none</item>
-        <item>@string/preset_reverb_plate</item>
+        <item>@string/preset_reverb_small_room</item>
+        <item>@string/preset_reverb_medium_room</item>
+        <item>@string/preset_reverb_large_room</item>
         <item>@string/preset_reverb_medium_hall</item>
         <item>@string/preset_reverb_large_hall</item>
-        <item>@string/preset_reverb_large_room</item>
-        <item>@string/preset_reverb_medium_room</item>
-        <item>@string/preset_reverb_small_room</item>
+        <item>@string/preset_reverb_plate</item>
+
     </string-array>
 
 
@@ -127,13 +129,16 @@
     <string name="equalizer_classic">Classical</string>
     <string name="equalizer_dance">Dance</string>
     <string name="equalizer_flat">Flat(Default)</string>
-    <string name="equalizer_fork">Fork</string>
+    <string name="equalizer_folk">Folk</string>
     <string name="equalizer_heavy_metal">Heavy Metal</string>
     <string name="equalizer_hiphop">Hip Hop</string>
     <string name="equalizer_jazz">Jazz</string>
     <string name="equalizer_pop">Pop</string>
+    <string name="equalizer_rock">Rock</string>
+
 
     <string name="equalizer_text">Equalizer</string>
+    <string name="equalizer_preset">Preset</string>
     <string name="bass_text">Bass</string>
     <string name="loudness_enhancer_text">Volume Enhancer</string>
     <string name="virtualizer_text">3D Sound Effect</string>
@@ -146,7 +151,7 @@
     <string name="preset_reverb_large_room">Large Room</string>
     <string name="preset_reverb_medium_room">Medium Room</string>
     <string name="preset_reverb_small_room">Small Room</string>
-    <string name="preset_reverb_waring_text">Note: Reverb effects may not apply on some earphones.</string>
+    <string name="preset_reverb_waring_text">Note: Volume may increase in speaker mode</string>
     <string name="preset_reverb_send_level_text">Strength</string>
     <string name="music_storage_button_text">Search My Music</string>
     <string name="video_storage_button_text">Search My Video</string>

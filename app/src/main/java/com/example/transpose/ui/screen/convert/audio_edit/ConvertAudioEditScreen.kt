@@ -2,7 +2,9 @@ package com.example.transpose.ui.screen.convert.audio_edit
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,8 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.example.transpose.MainViewModel
 import com.example.transpose.MediaViewModel
+import com.example.transpose.R
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.screen.convert.audio_edit.components.ExpandableSectionTitle
 import com.example.transpose.ui.screen.convert.audio_edit.components.bassboost.BassBoostSection
@@ -52,15 +57,18 @@ fun ConvertAudioEditScreen(
         )
         TempoSection(
             mediaViewModel = mediaViewModel)
-        EqualizerSection(title = "Equalizer", mediaViewModel = mediaViewModel)
-        ReverbSection(title = "Preset", mediaViewModel = mediaViewModel)
+        Spacer(modifier = Modifier.height(10.dp))
+
+        EqualizerSection(title = stringResource(id = R.string.equalizer_text), mediaViewModel = mediaViewModel)
+        Spacer(modifier = Modifier.height(10.dp))
+        ReverbSection(title = stringResource(id = R.string.preset_reverb_text), mediaViewModel = mediaViewModel)
         BassBoostSection(
             mediaViewModel = mediaViewModel)
         LoudnessEnhancerSection(
             mediaViewModel = mediaViewModel)
         VirtualizerSection(
             mediaViewModel = mediaViewModel)
-        HapticGeneratorSection(mediaViewModel = mediaViewModel)
+//        HapticGeneratorSection(mediaViewModel = mediaViewModel)
 //        EnvironmentalReverbSection(mediaViewModel = mediaViewModel)
     }
 

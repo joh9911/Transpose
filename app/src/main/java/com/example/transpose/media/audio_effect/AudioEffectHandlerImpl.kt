@@ -66,12 +66,16 @@ class AudioEffectHandlerImpl @Inject constructor(
             if (bassBoost == null) {
                 bassBoost = BassBoost(0, audioSessionId)
                 bassBoost?.enabled = true
+                Logger.d("if (bassBoost == null)")
             }
+
             if (audioSessionId != AudioEffect.ERROR_BAD_VALUE) {
                 bassBoost?.let {
                     if (it.strengthSupported) {
                         it.setStrength(value.toShort())
+                        it.enabled = true
                         exoPlayer.setAuxEffectInfo(AuxEffectInfo(it.id, 1f))
+                        Logger.d("exoPlayer.setAuxEffectInfo(AuxEffectInfo(it.id, 1f))")
                     }
                 }
 
@@ -123,11 +127,9 @@ class AudioEffectHandlerImpl @Inject constructor(
                 equalizer?.enabled = true
             }
 
-            for (i in 0 until equalizer!!.numberOfPresets) {
-                Logger.d("이퀼라이저 ${equalizer!!.getPresetName(i.toShort())}")
-            }
-
             equalizer?.usePreset(value.toShort())
+            equalizer?.enabled = true
+
         } catch (e: Exception) {
             Logger.d("setEqualizerWithPreset $e")
 
@@ -140,10 +142,10 @@ class AudioEffectHandlerImpl @Inject constructor(
             if (equalizer == null) {
                 equalizer = Equalizer(0, exoPlayer.audioSessionId)
                 equalizer?.enabled = true
-
-                equalizer?.setBandLevel(changedBand.toShort(), newGainLevel.toShort())
-
             }
+            equalizer?.setBandLevel(changedBand.toShort(), newGainLevel.toShort())
+            equalizer?.enabled = true
+
 
         } catch (e: Exception) {
             Logger.d("setEqualizerWithCustomValue $e")
@@ -192,13 +194,12 @@ class AudioEffectHandlerImpl @Inject constructor(
         try {
             if (presetReverb == null) {
                 presetReverb = PresetReverb(1, 0)
-                presetReverb?.enabled = true
             }
 
             presetReverb?.preset = presetIndex.toShort()
+            presetReverb?.enabled = true
 
             val auxEffectSendLevel = sendLevel.toFloat()
-            Logger.d("preset ${presetReverb?.preset} ${presetReverb?.enabled}")
             exoPlayer.setAuxEffectInfo(AuxEffectInfo(presetReverb!!.id, auxEffectSendLevel))
         }catch (e: Exception){
             Logger.d("setPresetReverb $e")

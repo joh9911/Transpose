@@ -342,6 +342,7 @@ class MediaViewModel @Inject constructor(
             if (result.isSuccess) {
                 val streamInfoData = result.getOrNull()
                 streamInfoData?.let { streamInfo ->
+                    Logger.d("${streamInfo.videoStreams?.first()?.content}")
                     val basicInfo = (currentVideoItemState.value as? PlayableItemUiState.BasicInfoLoaded)?.basicInfo
                     if (basicInfo != null) {
                         val fullInfo = streamInfo.toPlayableMediaItem(basicInfo)
@@ -710,7 +711,7 @@ class MediaViewModel @Inject constructor(
 
     fun updateBassBoostValue(value: Int) {
         _bassBoostValue.value = value
-        setBassBoost()
+
     }
 
     fun initBassBoostValue() {
