@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ import com.example.transpose.ui.components.bottom_navigation.BottomNavigationBar
 import com.example.transpose.ui.components.bottomsheet.PlayerBottomSheetScaffold
 import com.example.transpose.ui.theme.TransposeTheme
 import com.example.transpose.utils.Logger
+import com.example.transpose.utils.constants.AppColors
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -66,6 +69,7 @@ class MainActivity : ComponentActivity() {
     fun MainScreen(
         mainViewModel: MainViewModel, mediaViewModel: MediaViewModel
     ) {
+        val systemUiController = rememberSystemUiController()
 
         val navigationViewModel: NavigationViewModel by viewModels()
         val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
@@ -89,6 +93,16 @@ class MainActivity : ComponentActivity() {
                     return behaviorConsumed
                 }
             }
+        }
+
+        SideEffect {
+            systemUiController.setStatusBarColor(
+                color = AppColors.StatusBarBackground,
+            )
+
+            systemUiController.setNavigationBarColor(
+                color = AppColors.BlueBackground,
+            )
         }
 
         BackHandler {

@@ -10,13 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.unit.sp
 import com.example.transpose.MainViewModel
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.ui.components.appbar.SearchWidgetState
-import com.example.transpose.utils.Logger
+import com.example.transpose.utils.constants.AppColors
 
 @Composable
 fun BottomNavigationBar(
@@ -32,9 +35,7 @@ fun BottomNavigationBar(
 
     // BottomSheet에 의한 오프셋 계산
     val bottomSheetOffset = lerp(
-        start = 0.dp,
-        stop = 56.dp,
-        fraction = normalizedOffset.coerceIn(0f, 1f)
+        start = 0.dp, stop = 56.dp, fraction = normalizedOffset.coerceIn(0f, 1f)
     )
 
     // SearchBar 상태에 따른 오프셋 계산
@@ -48,29 +49,34 @@ fun BottomNavigationBar(
 
 
     BottomNavigation(
-        modifier = Modifier.navigationBarsPadding().offset(y = totalOffset)
+        modifier = Modifier
+            .navigationBarsPadding()
+            .offset(y = totalOffset),
+        backgroundColor = AppColors.BlueBackground
 
     ) {
         icons.forEach { icon ->
-            BottomNavigationItem(
-                selected = mainNavCurrentRoute == icon.route,
-                onClick = {
-                    if (mainNavCurrentRoute == icon.route) {
-                        navigationViewModel.resetNavigationFor(icon.route)
-                    } else {
-                        Logger.d("bottom ${icon.route}")
-                        navigationViewModel.changeMainCurrentRoute(icon.route)
-                    } },
-                icon = {
-                    Icon(
-                        painter = painterResource(
-                            id = if (mainNavCurrentRoute == icon.route) icon.filledIcon else icon.outlinedIcon
-                        ),
-                        contentDescription = icon.label
-                    )
-                },
-                label = { Text(icon.label) }
-            )
+            BottomNavigationItem(selected = mainNavCurrentRoute == icon.route, onClick = {
+                if (mainNavCurrentRoute == icon.route) {
+                    navigationViewModel.resetNavigationFor(icon.route)
+                } else {
+                    navigationViewModel.changeMainCurrentRoute(icon.route)
+                }
+            }, icon = {
+                Icon(
+                    painter = painterResource(
+                        id = if (mainNavCurrentRoute == icon.route) icon.filledIcon else icon.outlinedIcon
+                    ),
+                    tint = Color.White, contentDescription = icon.label,
+                )
+            }, label = {
+                Text(
+                    text = icon.label,
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = if (mainNavCurrentRoute == icon.route) FontWeight.Bold else null
+                )
+            })
         }
 
     }
