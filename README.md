@@ -54,13 +54,27 @@ Apply the same powerful audio effects to your local media
 
 ## Installation
 
-[Provide installation instructions here]
+The latest beta version of Transpose is now available!
+
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/joh9911/Transpose?include_prereleases)](https://github.com/joh9911/Transpose/releases/latest)
+
+You can download the latest APK from my [GitHub Releases page](https://github.com/joh9911/Transpose/releases/tag/v0.1.0-beta).
+
+Please note that this is a beta release and may contain bugs. We appreciate your feedback to help improve Transpose!
 
 ## Technology Stack
 
 - Kotlin
 - Jetpack Compose
-- [Add any other significant technologies or libraries used]
+- Android Jetpack Components:
+  - ViewModel
+  - Navigation
+  - Room
+  - LiveData
+- RxJava
+- Retrofit2
+- Media3 (ExoPlayer)
+- MVVM + Repository pattern
 
 ## Contributing
 
