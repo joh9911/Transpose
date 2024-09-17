@@ -40,6 +40,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,7 @@ import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicat
 import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
 import com.example.transpose.ui.components.bottomsheet.item.VideoDetailPanel
 import com.example.transpose.utils.Logger
+import com.example.transpose.utils.ToastUtil
 import com.example.transpose.utils.constants.AppColors
 
 
@@ -96,6 +98,7 @@ fun PlayerBottomSheet(
 
     var dragStartPosition by remember { mutableStateOf(Offset.Zero) }
     var isDragging by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     ConstraintLayout(
         modifier = Modifier
@@ -224,7 +227,7 @@ fun PlayerBottomSheet(
 
         // bottomPlayerCloseButton
         IconButton(
-            onClick = { mainViewModel.hideBottomSheet() },
+            onClick = { ToastUtil.showNotImplemented(context = context) },
             modifier = Modifier
                 .constrainAs(bottomPlayerCloseButton) {
                     end.linkTo(parent.end)

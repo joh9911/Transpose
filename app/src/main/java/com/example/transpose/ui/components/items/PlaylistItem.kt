@@ -19,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
+import com.example.transpose.utils.ToastUtil
 import com.example.transpose.utils.constants.AppColors
 
 @Composable
@@ -31,10 +33,11 @@ fun PlaylistItem(
     playlist: NewPipePlaylistData,
     onClick: (NewPipePlaylistData) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(playlist) }
+            .clickable { ToastUtil.showNotImplemented(context) }
             .padding(16.dp)
     ) {
         Box(

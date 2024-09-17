@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -50,6 +51,7 @@ import androidx.compose.ui.zIndex
 import com.example.transpose.R
 import com.example.transpose.ui.components.items.SearchSuggestionItem
 import com.example.transpose.utils.Logger
+import com.example.transpose.utils.ToastUtil
 import com.example.transpose.utils.constants.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -121,6 +123,7 @@ fun CustomSearchAppBar(
     onSearchBarActiveChanged: (Boolean) -> Unit
 ) {
 
+    val context = LocalContext.current
     SideEffect {
         focusRequester.requestFocus()
     }
@@ -145,7 +148,7 @@ fun CustomSearchAppBar(
         },
         trailingIcon = {
             if (searchTextState.isEmpty()) {
-                IconButton(onClick = { }) {
+                IconButton(onClick = {ToastUtil.showNotImplemented(context = context) }) {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
             } else {

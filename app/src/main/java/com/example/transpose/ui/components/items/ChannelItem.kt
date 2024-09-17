@@ -25,6 +25,7 @@ import com.example.transpose.R
 import com.example.transpose.data.model.newpipe.NewPipeChannelData
 import com.example.transpose.ui.components.bottomsheet.item.rememberStringArrayResource
 import com.example.transpose.utils.TextFormatUtil
+import com.example.transpose.utils.ToastUtil
 
 @Composable
 fun ChannelItem(
@@ -32,11 +33,11 @@ fun ChannelItem(
     onClick: (NewPipeChannelData) -> Unit
 ) {
     val subscriberCountFormats = rememberStringArrayResource(R.array.subscriber_count_formats)
-
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(channel) }
+            .clickable { ToastUtil.showNotImplemented(context) }
             .padding(vertical = 12.dp, horizontal = 16.dp)
     ) {
         Row(
@@ -45,7 +46,7 @@ fun ChannelItem(
             // Channel Avatar
             Spacer(modifier = Modifier.width(20.dp))
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
+                model = ImageRequest.Builder(context)
                     .data(channel.thumbnailUrl)
                     .crossfade(true)
                     .build(),

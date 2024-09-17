@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,6 +38,7 @@ import com.example.transpose.media.model.PlayableItemData
 import com.example.transpose.ui.common.PlayableItemUiState
 import com.example.transpose.utils.PlayableItemConverter.toNewPipeVideoData
 import com.example.transpose.utils.TextFormatUtil
+import com.example.transpose.utils.ToastUtil
 import com.example.transpose.utils.constants.AppColors
 import com.valentinilk.shimmer.shimmer
 
@@ -73,13 +75,13 @@ fun ChannelSection(
 @Composable
 fun ChannelSectionContent(videoItem: PlayableItemData, mainViewModel: MainViewModel) {
     val subscriberCountFormats = rememberStringArrayResource(R.array.subscriber_count_formats)
-
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 5.dp)
             .clip(RoundedCornerShape(4.dp))
-            .clickable { },
+            .clickable { ToastUtil.showNotImplemented(context) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
