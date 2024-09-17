@@ -16,11 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
+import com.example.transpose.utils.constants.AppColors
 
 @Composable
 fun RegularPlaylistItem(playlistData: NewPipePlaylistData,
@@ -30,6 +33,7 @@ fun RegularPlaylistItem(playlistData: NewPipePlaylistData,
         modifier = Modifier
             .width(150.dp)
             .padding(vertical = 10.dp)
+            .clip(RoundedCornerShape(8.dp))
             .clickable { onClick(itemId) }
     ) {
         AsyncImage(
@@ -47,28 +51,20 @@ fun RegularPlaylistItem(playlistData: NewPipePlaylistData,
         )
         Text(
             text = playlistData.title,
-
+            fontSize = 13.sp,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 4.dp)
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 3.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = playlistData.uploaderName,
-                color = Color.Gray,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = playlistData.publishTimestamp.toString(),
-                color = Color.Gray
-            )
-        }
+
+
+        Text(
+            text = playlistData.uploaderName,
+            color = AppColors.DescriptionColor,
+            fontSize = 10.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }

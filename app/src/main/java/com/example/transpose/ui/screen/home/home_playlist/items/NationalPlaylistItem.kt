@@ -1,5 +1,6 @@
 package com.example.transpose.ui.screen.home.home_playlist.items
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,11 +29,11 @@ fun NationalPlaylistItem(
     playlistData: NewPipePlaylistData,
     onClick: (String) -> Unit
 ) {
-    val itemId = playlistData.id
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 20.dp)
+            .width(330.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick(playlistData.id) }
     ) {
         AsyncImage(
             model = playlistData.thumbnailUrl,
@@ -53,7 +54,6 @@ fun NationalPlaylistItem(
             color = Color.Black
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
 
         Text(
             text = playlistData.description,
@@ -63,21 +63,12 @@ fun NationalPlaylistItem(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
 
-        Row {
-            Text(
-                text = playlistData.uploaderName,
-                fontSize = 8.sp,
-                color = AppColors.DescriptionColor,
-                modifier = Modifier.weight(0.8f)
-            )
-            Text(
-                text = playlistData.publishTimestamp.toString(),
-                fontSize = 8.sp,
-                color = AppColors.DescriptionColor,
-                modifier = Modifier.weight(0.4f)
-            )
-        }
+        Text(
+            text = playlistData.uploaderName,
+            fontSize = 8.sp,
+            color = AppColors.DescriptionColor,
+        )
+
     }
 }
