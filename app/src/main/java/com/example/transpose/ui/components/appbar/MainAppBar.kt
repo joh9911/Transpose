@@ -196,7 +196,7 @@ fun CustomSearchAppBar(
 @Composable
 fun DefaultAppBar(onSearchClicked: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
 
-
+    val context = LocalContext.current
     TopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = AppColors.BlueBackground,
@@ -232,7 +232,7 @@ fun DefaultAppBar(onSearchClicked: () -> Unit, scrollBehavior: TopAppBarScrollBe
                 )
 
             }
-            IconButton(onClick = { }) {
+            IconButton(onClick = { ToastUtil.showNotImplemented(context)}) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
                     contentDescription = "Setting",
