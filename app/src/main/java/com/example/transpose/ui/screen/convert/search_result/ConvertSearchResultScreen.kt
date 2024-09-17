@@ -81,7 +81,7 @@ fun ConvertSearchResultScreen(
 
                         InfoItem.InfoType.STREAM -> {
                             CommonVideoItem(
-                                item = item,
+                                item = item as NewPipeVideoData,
                                 currentIndex = index,
                                 onClick = {
                                     mediaViewModel.onMediaItemClick(item as NewPipeVideoData)

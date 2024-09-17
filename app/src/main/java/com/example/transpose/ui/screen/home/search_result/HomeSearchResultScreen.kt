@@ -72,25 +72,28 @@ fun HomeSearchResultScreen(
                 itemContent = {index, item: NewPipeContentListData ->
                     when (item.infoType) {
                         InfoItem.InfoType.PLAYLIST -> {
-                            PlaylistItem(playlist = (item as NewPipePlaylistData), onClick = {})
+                            val newPipePlaylistData = item as NewPipePlaylistData
+                            PlaylistItem(playlist = (newPipePlaylistData), onClick = {})
                         }
 
                         InfoItem.InfoType.STREAM -> {
+                            val newPipeVideoData = item as NewPipeVideoData
                             CommonVideoItem(
-                                item = item,
+                                item = newPipeVideoData,
                                 currentIndex = index,
                                 onClick = {
-                                    mediaViewModel.onMediaItemClick(item as NewPipeVideoData)
+                                    mediaViewModel.onMediaItemClick(newPipeVideoData)
                                     mainViewModel.expandBottomSheet()
                                 },
-                                dropDownMenuClick = {mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)}
+                                dropDownMenuClick = {mainViewModel.showAddToPlaylistDialog(newPipeVideoData)}
                             )
 
                         }
 
                         InfoItem.InfoType.CHANNEL -> {
+                            val newPipeChannelData = item as NewPipeChannelData
                             ChannelItem(
-                                channel = item as NewPipeChannelData,
+                                channel = newPipeChannelData,
                                 onClick = {
                                 }
                             )

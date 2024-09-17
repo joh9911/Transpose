@@ -31,7 +31,7 @@ fun HomePlaylistItemScreen(
     val bottomSheetState by mainViewModel.bottomSheetState.collectAsState()
     val playlistInfo by homePlaylistItemViewModel.playlistInfo.collectAsState()
     val playlistItemsState by homePlaylistItemViewModel.playlistItemsState.collectAsState()
-    val isShowingPlaylistDialog  by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
+    val isShowingPlaylistDialog by mainViewModel.isShowAddVideoToPlaylistDialog.collectAsState()
     val myPlaylists by mainViewModel.myPlaylists.collectAsState()
     val selectedVideo by mainViewModel.selectedVideo.collectAsState()
     BackHandler(
@@ -48,27 +48,28 @@ fun HomePlaylistItemScreen(
 
     when (val state = playlistItemsState) {
         is PaginatedState.Initial -> {
-            // 초기 상태 UI (예: 안내 메시지)
         }
+
         is PaginatedState.Loading -> {
             LoadingIndicator()
         }
+
         is PaginatedState.Success -> {
             EndlessLazyColumn(
                 items = state.items,
                 headerData = playlistInfo,
                 itemKey = { item: NewPipeContentListData -> item.id },
                 itemContent = { index, item: NewPipeContentListData ->
-                    CommonVideoItem(item = item, currentIndex = index, onClick = {
+                    CommonVideoItem(item = item as NewPipeVideoData, currentIndex = index, onClick = {
                         mainViewModel.expandBottomSheet()
                         mediaViewModel.onMediaItemClick(
                             item = item,
                             playlistItems = state.items,
                             clickedIndex = index
                         )
-
                     },
-                        dropDownMenuClick = { mainViewModel.showAddToPlaylistDialog(item as NewPipeVideoData)
+                        dropDownMenuClick = {
+                            mainViewModel.showAddToPlaylistDialog(item)
                         })
                 },
                 headerContent = { playlistData ->
@@ -79,8 +80,8 @@ fun HomePlaylistItemScreen(
                 hasMoreItems = state.hasMore
             )
         }
+
         is PaginatedState.Error -> {
-            // 에러 메시지 표시
             ErrorMessage(message = state.message)
         }
     }

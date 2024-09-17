@@ -11,10 +11,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.transpose.MainViewModel
+import com.example.transpose.R
 import com.example.transpose.navigation.viewmodel.NavigationViewModel
 import com.example.transpose.navigation.Route
 import com.example.transpose.data.model.newpipe.NewPipePlaylistData
@@ -57,7 +59,7 @@ fun HomePlaylistScreen(
     ) {
         item {
             PlaylistSection(
-                title = "국가별 플레이리스트",
+                title = stringResource(id = R.string.nation_playlist_text),
                 playlistState = nationalPlaylistState
             ) { playlist ->
                 NationalPlaylistItem(
@@ -68,7 +70,7 @@ fun HomePlaylistScreen(
         }
         item {
             PlaylistSection(
-                title = "추천 플레이리스트",
+                title = stringResource(id = R.string.Recommended_playlist_text),
                 playlistState = recommendedPlaylistState
             ) { playlist ->
                 RegularPlaylistItem(
@@ -79,7 +81,7 @@ fun HomePlaylistScreen(
         }
         item {
             PlaylistSection(
-                title = "취향별 플레이리스트",
+                title = stringResource(id = R.string.Type_based_playlist_text),
                 playlistState = typedPlaylistState
             ) { playlist ->
                 RegularPlaylistItem(
@@ -119,7 +121,7 @@ fun PlaylistSection(
                 ErrorMessage(
                     isVisible = true,
                     message = (playlistState).message,
-                    onRefresh = {} // 여기에 적절한 리프레시 함수를 넣어주세요
+                    onRefresh = {}
                 )
             }
             is UiState.Success -> {

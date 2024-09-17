@@ -35,13 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.transpose.data.model.newpipe.NewPipeContentListData
+import com.example.transpose.data.model.newpipe.NewPipeVideoData
 import com.example.transpose.ui.components.dropdown_menu.DropDownMenu
 
 @Composable
 fun CommonVideoItem(
-    item: NewPipeContentListData,
+    item: NewPipeVideoData,
     currentIndex: Int,
-    onClick: (NewPipeContentListData) -> Unit,
+    onClick: (NewPipeVideoData) -> Unit,
     dropDownMenuClick: () -> Unit,
 ) {
     var isExpanded by remember {
@@ -64,7 +65,6 @@ fun CommonVideoItem(
             contentScale = ContentScale.Crop,
             placeholder = ColorPainter(Color.LightGray),
             error = ColorPainter(Color.LightGray)
-
         )
         Column(
             modifier = Modifier
@@ -86,7 +86,7 @@ fun CommonVideoItem(
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = item.description,
+                text = item.uploaderName ?: "",
                 fontSize = 10.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
