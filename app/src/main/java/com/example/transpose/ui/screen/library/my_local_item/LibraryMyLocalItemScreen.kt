@@ -37,7 +37,6 @@ fun LibraryMyLocalItemScreen(
 
     LaunchedEffect(key1 = true) {
         type?.let { type ->
-            Logger.d("LibraryMyLocalItemScreen $type")
             when(type){
                 "audio" -> libraryMyLocalItemViewModel.loadAudioFiles()
                 "video" -> libraryMyLocalItemViewModel.loadVideoFiles()
@@ -60,7 +59,8 @@ fun LibraryMyLocalItemScreen(
                 LazyColumn {
                     items(videoFiles.size){ index ->
                         val item = videoFiles[index]
-                        LocalFileData(item = item, onClick = { mediaViewModel.onMediaItemClick(item) })
+                        LocalFileData(item = item, onClick = { mediaViewModel.onMediaItemClick(item)
+                            mainViewModel.expandBottomSheet()})
 
                     }
                 }
