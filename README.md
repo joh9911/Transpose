@@ -42,7 +42,13 @@ Apply the same powerful audio effects to your local media
 
 ## Screenshots
 
-[Insert your screenshots here]
+<div align="center">
+  <img src="assets/home_screen.jpeg" alt="Home Screen" width="30%">
+  <img src="assets/convert_screen.jpeg" alt="Convert Screen" width="30%">
+  <img src="assets/library_screen.jpeg" alt="Library Screen" width="30%">
+</div>
+
+From left to right: Home Screen, Convert Screen, Library Screen
 
 ## Upcoming Features (Todo List)
 
