@@ -40,6 +40,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -136,7 +137,7 @@ fun CustomSearchAppBar(
             onCloseClicked()
         },
         active = isSearchAppBarActive,
-        placeholder = { Text("Search YouTube") },
+        placeholder = { Text(text = stringResource(id = R.string.searchView_hint)) },
         leadingIcon = {
             IconButton(onClick = onCloseClicked) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

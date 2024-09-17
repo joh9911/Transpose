@@ -24,9 +24,9 @@ fun SearchSuggestionItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp)
-            .padding(horizontal = 10.dp)
-            .clickable { onClick(suggestionText) },
+            .height(50.dp)
+            .clickable { onClick(suggestionText) }
+            .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
