@@ -136,6 +136,7 @@ fun PlayerBottomSheetScaffold(
             }
 
             SheetValue.Hidden -> {
+
             }
         }
     }

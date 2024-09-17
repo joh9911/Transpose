@@ -61,6 +61,7 @@ import com.example.transpose.ui.components.bottomsheet.item.PlayerLoadingIndicat
 import com.example.transpose.ui.components.bottomsheet.item.PlayerThumbnailView
 import com.example.transpose.ui.components.bottomsheet.item.VideoDetailPanel
 import com.example.transpose.utils.Logger
+import com.example.transpose.utils.constants.AppColors
 
 
 object GraphicsLayerConstants {
@@ -161,7 +162,7 @@ fun PlayerBottomSheet(
                     scaleY = calculateScaleFactorY(normalizedOffset),
                     transformOrigin = TransformOrigin(0.5f, 0f)  // pivotY = 0f에 해당
                 )
-                .background(Color.Blue)
+                .background(AppColors.BlueBackground)
                 .pointerInput(Unit) {
                     awaitEachGesture {
                         // 첫 번째 터치 다운 이벤트를 기다립니다
@@ -195,7 +196,7 @@ fun PlayerBottomSheet(
                     width = Dimension.percent(0.3f)
                 }
                 .height(PEEK_HEIGHT)
-                .background(Color.LightGray)
+                .background(AppColors.LightGray)
         )
 
         // bottomTitleTextView
@@ -223,7 +224,7 @@ fun PlayerBottomSheet(
 
         // bottomPlayerCloseButton
         IconButton(
-            onClick = { /* Close logic */ },
+            onClick = { mainViewModel.hideBottomSheet() },
             modifier = Modifier
                 .constrainAs(bottomPlayerCloseButton) {
                     end.linkTo(parent.end)

@@ -1,5 +1,6 @@
 package com.example.transpose.ui.components.bottomsheet.item
 
+import androidx.compose.foundation.background
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -8,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.example.transpose.MediaViewModel
 import com.example.transpose.media.model.MediaItemType
 import com.example.transpose.ui.common.PlayableItemUiState
+import com.example.transpose.utils.constants.AppColors
 
 @Composable
 fun PlayerLoadingIndicator(
@@ -20,7 +22,8 @@ fun PlayerLoadingIndicator(
         is PlayableItemUiState.BasicInfoLoaded -> {
             if (state.basicInfo.type == MediaItemType.YOUTUBE){
                 CircularProgressIndicator(
-                    modifier = modifier
+                    modifier = modifier,
+                    color = AppColors.BlueBackground
                 )
             }
         }
@@ -30,7 +33,9 @@ fun PlayerLoadingIndicator(
         PlayableItemUiState.Initial -> {
 
             CircularProgressIndicator(
-                modifier = modifier
+                modifier = modifier,
+                color = AppColors.BlueBackground
+
             )
         }
     }
