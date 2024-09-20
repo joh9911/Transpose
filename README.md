@@ -98,5 +98,5 @@ This project is not affiliated with, endorsed by, or sponsored by YouTube or any
 
 ## Contact
 
-Sungmin Joh - joh9911@naver.com
+Sungmin Joh - joh99111@gmail.com
 
