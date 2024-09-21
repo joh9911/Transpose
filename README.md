@@ -2,12 +2,12 @@
 
 Transpose is an open-source, ad-free YouTube client for Android, built with Kotlin and Jetpack Compose. It offers a unique feature set focused on audio manipulation and an enhanced viewing experience.
 
+[한국어 버전 (Korean version)](README_KO.md)
+
 ## Features
 
 ### 🎵 Real-time Audio Effects (No Download Required!)
-
 Our standout feature is the ability to apply audio effects to YouTube videos in real-time, without downloading the audio file:
-
 - **Pitch Adjustment**: Modify the pitch of the audio
 - **Tempo Control**: Speed up or slow down the playback without affecting pitch
 - **Equalizer**: Fine-tune the audio frequencies
@@ -18,27 +18,22 @@ Our standout feature is the ability to apply audio effects to YouTube videos in 
 - **Audio-reactive Vibration**: Feel the music with vibration effects
 
 ### 🔍 Comprehensive Search
-
 - Search for any video within YouTube's vast library
 
 ### 🎨 Customizable Playback
-
 - Background playback: Continue listening with the screen off or while using other apps
 - Adjust audio effects from the notification bar during background playback
 
 ### 📋 Playlist Management
-
 - Create and manage playlists of your favorite videos
 - Add videos to playlists for easy access
 
 ### 🚫 Ad-Free Experience
-
 - Enjoy YouTube content without any advertisements
 
 ### 💾 Local File Playback
-
-Browse and play local video and audio files
-Apply the same powerful audio effects to your local media
+- Browse and play local video and audio files
+- Apply the same powerful audio effects to your local media
 
 ## Screenshots
 
@@ -99,4 +94,3 @@ This project is not affiliated with, endorsed by, or sponsored by YouTube or any
 ## Contact
 
 Sungmin Joh - joh99111@gmail.com
-
