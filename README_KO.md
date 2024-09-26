@@ -8,7 +8,8 @@ Transpose는 Kotlin과 Jetpack Compose로 개발한 오픈 소스, 광고 없는
 
 Transpose의 최신 베타 버전을 지금 바로 이용해보세요!
 
-[![GitHub release (최신 날짜 기준 사전 릴리스 포함)](https://img.shields.io/github/v/release/joh9911/Transpose?include_prereleases)](https://github.com/joh9911/Transpose/releases/latest)
+[![GitHub release (최신 날짜 기준 사전 릴리스 포함)](https://img.shields.io/github/v/release/joh9911/Transpose?include_prereleases)](https://github.com/joh9911/Transpose/releases/latest) ![GitHub all releases](https://img.shields.io/github/downloads/joh9911/Transpose/total)
+
 
 [GitHub Releases 페이지](https://github.com/joh9911/Transpose/releases/tag/v0.1.0-beta)에서 최신 APK를 다운로드할 수 있습니다.
 
