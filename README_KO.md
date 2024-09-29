@@ -4,6 +4,11 @@ Transpose는 Kotlin과 Jetpack Compose로 개발한 오픈 소스, 광고 없는
 
 [English version (영어 버전)](README.md)
 
+
+| 홈 화면 | 변환 화면 | 라이브러리 화면 |
+|:-------:|:---------:|:---------------:|
+| <img src="assets/home_screen.jpeg" alt="홈 화면" width="100%"> | <img src="assets/convert_screen.jpeg" alt="변환 화면" width="100%"> | <img src="assets/library_screen.jpeg" alt="라이브러리 화면" width="100%"> |
+
 ## 설치 방법
 
 Transpose의 최신 베타 버전을 지금 바로 이용해보세요!
@@ -46,11 +51,7 @@ Transpose의 대표 기능은 YouTube 동영상의 오디오를 실시간으로 
 - 기기에 저장된 비디오와 오디오 파일 탐색 및 재생
 - 로컬 미디어에도 동일한 강력한 오디오 효과 적용 가능
 
-## 스크린샷
 
-| 홈 화면 | 변환 화면 | 라이브러리 화면 |
-|:-------:|:---------:|:---------------:|
-| <img src="assets/home_screen.jpeg" alt="홈 화면" width="100%"> | <img src="assets/convert_screen.jpeg" alt="변환 화면" width="100%"> | <img src="assets/library_screen.jpeg" alt="라이브러리 화면" width="100%"> |
 
 ## 개발 예정 기능
 - [ ] 악기 효과 (보컬 제거)
