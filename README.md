@@ -4,6 +4,14 @@ Transpose is an open-source, ad-free YouTube client for Android, built with Kotl
 
 [한국어 버전 (Korean version)](README_KO.md)
 
+
+
+
+| Home Screen | Convert Screen | Library Screen |
+|:-----------:|:--------------:|:--------------:|
+| <img src="assets/home_screen.jpeg" alt="Home Screen" width="100%"> | <img src="assets/convert_screen.jpeg" alt="Convert Screen" width="100%"> | <img src="assets/library_screen.jpeg" alt="Library Screen" width="100%"> |
+
+
 ## Installation
 
 The latest beta version of Transpose is now available!
@@ -45,11 +53,7 @@ Our standout feature is the ability to apply audio effects to YouTube videos in 
 - Browse and play local video and audio files
 - Apply the same powerful audio effects to your local media
 
-## Screenshots
 
-| Home Screen | Convert Screen | Library Screen |
-|:-----------:|:--------------:|:--------------:|
-| <img src="assets/home_screen.jpeg" alt="Home Screen" width="100%"> | <img src="assets/convert_screen.jpeg" alt="Convert Screen" width="100%"> | <img src="assets/library_screen.jpeg" alt="Library Screen" width="100%"> |
 
 ## Upcoming Features (Todo List)
 
