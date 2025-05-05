@@ -27,6 +27,8 @@ internal fun Project.configureAndroidCompose(
             add("androidTestImplementation", platform(bom))
             add("testImplementation", project.libs.findLibrary("junit").get())
             add("debugImplementation", libs.findLibrary("androidx.ui.tooling.preview").get())
+            add("implementation", "androidx.compose.runtime:runtime-tracing:1.7.8")
+
         }
     }
 }
